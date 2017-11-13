@@ -5,7 +5,7 @@
 ##########------------------------------------------------------##########
 
 MCU   = atmega328p
-F_CPU = 1000000UL  
+F_CPU = 8000000UL  
 BAUD  = 9600UL
 ## Also try BAUD = 19200 or 38400 if you're feeling lucky.
 
@@ -53,7 +53,7 @@ TARGET = grinder_timer
 #  and in LIBDIR.  If you have any other (sub-)directories with code,
 #  you can add them in to SOURCES below in the wildcard statement.
 #!#SOURCES=$(wildcard *.c $(LIBDIR)/*.c)
-SOURCES=$(TARGET).c USART.c
+SOURCES=$(TARGET).c USART.c I2C.c SDD1306.c 
 OBJECTS=$(SOURCES:.c=.o)
 HEADERS=$(SOURCES:.c=.h)
 
