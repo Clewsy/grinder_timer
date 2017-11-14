@@ -47,17 +47,17 @@
 #define SET_HIGH_COLUMN_START_ADDRESS	0x10	//and "OR" 0x10 with 4 bits to give the upper nibble.  I.e. (0x00 | 0b0000EFGH),  (0x01 | 0b0000ABCD) gives column start address 0bABCDEFGH.
 #define SET_PAGE_START_ADDRESS		0xB0	//This command by itself sets the page start address to page 0. "OR" with 0x0 to 0x7 to set pages 0 to 7 (I.e. page range is 0xB0 to 0xB7)
 
-//Notes on horizontal addressing mode (for 64x128 display):
+//Notes on page addressing mode (for 64x128 display):
 //Address Pointer Movement
 //		Col0	Col1	...	Col126	Col127
-//	Page0	1stB	->	->	->	to Page1
-//	Page1	->	->	->	->	to Page2
+//	Page0	1stB	->	->	->	to Col0
 //	...	->	->	->	->	...
-//	Page6	->	->	->	->	to Page7
-//	Page7	->	->	->	->	LastB
+//	Page6	->	->	->	->	to Col0
+//	Page7	->	->	->	->	to Col0
 //
 //Each page consists of 128 vertical bytes with LSB at the top.
 //Each byte is effectively a vertical line of 8 pixels.
+//Every time a byte is written, column address increments but page address must me set manually.
 
 //function declarations
 void oled_send_command(uint8_t command);
