@@ -1,5 +1,5 @@
 #include <avr/io.h>
-#include "I2C.h"
+#include "i2c.h"
 
 //Slave address definitions.  SDD1306 module has slave address 0b011110[SA0][R/W] where:
 //-----	SA0 (slave address bit 0) is tied high or low by the hardware.
@@ -56,7 +56,15 @@
 //	Page7	->	->	->	->	to Col0
 //
 //Each page consists of 128 vertical bytes with LSB at the top.
-//Each byte is effectively a vertical line of 8 pixels.
+//Each byte is effectively a vertical line of 8 pixel:
+//e.g. 	Byte/		b0	<-LSb
+//	Segment:	b1
+//			b2
+//			b3
+//			b4
+//			b5
+//			b6
+//			b7	<-MSb
 //Every time a byte is written, column address increments but page address must me set manually.
 
 //function declarations
@@ -65,32 +73,5 @@ void oled_send_data(uint8_t data);
 void oled_init(void);
 void oled_set_address(uint8_t column, uint8_t page);
 void oled_clear_screen(void);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void oled_send_command(uint8_t command);
-void oled_send_data(uint8_t data);
+void oled_test_pattern(void);
+void oled_draw_box(uint8_t column, uint8_t page, uint8_t width, uint8_t height);

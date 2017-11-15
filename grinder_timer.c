@@ -3,79 +3,41 @@
 
 #include <avr/power.h>	//added to set clock prescaler in code
 
-#include "USART.h"
-#include "I2C.h"
-#include "SDD1306.h"
+#include "usart.h"
+#include "i2c.h"
+#include "ssd1306.h"
 
-void oled_test_pattern(void)
+//Initialise hardware (AVR peripherals and OLED module).
+void hardware_init(void)
 {
-	unsigned char i,j,k;
-	for (k=0;k<8;k++)
-	{
-		oled_set_address(0,k);
-		j=0;
-		for(i=0;i<128;i++)
-		{
-			j++;
-			if(j==8){j=0;}
-			oled_send_data(1 << j);
-		}
-	}
+	clock_prescale_set(clock_div_1);	//needs #include <avr/power.h>, prescaler 1 gives clock speed 8MHz
+	usart_init();				//Initialise AVR USART hardware.
+	i2c_init();				//Initialise AVR TWI (I2C) hardware.
+	oled_init();				//Initialise the OLED module.
 }
-
-void oled_draw_box(void)
-{
-	oled_set_address(10,2);
-	oled_send_data(0xFF);
-	oled_send_data(0xFF);
-	oled_send_data(0xFF);
-	oled_send_data(0xFF);
-	oled_send_data(0xFF);
-	oled_send_data(0xFF);
-	oled_send_data(0xFF);
-	oled_send_data(0xFF);
-	oled_send_data(0xFF);
-	oled_send_data(0xFF);
-	oled_set_address(10,3);
-	oled_send_data(0x03);
-	oled_send_data(0x03);
-	oled_send_data(0x03);
-	oled_send_data(0x03);
-	oled_send_data(0x03);
-	oled_send_data(0x03);
-	oled_send_data(0x03);
-	oled_send_data(0x03);
-	oled_send_data(0x03);
-	oled_send_data(0x03);
-}
-
 
 int main(void)
 {
-	clock_prescale_set(clock_div_1);	//needs #include <avr/power.h>, prescaler 1 gives clock speed 8MHz
-
-	initUSART();
+	hardware_init();
+	
 	//Test string for USART initialisation
-	printString("\r\n___Grinder_Timer\r\n");
+	usart_print_string("\r\ngrind(coffee);\r\n");
 
-	i2c_init();
-
-	oled_init();
-
-	printString("got here");
-
-	//oled_send_command(0xa5);
-	oled_test_pattern();
 	while (1)
 	{		
 		oled_test_pattern();
 		_delay_ms(500);
 		oled_clear_screen();
 		_delay_ms(1000);
-		oled_draw_box();
-		_delay_ms(2000);
-		
+		oled_draw_box(0,0,128,8);
+		_delay_ms(500);
+		oled_draw_box(7,1,112,6);
+		_delay_ms(500);
+		oled_draw_box(15,2,96,4);
+		_delay_ms(500);
+		oled_draw_box(23,3,80,2);
+		_delay_ms(5000);
 	}
 
-return 0;                            /* This line is never reached */
+	return 0;	//Should never reach this.
 }

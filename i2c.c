@@ -1,4 +1,4 @@
-#include "I2C.h"
+#include "i2c.h"
 
 //Initialise the I2C hardware.
 void i2c_init(void)

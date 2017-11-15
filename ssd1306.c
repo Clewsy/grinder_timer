@@ -1,4 +1,4 @@
-#include "SDD1306.h"
+#include "ssd1306.h"
 
 //SDD1306 OLED controller write mode for I2C: Must follow this packet structure:
 //Set I2C start condition
@@ -52,10 +52,10 @@ void oled_init(void)
 	oled_send_command(SET_DISPLAY_ON);
 }
 
-//This function sets the address from which oled image data will be written.
+//This function sets the address to  which oled image data will be written.
 //Note, in page address mode, the column is automatically incremented with every data byte writte, but the page must be set manually.
 //Consider the column to be the x co-ords (0to127) and the page to be the y co-ords (0 to 7).
-//Each data byte is represented as a vertical line of 8 pixels. 
+//Each data byte is referred to as a segment and effectively represents a vertical line of 8 pixels. 
 void oled_set_address(uint8_t column, uint8_t page)
 {
 	oled_send_command(SET_LOW_COLUMN_START_ADDRESS | (column & 0x0F));	//Send the byte that sets the column address lower nibble.
@@ -76,3 +76,60 @@ void oled_clear_screen(void)
 		}
 	}
 }
+
+//Draw a test pattern - a series of diagonal lines across the screen.
+void oled_test_pattern(void)
+{
+	unsigned char i,j,k;
+	for (k=0;k<8;k++)
+	{
+		oled_set_address(0,k);
+		j=0;
+		for(i=0;i<128;i++)
+		{
+			if(j==8){j=0;}
+			oled_send_data(1 << j);
+			j++;
+		}
+	}
+}
+
+//Draws a box at outside edges of segments starting at <column>, <page> and of size <width> columns and <height pages>.
+void oled_draw_box(uint8_t column, uint8_t page, uint8_t width, uint8_t height)
+{
+	oled_set_address(column,page);
+	oled_send_data(0xFF);					//Forms first vertical line for first segment in first page.
+	uint8_t i;
+	for(i=column;i<(column+width-2);i++)
+	{	
+		if(height != 1)
+		{
+			oled_send_data(0x01);			//Forms top horizontal line if height>1 page.
+		}
+		else
+		{
+			oled_send_data(0xC1);			//Forms the top and bottom horizontal lines for a box height of 1 page.
+		}
+	}
+	oled_send_data(0xFF);					//Forms right vertical line for last segment in first page.
+
+	if(height != 1)						//If box height is only one page then the box is done.  Else the following is required for side and bottom lines.
+	{
+		for(i=page+1;i<(page+height);i++)
+		{
+			oled_set_address(column,i);
+			oled_send_data(0xFF);			//Forms left vertical line.
+			oled_set_address(column+width-1,i);
+			oled_send_data(0xFF);			//Forms right vertical line.
+		}
+
+		oled_set_address(column,page+height-1);
+		oled_send_data(0xFF);				//Forms left vertical line for first segment in last page.
+		for(i=column;i<(column+width-2);i++)
+		{
+			oled_send_data(0xC0);			//Forms bottom horizontal line.
+		}
+		oled_send_data(0xFF);				//Forms right vertical line for last segment in last page.
+	}
+}
+
