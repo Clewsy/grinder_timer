@@ -53,7 +53,7 @@ TARGET = grinder_timer
 #  and in LIBDIR.  If you have any other (sub-)directories with code,
 #  you can add them in to SOURCES below in the wildcard statement.
 #!#SOURCES=$(wildcard *.c $(LIBDIR)/*.c)
-SOURCES=$(TARGET).c usart.c i2c.c ssd1306.c 
+SOURCES=$(TARGET).c usart.c i2c.c ssd1306.c rtc.c 
 OBJECTS=$(SOURCES:.c=.o)
 HEADERS=$(SOURCES:.c=.h)
 

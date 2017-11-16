@@ -54,12 +54,11 @@ void usart_print_string(const char string[])
 //Takes an integer and transmits the characters
 void usart_print_byte(uint8_t byte)
 {
-	//(modified to only print last 2 digits (tens & ones)).
-	//while (!(UCSR1A & (1 << UDRE1))) {}	//Wait until the USART 0 data register is empty (ready to transmit).
-	//transmitByte('0'+ (byte/100));	//Hundreds
-	while (!(UCSR0A & (1 << UDRE0))) {}	//Wait until the USART 0 data register is empty (ready to transmit).
+	//while (!(UCSR0A & (1 << UDRE0))) {}		//Wait until the USART 0 data register is empty (ready to transmit).
+	//usart_transmit_byte('0'+ (byte/100));		//Hundreds
+	while (!(UCSR0A & (1 << UDRE0))) {}		//Wait until the USART 0 data register is empty (ready to transmit).
 	usart_transmit_byte('0'+ ((byte/10) % 10));	//Tens
-	while (!(UCSR0A & (1 << UDRE0))) {}	//Wait until the USART 0 data register is empty (ready to transmit).
+	while (!(UCSR0A & (1 << UDRE0))) {}		//Wait until the USART 0 data register is empty (ready to transmit).
 	usart_transmit_byte('0'+ (byte % 10));		//Ones
 }
 
