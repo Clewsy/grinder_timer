@@ -146,7 +146,7 @@ void oled_type_char(char character)
 }										//The font characters start with " " (space) at 0 which is offset by 32 to the standard ascii set.
 
 //Types the characters from with a string to the screen.  Effectively calls function "oled_type_char" for each char within the string.
-////Note, the address must be set before calling this function and there is no check for characters being printed outside the 128col x 8page grid.
+//Note, the address must be set before calling this function and there is no check for characters being printed outside the 128col x 8page grid.
 void oled_type_string(char string[])
 {
 	uint8_t i = 0;
@@ -155,4 +155,13 @@ void oled_type_string(char string[])
 		oled_type_char(string[i]);	//Call the oled_print_char function for the current character.
 		i++;				//Increment to the next character in the string.
 	}
+}
+
+//Types to the oled the ascii characters corresponding to the digits of an integer.
+////Note, the address must be set before calling this function.
+void oled_type_byte(uint8_t byte)
+{
+//	oled_type_char('0'+ (byte/100));	//Hundreds
+	oled_type_char('0'+ ((byte/10) % 10));	//Tens
+	oled_type_char('0'+ (byte % 10));	//Ones
 }
