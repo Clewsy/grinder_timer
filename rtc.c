@@ -36,9 +36,23 @@ void rtc_init(void)
 				//OCR2AUB: TC2 Output Compare Register A Update Busy - Set until write to OCR2A is complete.
 				//OCR2BUB: TC2 Output Compare Register B Update Busy - Set until write to OCR2B is complete.
 
-	TIMSK2 |= (1 << TOIE2);	//Enable required interrupts:
-				//TOIE2: TC2 Overflow Interrupt.  This will trigger "ISR(TIMER2_OVF_vect)" when TCNT2 overflows.
+	//Following could be used in a general-purpose RTC initialisation but for this application it serves as the rtc_enable/disable operation in a separate function.
+	//TIMSK2 |= (1 << TOIE2);	//Enable required interrupts:
+					//TOIE2: TC2 Overflow Interrupt.  This will trigger "ISR(TIMER2_OVF_vect)" when TCNT2 overflows.
 
 	//Global enable of interrupts.  Can be included here if not enabled elsewhere in the code.
 	//sei();
+}
+
+//Function to effectively enable the timer by enabling the overflow interrupt (assumes rtc has otherwise been initialise).
+void rtc_enable(void)
+{
+	TIMSK2 |= (1 << TOIE2);	//Enable overflow interrupt.
+				//TOIE2: TC2 Overflow Interrupt.  This will trigger "ISR(TIMER2_OVF_vect)" when TCNT2 overflows.
+}
+
+//Function to effectively disable the timer by disabling the overflow interrupt. 
+void rtc_disable(void)
+{
+	TIMSK2 &= ~(1 << TOIE2);	//Disable overflow interrupt TOIE2.
 }
