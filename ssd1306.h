@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include "i2c.h"
+//#include "fonts.h"
 
 //Slave address definitions.  SDD1306 module has slave address 0b011110[SA0][R/W] where:
 //-----	SA0 (slave address bit 0) is tied high or low by the hardware.
@@ -75,3 +76,5 @@ void oled_set_address(uint8_t column, uint8_t page);
 void oled_clear_screen(void);
 void oled_test_pattern(void);
 void oled_draw_box(uint8_t column, uint8_t page, uint8_t width, uint8_t height);
+void oled_type_char(char character);
+void oled_type_string(char string[]);

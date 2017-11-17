@@ -6,6 +6,7 @@
 #include "usart.h"
 #include "i2c.h"
 #include "ssd1306.h"
+//#include "fonts.h"
 #include "rtc.h"
 
 //The following interrupt subroutine will be triggered every 1/16th of a second.
@@ -59,7 +60,26 @@ int main(void)
 		oled_draw_box(15,2,96,4);
 		_delay_ms(500);
 		oled_draw_box(23,3,80,2);
+		_delay_ms(500);
+
+		oled_clear_screen();
+		oled_set_address(0,0);
+		oled_type_string("GAME OVER MAN...");
 		_delay_ms(5000);
+
+/*		oled_clear_screen();
+		oled_type_char(0,0,0);
+		oled_type_char(1,8,1);
+		oled_type_char(2,16,2);
+		oled_type_char(3,24,3);
+		oled_type_char(4,32,4);
+		oled_type_char(5,40,5);
+		oled_type_char(6,48,6);
+		oled_type_char(7,56,7);
+		//oled_type_char(8,64,8);
+		//oled_type_char(9,72,9);
+		_delay_ms(5000);
+*/
 	}
 
 	return 0;	//Should never reach this.

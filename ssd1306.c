@@ -1,4 +1,5 @@
 #include "ssd1306.h"
+#include "fonts.h"
 
 //SDD1306 OLED controller write mode for I2C: Must follow this packet structure:
 //Set I2C start condition
@@ -133,3 +134,25 @@ void oled_draw_box(uint8_t column, uint8_t page, uint8_t width, uint8_t height)
 	}
 }
 
+//Types a single character to the screen in accordance with the font defined as "font_8x8"
+//Note, the address must be set before calling this function and there is no check for characters being printed outside the 128col x 8page grid.
+void oled_type_char(char character)
+{
+	uint8_t i;
+	for(i=0;i<8;i++)	//Cycle through each of the 8 segments that make up the character.
+	{
+		oled_send_data(pgm_read_byte(&(font_8x8[character-32][i])));	//Send the data that corresponds to the segments defined in the font.
+	}									//Note "-32" is required to map the decimal value of the <char> to the defined font.
+}										//The font characters start with " " (space) at 0 which is offset by 32 to the standard ascii set.
+
+//Types the characters from with a string to the screen.  Effectively calls function "oled_type_char" for each char within the string.
+////Note, the address must be set before calling this function and there is no check for characters being printed outside the 128col x 8page grid.
+void oled_type_string(char string[])
+{
+	uint8_t i = 0;
+	while(string[i] != '\0')		//Will continue printing characters until the null character is reached indicating the end of the string.
+	{
+		oled_type_char(string[i]);	//Call the oled_print_char function for the current character.
+		i++;				//Increment to the next character in the string.
+	}
+}
