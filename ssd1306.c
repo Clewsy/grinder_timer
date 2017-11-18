@@ -37,7 +37,7 @@ void oled_init(void)
 	oled_send_command(MULTIPLEX_RATIO_64);
 	oled_send_command(SET_DISPLAY_OFFSET);
 	oled_send_command(DISPLAY_OFFSET_0);
-	oled_send_command(SET_DISPLAY_START_LINE_0);	
+	oled_send_command(SET_DISPLAY_START_LINE_0);
 	oled_send_command(SET_SEGMENT_REMAP_0);
 	oled_send_command(SET_COM_OUTPUT_SCAN_DIR_NORMAL);
 	oled_send_command(SET_COM_PINS_HARDWARE_CONFIG);
@@ -56,7 +56,7 @@ void oled_init(void)
 //This function sets the address to  which oled image data will be written.
 //Note, in page address mode, the column is automatically incremented with every data byte writte, but the page must be set manually.
 //Consider the column to be the x co-ords (0to127) and the page to be the y co-ords (0 to 7).
-//Each data byte is referred to as a segment and effectively represents a vertical line of 8 pixels. 
+//Each data byte is referred to as a segment and effectively represents a vertical line of 8 pixels.
 void oled_set_address(uint8_t column, uint8_t page)
 {
 	oled_send_command(SET_LOW_COLUMN_START_ADDRESS | (column & 0x0F));	//Send the byte that sets the column address lower nibble.
@@ -102,7 +102,7 @@ void oled_draw_box(uint8_t column, uint8_t page, uint8_t width, uint8_t height)
 	oled_send_data(0xFF);					//Forms first vertical line for first segment in first page.
 	uint8_t i;
 	for(i=column;i<(column+width-2);i++)
-	{	
+	{
 		if(height != 1)
 		{
 			oled_send_data(0x01);			//Forms top horizontal line if height>1 page.
@@ -139,9 +139,9 @@ void oled_draw_box(uint8_t column, uint8_t page, uint8_t width, uint8_t height)
 void oled_type_char(char character)
 {
 	uint8_t i;
-	for(i=0;i<8;i++)	//Cycle through each of the 8 segments that make up the character.
+	for(i=0;i<6;i++)	//Cycle through each of the 8 segments that make up the character.
 	{
-		oled_send_data(pgm_read_byte(&(font_8x8[character-32][i])));	//Send the data that corresponds to the segments defined in the font.
+		oled_send_data(pgm_read_byte(&(font_6x8[character-32][i])));	//Send the data that corresponds to the segments defined in the font.
 	}									//Note "-32" is required to map the decimal value of the <char> to the defined font.
 }										//The font characters start with " " (space) at 0 which is offset by 32 to the standard ascii set.
 
@@ -164,4 +164,22 @@ void oled_type_byte(uint8_t byte)
 //	oled_type_char('0'+ (byte/100));	//Hundreds
 	oled_type_char('0'+ ((byte/10) % 10));	//Tens
 	oled_type_char('0'+ (byte % 10));	//Ones
+}
+
+//Types to screen a single digit in the 7-seg style font I made.  Digit will start at <column>, <row>.
+//Size of digits is 24 columns x 6 pages (or 24x48 pixels).
+void oled_type_digit_large(uint8_t digit, uint8_t column, uint8_t page)
+{
+	uint8_t i,j;
+	for(j=0;j<6;j++)				//Cycle through 6 times for each page the digit requires.
+	{
+		oled_set_address(column,(page+j));	//Set the start address for the next set of 24 segments.
+		for(i=0;i<24;i++)			//Cycle through 24 times for each column.
+		{
+			//Send the data byte (segment) to be drawn.
+			//The byte is found in program space (flash). 
+			oled_send_data(pgm_read_byte(&(font_7_seg_digits[digit][i+(24*j)])));
+		}
+	}
+
 }

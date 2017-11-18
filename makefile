@@ -5,12 +5,12 @@
 ##########------------------------------------------------------##########
 
 MCU   = atmega328p
-F_CPU = 8000000UL  
+F_CPU = 8000000UL
 BAUD  = 9600UL
 ## Also try BAUD = 19200 or 38400 if you're feeling lucky.
 
 ## A directory for common include files and the simple USART library.
-## If you move either the current folder or the Library folder, you'll 
+## If you move either the current folder or the Library folder, you'll
 ##  need to change this path to match.
 #!#LIBDIR = ../../AVR-Programming-Library
 
@@ -22,7 +22,7 @@ BAUD  = 9600UL
 
 PROGRAMMER_TYPE = usbasp
 # extra arguments to avrdude: baud rate, chip type, -F flag, etc.
-PROGRAMMER_ARGS = 	
+PROGRAMMER_ARGS =
 
 ##########------------------------------------------------------##########
 ##########                  Program Locations                   ##########
@@ -53,7 +53,7 @@ TARGET = grinder_timer
 #  and in LIBDIR.  If you have any other (sub-)directories with code,
 #  you can add them in to SOURCES below in the wildcard statement.
 #!#SOURCES=$(wildcard *.c $(LIBDIR)/*.c)
-SOURCES=$(TARGET).c usart.c i2c.c ssd1306.c rtc.c 
+SOURCES=$(TARGET).c usart.c i2c.c ssd1306.c rtc.c
 OBJECTS=$(SOURCES:.c=.o)
 HEADERS=$(SOURCES:.c=.h)
 
@@ -74,7 +74,7 @@ CFLAGS = -Os -g -std=gnu99 -Wall
 ###### -Wall used to enable (all) (W)arnings
 
 ## Linker options
-#!#LDFLAGS = -Wl,-Map,$(TARGET).map 
+#!#LDFLAGS = -Wl,-Map,$(TARGET).map
 #### notes
 ###### -Wl: -Wl,<option> to pass an options to the linker.  Or multiple options separated by commas.
 ###### -Map,$(TARGET).map creates a $(TARGET).map file. Useful for monitoring the sizes of your code and data.
@@ -88,12 +88,12 @@ TARGET_ARCH = -mmcu=$(MCU)
 ###### $% evaluates to the target member name, when the target is an archive member.
 ###### $^ evaluates to the names of all the prerequisites, with spaces between them.
 
-##  Make .o (object) files from .c files 
+##  Make .o (object) files from .c files
 %.o: %.c $(HEADERS) makefile
 	 $(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<;
 #### Notes:
 ###### -c: Compile or assemble the source files, but do not link.
-###### -o <file>: Place output in file <file>. 
+###### -o <file>: Place output in file <file>.
 
 
 ## To make .elf (executable and linkable format) file from .o files
@@ -104,9 +104,9 @@ $(TARGET).elf: $(OBJECTS)
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $< $@
 
-all: $(TARGET).hex 
+all: $(TARGET).hex
 
-# Optionally show how big the resulting program is 
+# Optionally show how big the resulting program is
 size:  $(TARGET).elf
 	$(AVRSIZE) -C --mcu=$(MCU) $(TARGET).elf
 
@@ -126,5 +126,5 @@ squeaky_clean:
 ##########           Flashing code to AVR using avrdude         ##########
 ##########------------------------------------------------------##########
 
-flash: $(TARGET).hex 
+flash: $(TARGET).hex
 	$(AVRDUDE) -c $(PROGRAMMER_TYPE) -p $(MCU) $(PROGRAMMER_ARGS) -U flash:w:$<

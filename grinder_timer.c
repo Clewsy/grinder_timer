@@ -1,25 +1,10 @@
-#include <avr/io.h>		/* Defines pins, ports, etc */
-#include <util/delay.h>		/* Functions to waste time */
+#include "grinder_timer.h"
 
-#include <avr/power.h>	//added to set clock prescaler in code
 
-#include "usart.h"
-#include "i2c.h"
-#include "ssd1306.h"
-#include "rtc.h"
 
-#define RELAY_PORT		PORTC
-#define RELAY_DDR		DDRC
-#define RELAY_PIN			PC0
-
-#define BUTTON_PORT		PORTB
-#define BUTTON_DDR		DDRB
-#define BUTTON_GRIND		PB0
 
 //The following interrupt subroutine will be triggered every 1/16th of a second.
-uint8_t global_seconds = 0;	//globally accessible variable used to count seconds.
-uint16_t global_sixteenths = 0;	//globally accessible variable used to count sixteenths of a second.i
-uint16_t global_timer_setpoint = 192;
+//uint8_t global_seconds = 0;	//globally accessible variable used to count seconds.
 ISR(TIMER2_OVF_vect)
 {
 	global_sixteenths--;
@@ -27,30 +12,35 @@ ISR(TIMER2_OVF_vect)
 	{
 		RELAY_PORT &= ~(1 << RELAY_PIN);
 		global_sixteenths = 0;
-		rtc_disable();	//Reset to 0.
+		rtc_disable();
+		_delay_ms(1000);
+		global_sixteenths = global_timer_setpoint;
 	}
-	global_seconds=(global_sixteenths>>4);	//Bitshift right four digits is equivalent to dividing by sixteen.
-
-	//Print some information across serial for debugging.
-	//usart_print_string("\r");			//Reset to the start of the line.
-	//usart_print_byte(global_seconds);		//Convert the seconds integer to ascii characters and print.
-	//usart_print_string(".");			//Print a dividing decimal point.
-	//usart_print_byte(global_sixteenths*6.25);	//Print the decimal equivalent of sixteenths of a second.
-
-	//Print some information to the oled display for debugging.
-	oled_set_address(44,4);
-	oled_type_byte(global_seconds);
-	oled_type_char('.');
-	oled_type_byte(global_sixteenths*6.25);
+	display_clock();
 }
 
 //The following interrupt sub-routine will be triggered every time there is a change in state of any button.
 ISR(PCINT0_vect)
 {
-	global_sixteenths = global_timer_setpoint;
-	RELAY_PORT |= (1 << RELAY_PIN);
-	rtc_enable();
+	//_delay_ms(50);
+	if((BUTTON_PINS & (1 << BUTTON_GRIND)) == 0)	//If the grind button is pressed
+	{
+		global_sixteenths = global_timer_setpoint;
+		RELAY_PORT |= (1 << RELAY_PIN);
+		rtc_enable();
+	}
 }//Interrupt flag PCIF0 (pin-change interrupt flag 0) on PCIFR (pin-change interrupt flag register) is automatically cleared upon exit of this ISR.
+
+//This function displays the current value of the timer by converting the quantity of "global_sixteenths" to seconds.
+//The digits are displayed with the large seven-segment style font.
+void display_clock(void)
+{
+	oled_type_digit_large(((global_sixteenths >> 4) / 10), 4, 2);			//Tens of seconds. RShift 4 bits to divide by 16. Print with top left at column 4, page 2.
+	oled_type_digit_large(((global_sixteenths >> 4) % 10), 28, 2);			//Ones of seconds. % (i.e. mod) gives remainder after dividing.
+	oled_type_digit_large(10, 52, 2);						//The tenth character in this font is a colon (':').  This serves as a separator.
+	oled_type_digit_large(((uint8_t)(global_sixteenths*0.625) % 10), 76, 2);	//Tenths of seconds. Note division and modulus operators ignore fractions.
+	oled_type_digit_large(((uint16_t)(global_sixteenths*6.25) % 10) , 100, 2);	//Hudredths of a second. Note modulus operation (%) only works on integers.
+}
 
 
 //Initialise hardware (AVR peripherals and OLED module).
@@ -62,6 +52,7 @@ void hardware_init(void)
 	oled_init();				//Initialise the OLED module.
 	rtc_init();				//Initialise AVR Timer/Counter 2 hardware to operate asynchronously as a real time clock (for accurate timing).
 
+	//Setup inputs and outputs.
 	PCICR |= (1 << PCIE0);			//Enable Pin-Change Interrupt for pin-change int pins PCINT[0-7].  This includes all 5 buttons.
 						//PCICR: Pin-Change Interrupt Control Register
 						//PCIE[0-7]: Pin-Change Interrupt Enable 0-7
@@ -69,8 +60,6 @@ void hardware_init(void)
 						//PCMSK0: Pin-Change Mask Register 0
 						//PCINT[0-7]: Pin-Change Interrupt [0-7]
 	BUTTON_PORT |= (1 << BUTTON_GRIND);	//Enable pull-up resistors for all 5 buttons.
-
-	
 	RELAY_DDR |= (1 << RELAY_PIN);		//Set as an output the pin to which the relay is connected.
 
 	sei();					//Global enable of interrupts.
@@ -79,18 +68,16 @@ void hardware_init(void)
 int main(void)
 {
 	hardware_init();
-	
+
 	//Test string for USART initialisation
 	usart_print_string("\n\r\ngrind(coffee);\r\n");
 	oled_clear_screen();
-	oled_set_address(8,0);
+	oled_set_address(0,0);
 	oled_type_string("grind(coffee);");
-	_delay_ms(500);
 
 	while (1)
-	{		
-		//oled_test_pattern();
-		//oled_draw_box(0,0,128,8);
+	{
+		//Everything is interrupt driven.
 	}
 
 	return 0;	//Should never reach this.
