@@ -20,7 +20,7 @@ ISR(TIMER2_OVF_vect)
 }
 
 //The following interrupt sub-routine will be triggered every time there is a change in state of any button.
-ISR(PCINT0_vect)
+ISR(BUTTON_PCI_VECTOR)
 {
 	//_delay_ms(50);
 	if((BUTTON_PINS & (1 << BUTTON_GRIND)) == 0)	//If the grind button is pressed
@@ -53,13 +53,21 @@ void hardware_init(void)
 	rtc_init();				//Initialise AVR Timer/Counter 2 hardware to operate asynchronously as a real time clock (for accurate timing).
 
 	//Setup inputs and outputs.
-	PCICR |= (1 << PCIE0);			//Enable Pin-Change Interrupt for pin-change int pins PCINT[0-7].  This includes all 5 buttons.
+	PCICR |= (1 << BUTTON_PCIE);		//Enable Pin-Change Interrupt for pin-change int pins PCINT[0-7].  This includes all 5 buttons.
 						//PCICR: Pin-Change Interrupt Control Register
-						//PCIE[0-7]: Pin-Change Interrupt Enable 0-7
-	PCMSK0 |= (1 << PCINT0);		//Enable Pin-Change Interrupt on PCINT[x] for PCINT pins to which the 5 buttons are connected.
-						//PCMSK0: Pin-Change Mask Register 0
-						//PCINT[0-7]: Pin-Change Interrupt [0-7]
-	BUTTON_PORT |= (1 << BUTTON_GRIND);	//Enable pull-up resistors for all 5 buttons.
+						//PCIE0: Pin-Change Interrupt Enable 0 (Enables PCINT[0-7] i.e. PB[7-0])
+						//PCIE1: Pin-Change Interrupt Enable 1 (Enables PCINT[14-8] i.e. PC[6-0])
+						//PCIE2: Pin-Change Interrupt Enable 2 (Enables PCINT[23-16] i.e. PD[7-0])
+	BUTTON_PCMSK |= ((1 << BUTTON_GRIND) | (1 << BUTTON_UP) | (1 << BUTTON_DOWN) | (1 << BUTTON_LEFT) | (1 << BUTTON_RIGHT));
+						//Enable Pin-Change Interrupt on PCINT[x] for PCINT pins to which the 5 buttons are connected.
+						//PCMSK0: Pin-Change Mask Register 0 (For PCINT[0-7] i.e. PB[7-0])
+						//PCMSK1: Pin-Change Mask Register 1 (For PCINT[14-8] i.e. PC[6-0])
+						//PCMSK2: Pin-Change Mask Register 2 (For PCINT[23-16] i.e. PD[7-0])
+						//PCINT[0-7]: Pin-Change Interrupt [0-7]. Note PCINT[7-0]: PB[7-0]
+						//PCINT[14-8]: Pin-Change Interrupt [14-8]. Note PCINT[7-0]: PC[6-0]
+						//PCINT[23-16]: Pin-Change Interrupt [23-16]. Note PCINT[7-0]: PD[7-0]
+	BUTTON_PORT |= ((1 << BUTTON_GRIND) | (1 << BUTTON_UP) | (1 << BUTTON_DOWN) | (1 << BUTTON_LEFT) | (1 << BUTTON_RIGHT));
+						//Enable pull-up resistors for all 5 buttons.
 	RELAY_DDR |= (1 << RELAY_PIN);		//Set as an output the pin to which the relay is connected.
 
 	sei();					//Global enable of interrupts.

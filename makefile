@@ -125,6 +125,14 @@ squeaky_clean:
 ##########              Programmer-specific details             ##########
 ##########           Flashing code to AVR using avrdude         ##########
 ##########------------------------------------------------------##########
+########## added some commands to use a blink(1) to indicate programming status.
+red:
+	sudo blink1-tool -m 100 --rgb=255,0,0
 
-flash: $(TARGET).hex
+green:
+	sudo blink1-tool -m 100 --rgb=0,255,0
+
+program: $(TARGET).hex
 	$(AVRDUDE) -c $(PROGRAMMER_TYPE) -p $(MCU) $(PROGRAMMER_ARGS) -U flash:w:$<
+
+flash: red program green
