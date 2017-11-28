@@ -1,8 +1,6 @@
 #include "grinder_timer.h"
 
 
-
-
 //The following interrupt subroutine will be triggered every 1/16th of a second.
 //uint8_t global_seconds = 0;	//globally accessible variable used to count seconds.
 ISR(TIMER2_OVF_vect)
@@ -37,7 +35,7 @@ void display_clock(void)
 {
 	oled_type_digit_large(((global_sixteenths >> 4) / 10), 4, 2);			//Tens of seconds. RShift 4 bits to divide by 16. Print with top left at column 4, page 2.
 	oled_type_digit_large(((global_sixteenths >> 4) % 10), 28, 2);			//Ones of seconds. % (i.e. mod) gives remainder after dividing.
-	oled_type_digit_large(10, 52, 2);						//The tenth character in this font is a colon (':').  This serves as a separator.
+	oled_type_digit_large(11, 52, 2);						//The eleventh character in this font is a period ('.').  This serves as a separator.
 	oled_type_digit_large(((uint8_t)(global_sixteenths*0.625) % 10), 76, 2);	//Tenths of seconds. Note division and modulus operators ignore fractions.
 	oled_type_digit_large(((uint16_t)(global_sixteenths*6.25) % 10) , 100, 2);	//Hudredths of a second. Note modulus operation (%) only works on integers.
 }
@@ -82,6 +80,10 @@ int main(void)
 	oled_clear_screen();
 	oled_set_address(0,0);
 	oled_type_string("grind(coffee);");
+
+	//Set an initial boot-up timer value and display on-screen.
+	global_sixteenths = global_timer_setpoint;
+	display_clock();
 
 	while (1)
 	{
