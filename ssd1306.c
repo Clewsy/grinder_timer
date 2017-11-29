@@ -177,7 +177,7 @@ void oled_type_digit_large(uint8_t digit, uint8_t column, uint8_t page)
 		for(i=0;i<24;i++)			//Cycle through 24 times for each column.
 		{
 			//Send the data byte (segment) to be drawn.
-			//The byte is found in program space (flash). 
+			//The byte is found in program space (flash).
 			oled_send_data(pgm_read_byte(&(font_7_seg_digits[digit][i+(24*j)])));
 		}
 	}
