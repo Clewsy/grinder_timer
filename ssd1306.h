@@ -77,6 +77,7 @@ void oled_clear_screen(void);
 void oled_test_pattern(void);
 void oled_draw_box(uint8_t column, uint8_t page, uint8_t width, uint8_t height);
 void oled_type_char(char character);
+void oled_type_menu_char(uint8_t character, uint8_t column, uint8_t page);
 void oled_type_string(char string[]);
 void oled_type_byte(uint8_t byte);
 void oled_type_digit_large(uint8_t digit, uint8_t column, uint8_t page);

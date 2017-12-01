@@ -145,6 +145,23 @@ void oled_type_char(char character)
 	}									//Note "-32" is required to map the decimal value of the <char> to the defined font.
 }										//The font characters start with " " (space) at 0 which is offset by 32 to the standard ascii set.
 
+//This function draws a specific character from a 12x16 (12 columns x 2 pages) font created for
+//the preset menu selection.
+void oled_type_menu_char(uint8_t character, uint8_t column, uint8_t page)
+{
+	uint8_t i;
+	oled_set_address(column, page);
+	for(i=0;i<12;i++)	//First set of 12 segments (first page)
+	{
+		oled_send_data(pgm_read_byte(&(font_menu[character][i])));
+	}
+	oled_set_address(column, (page+1));
+	for(i=0;i<12;i++)	//Second set of 12 segments (second page)
+	{
+		oled_send_data(pgm_read_byte(&(font_menu[character][i+12])));
+	}
+}
+
 //Types the characters from with a string to the screen.  Effectively calls function "oled_type_char" for each char within the string.
 //Note, the address must be set before calling this function and there is no check for characters being printed outside the 128col x 8page grid.
 void oled_type_string(char string[])

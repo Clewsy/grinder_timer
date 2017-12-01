@@ -127,10 +127,10 @@ squeaky_clean:
 ##########------------------------------------------------------##########
 ########## added some commands to use a blink(1) to indicate programming status.
 red:
-	sudo blink1-tool -m 100 --rgb=255,0,0
+	sudo blink1-tool -m 1000 --rgb=255,0,0
 
 green:
-	sudo blink1-tool -m 100 --rgb=0,255,0
+	sudo blink1-tool -m 1000 --rgb=0,255,0
 
 program: $(TARGET).hex
 	$(AVRDUDE) -c $(PROGRAMMER_TYPE) -p $(MCU) $(PROGRAMMER_ARGS) -U flash:w:$<
