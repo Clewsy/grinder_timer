@@ -9,6 +9,7 @@ ISR(TIMER2_OVF_vect)
 	{
 		RELAY_PORT &= ~(1 << RELAY_PIN);				//Switch the relay back off.
 		rtc_disable();							//Disable the timer.
+		presets_update_eeprom();					//If the preset was changed, save it to eeprom (after grind to not increase duration).
 		_delay_ms(1000);						//Pause with the timer display at zero for one second.
 		global_sixteenths = global_presets[global_current_preset];	//Reset the countdown duration to the current preset.
 		PCICR |= (1 << BUTTON_PCIE);					//Effectively re-enable the buttons.
@@ -20,10 +21,11 @@ ISR(TIMER2_OVF_vect)
 //ISR has 6 sections, one for each button.
 ISR(BUTTON_PCI_VECTOR)
 {
-	if(global_oled_sleep_flag)		//If the oled is "sleeping" (i.e. turned off the the TCo overflow interrupt)
-	{					//then we just want to turn the screen back on with any button press.
-		reset_oled_sleep_timer();	//Call the oled sleep timer reset function.
-		return;				//No other action regardless of button pressed.
+	if(global_oled_sleep_flag)			//If the oled is "sleeping" (i.e. turned off the the TCo overflow interrupt)
+	{						//then we just want to turn the screen back on with any button press.
+		_delay_ms(BUTTON_DEBOUNCE_DURATION);	//wait for DEBOUNCE_DURATION milliseconds to mitigate effect of switch bounce.
+		reset_oled_sleep_timer();		//Call the oled sleep timer reset function.
+		return;					//No other action regardless of button pressed.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -71,6 +73,7 @@ ISR(BUTTON_PCI_VECTOR)
 		display_menu(global_current_preset);				//Update the menu to indicate which preset is selected.
 		global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding
 		display_clock();						//Update the timer display to show the preset in seconds.
+		presets_update_eeprom();					//If the previous preset was changed, this will save it to eeprom.
 		while((BUTTON_PINS & (1 << BUTTON_LEFT))  == 0){}		//Wait until the button is released.
 	}
 
@@ -88,6 +91,7 @@ ISR(BUTTON_PCI_VECTOR)
 		display_menu(global_current_preset);				//Update the menu to indicate which preset is selected.
 		global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding
 		display_clock();						//Update the timer display to show the preset in seconds.
+		presets_update_eeprom();					//If the previous preset was changed, this will save it to eeprom.
 		while((BUTTON_PINS & (1 << BUTTON_RIGHT))  == 0){}		//Wait until the button is released.
 	}
 
@@ -146,17 +150,6 @@ ISR(BUTTON_PCI_VECTOR)
 	}
 }//Interrupt flag PCIF0 (pin-change interrupt flag 0) on PCIFR (pin-change interrupt flag register) is automatically cleared upon exit of this ISR.
 
-//This function displays the current value of the timer by converting the quantity of "global_sixteenths" to seconds.
-//The digits are displayed with the large seven-segment style font.
-void display_clock(void)
-{
-	oled_type_digit_large(((global_sixteenths >> 4) / 10), 4, 2);			//Tens of seconds. RShift 4 bits to divide by 16. Print with top left at column 4, page 2.
-	oled_type_digit_large(((global_sixteenths >> 4) % 10), 28, 2);			//Ones of seconds. % (i.e. mod) gives remainder after dividing.
-	oled_type_digit_large(11, 52, 2);						//The eleventh character in this font is a period ('.').  This serves as a separator.
-	oled_type_digit_large(((uint16_t)(global_sixteenths*0.625) % 10), 76, 2);	//Tenths of seconds. Note division and modulus operators ignore fractions.
-	oled_type_digit_large(((uint16_t)(global_sixteenths*6.25) % 10) , 100, 2);	//Hudredths of a second. Note modulus operation (%) only works on integers.
-}
-
 //Timer/Counter 0 overflow interrupt vector.
 //TC0 is used as a simple counter prescaled by 1024 (~7812Hz) that triggers this interrupt at overflow.
 //The interrupt function just increments a counter but when the counter reaches a nominated value,
@@ -179,6 +172,77 @@ void reset_oled_sleep_timer(void)
 	oled_send_command(SET_DISPLAY_ON);		//Ensure the oled is turned on
 	global_oled_sleep_flag = OLED_SLEEP_OFF;	//Flag that the oled is not "sleeping".
 	global_oled_sleep_timer = 0;			//Reset the oled sleep timer counter.
+}
+
+//This function displays the current value of the timer by converting the quantity of "global_sixteenths" to seconds.
+////The digits are displayed with the large seven-segment style font.
+void display_clock(void)
+{
+	oled_type_digit_large(((global_sixteenths >> 4) / 10), 4, 2);			//Tens of seconds. RShift 4 bits to divide by 16. Print with top left at column 4, page 2.
+	oled_type_digit_large(((global_sixteenths >> 4) % 10), 28, 2);			//Ones of seconds. % (i.e. mod) gives remainder after dividing.
+	oled_type_digit_large(11, 52, 2);						//The eleventh character in this font is a period ('.').  This serves as a separator.
+	oled_type_digit_large(((uint16_t)(global_sixteenths*0.625) % 10), 76, 2);	//Tenths of seconds. Note division and modulus operators ignore fractions.
+	oled_type_digit_large(((uint16_t)(global_sixteenths*6.25) % 10) , 100, 2);	//Hudredths of a second. Note modulus operation (%) only works on integers.
+}
+
+//Draws the preset menu at the top of the screen.  Presets represented by A, B, C and D.
+//The currently selected preset is indicated by a box around the letter.
+void display_menu(uint8_t selected_preset)
+{
+	uint8_t i;
+	for(i=0;i<4;i++)	//Repeat four times for presets A, B, C and D.
+	{
+		//If statement will usually just draw the characters A to D, except in the case of the
+		//selected_preset character.  By adding 4 to the font map, the alternate character Will
+		//be selected (same character but within a box)
+		if(i == selected_preset)
+		{
+			oled_type_menu_char(i+4,((i*24)+22),0);
+		}
+		else
+		{
+			oled_type_menu_char(i,((i*24)+22),0);
+		}
+	}
+}
+
+//A simple function to briefly display a splash screen on power-up.
+void display_splash_screen(void)
+{
+	oled_clear_screen();
+	oled_set_address(22,3);
+	oled_type_string("grind(coffee);");
+	_delay_ms(1000);
+	oled_clear_screen();
+}
+
+//This function is run on start-up to pull the presets saved to EEPROM and make them easily, globally accessible.
+//It will also set the presets to zero if they are not a valid number (such as after flashing a new AVR).
+//To be valid, the preset must be a multiple of 4 (only possible increments/decrements of sixteenths)
+//and also less than PRESET_MAX.
+void presets_init(void)
+{
+	uint8_t i;
+	for(i=0;i<4;i++)	//Run through for each of the four presets.
+	{
+		global_presets[i] = eeprom_read_word((uint16_t *) (PRESET_EEPROM_ADDRESS + (2*i)));	//Read the current preset from eeprom
+		if ((global_presets[i] > PRESET_MAX) || (global_presets[i] % 4))			//Check if it's not valid
+		{
+			global_presets[i] = 0;								//Reset preset to 0
+			eeprom_update_word((uint16_t *) (PRESET_EEPROM_ADDRESS + (2*i)), 0);
+		}	//Save valid value (0) to eeprom.
+	}
+}
+
+//This function compares the presets in use to those stored in eeprom.  If they differ then the eeprom is updated.
+//It will be called when changing betwwen presets or starting the grinder as these are the times the presets have possibly changed.
+void presets_update_eeprom(void)
+{
+	uint8_t i;
+	for(i=0;i<4;i++)		//Run through for each of the four presets.
+	{
+		eeprom_update_word((uint16_t *) (PRESET_EEPROM_ADDRESS + (2*i)), global_presets[i]);
+	}	//Save value to eeprom.  Note "update..." not "write..." as eeprom_update_word only writes if the value has changed.
 }
 
 //Initialise hardware (AVR peripherals and OLED module).
@@ -217,42 +281,19 @@ void hardware_init(void)
 	sei();					//Global enable of interrupts.
 }
 
-//Draws the preset menu at the top of the screen.  Presets represented by A, B, C and D.
-//The currently selected preset is indicated by a box around the letter.
-void display_menu(uint8_t selected_preset)
-{
-	uint8_t i;
-	for(i=0;i<4;i++)	//Repeat four times for presets A, B, C and D.
-	{
-		//If statement will usually just draw the characters A to D, except in the case of the
-		//selected_preset character.  By adding 4 to the font map, the alternate character Will
-		//be selected (same character but within a box)
-		if(i == selected_preset)
-		{
-			oled_type_menu_char(i+4,((i*24)+22),0);
-		}
-		else
-		{
-			oled_type_menu_char(i,((i*24)+22),0);
-		}
-	}
-}
-
 int main(void)
 {
+	//Initialise AVR peripherals and external devices (oled).
 	hardware_init();
 
 	//Test string for USART initialisation
 	usart_print_string("\n\r\ngrind(coffee);\r\n");
 
-	//splash screen
-	oled_clear_screen();
-	oled_set_address(22,3);
-	oled_type_string("grind(coffee);");
-	_delay_ms(1000);
-	oled_clear_screen();
+	//Test the oled display
+	display_splash_screen();
 
-	//Set an initial boot-up timer value and display on-screen.
+	//Set an initial boot-up timer value and display menu and tiomer on-screen.
+	presets_init();
 	global_sixteenths = global_presets[global_current_preset];
 	display_clock();
 	display_menu(global_current_preset);
@@ -260,7 +301,6 @@ int main(void)
 	while (1)
 	{
 		//Everything is interrupt driven.
-		_delay_ms(30000);
 	}
 
 	return 0;	//Never reached.

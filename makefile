@@ -1,4 +1,4 @@
-
+## Note: Use http://www.engbedded.com/fusecalc/ for fuse setting info
 ##########------------------------------------------------------##########
 ##########              Project-specific Details                ##########
 ##########    Check these every time you start a new project    ##########

@@ -50,6 +50,9 @@ void oled_init(void)
 	oled_send_command(CLOCK_DIVIDE_DEFAULT);
 	oled_send_command(CHARGE_PUMP_CONTROL);
 	oled_send_command(ENABLE_CHARGE_PUMP);
+
+	oled_clear_screen();
+
 	oled_send_command(SET_DISPLAY_ON);
 }
 
