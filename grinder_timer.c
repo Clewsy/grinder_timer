@@ -21,10 +21,12 @@ ISR(TIMER2_OVF_vect)
 //ISR has 6 sections, one for each button.
 ISR(BUTTON_PCI_VECTOR)
 {
-	if(global_oled_sleep_flag)			//If the oled is "sleeping" (i.e. turned off the the TCo overflow interrupt)
+	if(global_oled_sleep_flag)			//If the oled is "sleeping" (i.e. turned off the the TC0 overflow interrupt)
 	{						//then we just want to turn the screen back on with any button press.
 		_delay_ms(BUTTON_DEBOUNCE_DURATION);	//wait for DEBOUNCE_DURATION milliseconds to mitigate effect of switch bounce.
 		reset_oled_sleep_timer();		//Call the oled sleep timer reset function.
+		while(~BUTTON_PINS & ((1 << BUTTON_GRIND) | (1 << BUTTON_UP) | (1 << BUTTON_DOWN) | (1 << BUTTON_LEFT) | (1 << BUTTON_RIGHT))){}
+							//Wait until all buttons are released (avoid running straight through to button-specific action).
 		return;					//No other action regardless of button pressed.
 	}
 
