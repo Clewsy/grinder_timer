@@ -20,6 +20,12 @@ ISR(TIMER2_OVF_vect)
 //ISR has 6 sections, one for each button.
 ISR(BUTTON_PCI_VECTOR)
 {
+	if(global_oled_sleep_flag)		//If the oled is "sleeping" (i.e. turned off the the TCo overflow interrupt)
+	{					//then we just want to turn the screen back on with any button press.
+		reset_oled_sleep_timer();	//Call the oled sleep timer reset function.
+		return;				//No other action regardless of button pressed.
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////////
 	//GRIND BUTTON
 	//If statement to capyure actuation of the grind button.
@@ -151,6 +157,29 @@ void display_clock(void)
 	oled_type_digit_large(((uint16_t)(global_sixteenths*6.25) % 10) , 100, 2);	//Hudredths of a second. Note modulus operation (%) only works on integers.
 }
 
+//Timer/Counter 0 overflow interrupt vector.
+//TC0 is used as a simple counter prescaled by 1024 (~7812Hz) that triggers this interrupt at overflow.
+//The interrupt function just increments a counter but when the counter reaches a nominated value,
+//the oled is put to "sleep" (screen turned off).
+ISR(TIMER0_OVF_vect)
+{
+	global_oled_sleep_timer++;			//Increment the oled sleep timer counter.
+	if(global_oled_sleep_timer > OLED_SLEEP_TIMER)	//If the counter reaches a determined value.
+	{
+		global_oled_sleep_timer = 0;		//Reset the counter.
+		global_oled_sleep_flag = OLED_SLEEP_ON;	//Flag that the oled is "sleeping".
+		oled_send_command(SET_DISPLAY_OFF);	//Turn off the oled.
+	}
+}
+
+//This function resets the counter that would otherwise eventually put the oled to "sleep".
+//Whenever called, this function will effectively reset a countdown (countup) to turning off the oled.
+void reset_oled_sleep_timer(void)
+{
+	oled_send_command(SET_DISPLAY_ON);		//Ensure the oled is turned on
+	global_oled_sleep_flag = OLED_SLEEP_OFF;	//Flag that the oled is not "sleeping".
+	global_oled_sleep_timer = 0;			//Reset the oled sleep timer counter.
+}
 
 //Initialise hardware (AVR peripherals and OLED module).
 void hardware_init(void)
@@ -161,7 +190,13 @@ void hardware_init(void)
 	oled_init();				//Initialise the OLED module.
 	rtc_init();				//Initialise AVR Timer/Counter 2 hardware to operate asynchronously as a real time clock (for accurate timing).
 
-	//Setup inputs and outputs.
+	//Timer/Counter o (TC0) is used to effectively turn off the oled screen if no button is pressed for a determined duration.
+	TCCR0B |= ((1 << CS02) | (1 << CS00));	//Timer/Counter 0 Conrtol Register B
+						//CS0[2:0]: TC0 Closk Select Bits. CS[2:0]=101 correlates to /1024
+	TIMSK0 |= (1 << TOIE0);			//TC0 Interrupt Mask
+						//TOIE: TC0 Overflow Interrupt Enable.
+
+	//Setup inputs (buttons) and outputs (relay).
 	PCICR |= (1 << BUTTON_PCIE);		//Enable Pin-Change Interrupt for pin-change int pins PCINT[0-7].  This includes all 5 buttons.
 						//PCICR: Pin-Change Interrupt Control Register
 						//PCIE0: Pin-Change Interrupt Enable 0 (Enables PCINT[0-7] i.e. PB[7-0])
@@ -225,6 +260,7 @@ int main(void)
 	while (1)
 	{
 		//Everything is interrupt driven.
+		_delay_ms(30000);
 	}
 
 	return 0;	//Never reached.
