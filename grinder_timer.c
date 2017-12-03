@@ -10,7 +10,7 @@ ISR(TIMER2_OVF_vect)
 		RELAY_PORT &= ~(1 << RELAY_PIN);				//Switch the relay back off.
 		rtc_disable();							//Disable the timer.
 		presets_update_eeprom();					//If the preset was changed, save it to eeprom (after grind to not increase duration).
-		_delay_ms(1000);						//Pause with the timer display at zero for one second.
+		_delay_ms(1000);						//Pause for one second with the timer display at zero.
 		global_sixteenths = global_presets[global_current_preset];	//Reset the countdown duration to the current preset.
 		PCICR |= (1 << BUTTON_PCIE);					//Effectively re-enable the buttons.
 	}
@@ -21,98 +21,91 @@ ISR(TIMER2_OVF_vect)
 //ISR has 6 sections, one for each button.
 ISR(BUTTON_PCI_VECTOR)
 {
-	if(global_oled_sleep_flag)			//If the oled is "sleeping" (i.e. turned off the the TC0 overflow interrupt)
+	_delay_ms(BUTTON_DEBOUNCE_DURATION);	//wait for DEBOUNCE_DURATION milliseconds to mitigate effect of switch bounce.
+
+	//If statement so taht any button pressed wakes the oled if it is "sleeping" but does nothing else.
+	if(global_oled_sleep_flag)			//If the oled is "sleeping" (i.e. turned off by the TC0 overflow interrupt)
 	{						//then we just want to turn the screen back on with any button press.
-		_delay_ms(BUTTON_DEBOUNCE_DURATION);	//wait for DEBOUNCE_DURATION milliseconds to mitigate effect of switch bounce.
 		reset_oled_sleep_timer();		//Call the oled sleep timer reset function.
-		while(~BUTTON_PINS & ((1 << BUTTON_GRIND) | (1 << BUTTON_UP) | (1 << BUTTON_DOWN) | (1 << BUTTON_LEFT) | (1 << BUTTON_RIGHT))){}
+		while(~(BUTTON_PINS) & ((1 << BUTTON_GRIND) | (1 << BUTTON_UP) | (1 << BUTTON_DOWN) | (1 << BUTTON_LEFT) | (1 << BUTTON_RIGHT))){}
 							//Wait until all buttons are released (avoid running straight through to button-specific action).
+		_delay_ms(BUTTON_DEBOUNCE_DURATION);	//wait for DEBOUNCE_DURATION milliseconds to mitigate effect of switch bounce at release.
 		return;					//No other action regardless of button pressed.
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////
-	//GRIND BUTTON
-	//If statement to capyure actuation of the grind button.
-	//This button triggers the relay and begins counting down the timer for the duration in accordance with the selected preset.
-	if((BUTTON_PINS & (1 << BUTTON_GRIND)) == 0)	//If the grind button is pressed
-	{
-		PCICR &= ~(1 << BUTTON_PCIE);	//Effectively disable the buttons while grinding.
-		switch(global_current_preset)
-		{
-			case PRESET_A :
-				global_sixteenths = global_presets[PRESET_A];
-				break;
-			case PRESET_B :
-				global_sixteenths = global_presets[PRESET_B];
-				break;
-			case PRESET_C :
-				global_sixteenths = global_presets[PRESET_C];
-				break;
-			case PRESET_D :
-				global_sixteenths = global_presets[PRESET_D];
-				break;
-		}
-		RELAY_PORT |= (1 << RELAY_PIN);
-		rtc_enable();
-		return;		//The grinder motor should now be running.  Exit from the ISR.
-				//Note, the debounce delay is after the grind button if statement so thatthere is
-				//no delay when the grind button is pressed.  Debounce only needed for up, down, left and right.
-	}
+	reset_oled_sleep_timer();		//Call the oled sleep timer reset function.  If any button is pressed, the oled turning off should be delayed.
+						//Don't want this before the if() above as the reset function clears the oled_sleep_flag
 
-	_delay_ms(BUTTON_DEBOUNCE_DURATION);	//wait for DEBOUNCE_DURATION milliseconds to mitigate effect of switch bounce.
-
-	////////////////////////////////////////////////////////////////////////////////////////
-	//LEFT BUTTON
-	//If statement to capture actuation of the left button.
-	//This button changes the selected preset scrolls backwards through them (A->D->C->B->A)
-	if((BUTTON_PINS & (1 << BUTTON_LEFT))  == 0)
+	uint16_t long_press_counter = BUTTON_HOLD_DURATION;	//Variable used to determine if a button is held for a specified duration.
+	//Switch statement to run a specific case for each button.
+	switch(~BUTTON_PINS & ((1 << BUTTON_GRIND) | (1 << BUTTON_UP) | (1 << BUTTON_DOWN) | (1 << BUTTON_LEFT) | (1 << BUTTON_RIGHT)))
 	{
-		global_current_preset--;			//Decrement the currently selected preset.
-		if(global_current_preset == 255)		//Rollover from 0 to 4 (A to D)
-		{
-			global_current_preset = PRESET_D;
-		}
-		display_menu(global_current_preset);				//Update the menu to indicate which preset is selected.
-		global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding
-		display_clock();						//Update the timer display to show the preset in seconds.
-		presets_update_eeprom();					//If the previous preset was changed, this will save it to eeprom.
-		while((BUTTON_PINS & (1 << BUTTON_LEFT))  == 0){}		//Wait until the button is released.
-	}
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//GRIND BUTTON
+		//If statement to capture actuation of the grind button.
+		//This button triggers the relay and begins counting down the timer for the duration in accordance with the selected preset.
+		case (1 << BUTTON_GRIND) :
+			PCICR &= ~(1 << BUTTON_PCIE);	//Effectively disable the buttons while grinding (will be re-enabled at timer overflow ISR).
+			switch(global_current_preset)
+			{
+				case PRESET_A :
+					global_sixteenths = global_presets[PRESET_A];
+					break;
+					case PRESET_B :
+					global_sixteenths = global_presets[PRESET_B];
+					break;
+					case PRESET_C :
+					global_sixteenths = global_presets[PRESET_C];
+					break;
+					case PRESET_D :
+					global_sixteenths = global_presets[PRESET_D];
+					break;
+			}
+			RELAY_PORT |= (1 << RELAY_PIN);
+			rtc_enable();
+			return;		//The grinder motor should now be running.  Exit from the ISR.
+					//Note, the debounce delay is after the grind button if statement so thatthere is
+					//no delay when the grind button is pressed.  Debounce only needed for up, down, left and right.
 
-	////////////////////////////////////////////////////////////////////////////////////////
-	//RIGHT BUTTON
-	//If statement to capture actuation of the right button.
-	//This button changes the selected preset scrolls forwards through them (A->B->C->D->A)
-	if((BUTTON_PINS & (1 << BUTTON_RIGHT))  == 0)
-	{
-		global_current_preset++;			//Decrement the currently selected preset.
-		if(global_current_preset == 4)			//Rollover from 0 to 4 (A to D)
-		{
-			global_current_preset = PRESET_A;
-		}
-		display_menu(global_current_preset);				//Update the menu to indicate which preset is selected.
-		global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding
-		display_clock();						//Update the timer display to show the preset in seconds.
-		presets_update_eeprom();					//If the previous preset was changed, this will save it to eeprom.
-		while((BUTTON_PINS & (1 << BUTTON_RIGHT))  == 0){}		//Wait until the button is released.
-	}
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//LEFT BUTTON
+		//If statement to capture actuation of the left button.
+		//This button changes the selected preset scrolls backwards through them (A->D->C->B->A)
+		case (1 << BUTTON_LEFT) :
+			global_current_preset--;			//Decrement the currently selected preset.
+			if(global_current_preset == 255)		//Rollover from 0 to 4 (A to D)
+			{
+				global_current_preset = PRESET_D;
+			}
+			//display_menu(global_current_preset);				//Update the menu to indicate which preset is selected.
+			//global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding
+			//display_clock();						//Update the timer display to show the preset in seconds.
+			presets_update_eeprom();					//If the previous preset was changed, this will save it to eeprom.
+			//while((BUTTON_PINS & (1 << BUTTON_LEFT))  == 0){}		//Wait until the button is released.
+			break;
 
-	////////////////////////////////////////////////////////////////////////////////////////
-	//UP BUTTON
-	//If statement to capture actuation of the up button.
-	//This button adjusts upwards the duration of the selected preset.
-	if((BUTTON_PINS & (1 << BUTTON_UP)) == 0)
-	{
-		global_presets[global_current_preset] = (global_presets[global_current_preset] + 4);	//Increment the preset value by 4 sixteenths (0.25s).
-		if(global_presets[global_current_preset] > PRESET_MAX)					//Cap the maximum value.
-		{
-			global_presets[global_current_preset] = PRESET_MAX;
-		}
-		global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding
-		display_clock();						//Update the timer display to show the preset in seconds.
-		_delay_ms(BUTTON_HOLD_DURATION);				//Implement a delay.  If the button is still held after this:
-		while((BUTTON_PINS & (1 << BUTTON_UP)) == 0)			//Run this loop until the button is released.  Fast increment.
-		{
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//RIGHT BUTTON
+		//If statement to capture actuation of the right button.
+		//This button changes the selected preset scrolls forwards through them (A->B->C->D->A)
+		case (1 << BUTTON_RIGHT) :
+			global_current_preset++;			//Decrement the currently selected preset.
+			if(global_current_preset == 4)			//Rollover from 0 to 4 (A to D)
+			{
+				global_current_preset = PRESET_A;
+			}
+			//display_menu(global_current_preset);				//Update the menu to indicate which preset is selected.
+			//global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding
+			//display_clock();						//Update the timer display to show the preset in seconds.
+			presets_update_eeprom();					//If the previous preset was changed, this will save it to eeprom.
+			//while((BUTTON_PINS & (1 << BUTTON_RIGHT))  == 0){}		//Wait until the button is released.
+			break;
+
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//UP BUTTON
+		//If statement to capture actuation of the up button.
+		//This button adjusts upwards the duration of the selected preset.
+		case (1 << BUTTON_UP) :
 			global_presets[global_current_preset] = (global_presets[global_current_preset] + 4);	//Increment the preset value by 4 sixteenths (0.25s).
 			if(global_presets[global_current_preset] > PRESET_MAX)					//Cap the maximum value.
 			{
@@ -120,36 +113,69 @@ ISR(BUTTON_PCI_VECTOR)
 			}
 			global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding
 			display_clock();						//Update the timer display to show the preset in seconds.
-			_delay_ms(BUTTON_FAST_CHANGE_DURATION);							//Brief delay between increments.
-		}
-	}
 
-	////////////////////////////////////////////////////////////////////////////////////////
-	//DOWN BUTTON
-	//If statement to capture actuation of the down button.
-	//This button adjusts downwards the duration of the selected preset.
-	if((BUTTON_PINS & (1 << BUTTON_DOWN)) == 0)
-	{
-		global_presets[global_current_preset] = (global_presets[global_current_preset] - 4);	//Deccrement the preset value by 4 sixteenths (0.25s).
-		if(global_presets[global_current_preset] > 65000)					//Indicates rollunder from zero.
-		{
-			global_presets[global_current_preset] = 0;
-		}
-		global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding
-		display_clock();						//Update the timer display to show the preset in seconds.
-		_delay_ms(BUTTON_HOLD_DURATION);				//Implement a delay.  If the button is still held after this:
-		while((BUTTON_PINS & (1 << BUTTON_DOWN)) == 0)			//Run this loop until the button is released.  Fast increment.
-		{
-			global_presets[global_current_preset] = (global_presets[global_current_preset] - 4);	//Decrement the preset value by 4 sixteenths (0.25s).
+			//Following while loop tests if the button is held for a specified duration.  Exits if time elapsed or button released.
+			while(((BUTTON_PINS & (1 << BUTTON_UP)) == 0) && (long_press_counter > 0))
+			{
+				long_press_counter--;
+				_delay_ms(1);
+			}
+
+			//If the button is still held after the specified duration, a fast increment runs until the button is released.
+			while((BUTTON_PINS & (1 << BUTTON_UP)) == 0)			//Run this loop until the button is released.  Fast increment.
+			{
+				global_presets[global_current_preset] = (global_presets[global_current_preset] + 4);	//Increment the preset value by 4 sixteenths (0.25s).
+				if(global_presets[global_current_preset] > PRESET_MAX)					//Cap the maximum value.
+				{
+					global_presets[global_current_preset] = PRESET_MAX;
+				}
+				global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding
+				display_clock();						//Update the timer display to show the preset in seconds.
+				_delay_ms(BUTTON_FAST_CHANGE_DURATION);							//Brief delay between increments.
+			}
+			break;
+
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//DOWN BUTTON
+		//If statement to capture actuation of the down button.
+		//This button adjusts downwards the duration of the selected preset.
+		case (1 << BUTTON_DOWN) :
+			global_presets[global_current_preset] = (global_presets[global_current_preset] - 4);	//Deccrement the preset value by 4 sixteenths (0.25s).
 			if(global_presets[global_current_preset] > 65000)					//Indicates rollunder from zero.
 			{
 				global_presets[global_current_preset] = 0;
 			}
 			global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding
 			display_clock();						//Update the timer display to show the preset in seconds.
-			_delay_ms(BUTTON_FAST_CHANGE_DURATION);							//Brief delay between increments.
-		}
+
+			//Following while loop tests if the button is held for a specified duration.  Exits if time elapsed or button released.
+			while(((BUTTON_PINS & (1 << BUTTON_DOWN)) == 0) && (long_press_counter > 0))
+			{
+				long_press_counter--;
+				_delay_ms(1);
+			}
+
+			//If the button is still held after the specified duration, a fast decrement runs until the button is released.
+			while((BUTTON_PINS & (1 << BUTTON_DOWN)) == 0)			//Run this loop until the button is released.  Fast increment.
+			{
+				global_presets[global_current_preset] = (global_presets[global_current_preset] - 4);	//Decrement the preset value by 4 sixteenths (0.25s).
+				if(global_presets[global_current_preset] > 65000)					//Indicates rollunder from zero.
+				{
+					global_presets[global_current_preset] = 0;
+				}
+				global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding
+				display_clock();						//Update the timer display to show the preset in seconds.
+				_delay_ms(BUTTON_FAST_CHANGE_DURATION);							//Brief delay between increments.
+			}
+			break;
 	}
+
+	display_menu(global_current_preset);				//Update the menu to indicate which preset is selected.
+	global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding
+	display_clock();						//Update the timer display to show the preset in seconds.
+	while(~(BUTTON_PINS) & ((1 << BUTTON_GRIND) | (1 << BUTTON_UP) | (1 << BUTTON_DOWN) | (1 << BUTTON_LEFT) | (1 << BUTTON_RIGHT))){}
+									//Wait until all buttons are released.
+
 }//Interrupt flag PCIF0 (pin-change interrupt flag 0) on PCIFR (pin-change interrupt flag register) is automatically cleared upon exit of this ISR.
 
 //Timer/Counter 0 overflow interrupt vector.
@@ -212,6 +238,7 @@ void display_menu(uint8_t selected_preset)
 void display_splash_screen(void)
 {
 	oled_clear_screen();
+	oled_draw_box(0,0,128,8);
 	oled_set_address(22,3);
 	oled_type_string("grind(coffee);");
 	_delay_ms(1000);

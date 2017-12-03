@@ -32,7 +32,7 @@
 #define BUTTON_RIGHT			PD6		//The specific pin to which the right button is connected.
 #define BUTTON_GRIND			PD7		//The specific pin to which the grind button is connected.
 #define BUTTON_PCI_VECTOR		PCINT2_vect	//The ISR (interrupt sub-routine) vector for the function that is triggered upon any pin-change (button press).
-#define BUTTON_DEBOUNCE_DURATION	20		//The duration in milliseconds used for the button debounce.
+#define BUTTON_DEBOUNCE_DURATION	10		//The duration in milliseconds used for the button debounce.
 #define BUTTON_HOLD_DURATION		1000		//The button hold duration after which a fast increment/decrement will begin
 #define BUTTON_FAST_CHANGE_DURATION	10		//The duration between fast increments/decrements.
 
