@@ -1,4 +1,4 @@
-update=Sun 19 Nov 2017 11:32:27 AEDT
+update=Mon 04 Dec 2017 11:44:53 AEDT
 version=1
 last_client=kicad
 [pcbnew]
@@ -63,3 +63,7 @@ LibName31=grinder_timer
 LibName32=switches
 LibName33=ftdi
 LibName34=relays
+LibName35=motors
+LibName36=ac-dc
+LibName37=Power_Management
+LibName38=powerint

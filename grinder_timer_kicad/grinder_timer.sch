@@ -33,6 +33,10 @@ LIBS:grinder_timer
 LIBS:switches
 LIBS:ftdi
 LIBS:relays
+LIBS:motors
+LIBS:ac-dc
+LIBS:Power_Management
+LIBS:powerint
 LIBS:grinder_timer-cache
 EELAYER 25 0
 EELAYER END
@@ -531,6 +535,55 @@ F 3 "" H 3950 6300 50  0000 C CNN
 	1    3950 6300
 	1    0    0    -1  
 $EndComp
+$Comp
+L +5V #PWR019
+U 1 1 5A1ABE2B
+P 8300 3200
+F 0 "#PWR019" H 8300 3050 50  0001 C CNN
+F 1 "+5V" H 8300 3340 50  0000 C CNN
+F 2 "" H 8300 3200 50  0000 C CNN
+F 3 "" H 8300 3200 50  0000 C CNN
+	1    8300 3200
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR020
+U 1 1 5A1ABE75
+P 8700 3600
+F 0 "#PWR020" H 8700 3350 50  0001 C CNN
+F 1 "GND" H 8700 3450 50  0000 C CNN
+F 2 "" H 8700 3600 50  0000 C CNN
+F 3 "" H 8700 3600 50  0000 C CNN
+	1    8700 3600
+	1    0    0    -1  
+$EndComp
+Text Notes 8950 4150 0    60   ~ 0
+NOTE:\nA 10uF electrolytinc capacitor was\nadded to the oled across the reset\npin to simulate a delayed hard reset\non power-up.  This can be avoided\nby using another GPIO output from\nthe micro and programming a toggle\nof the reset pin at initialisation.\nCapcitor not shown here as it is to\nbe attached directly to the OLED\nmodule (not wanted on the PCB).
+Text Notes 9000 2650 0    60   ~ 0
+OLED Module with SSD1306 Driver
+Text Notes 7400 7500 0    60   ~ 0
+grinder_timer
+Text Notes 8150 7650 0    60   ~ 0
+04/12/2017
+Text Notes 10600 7650 0    60   ~ 0
+1
+Text Notes 8000 6950 0    60   ~ 0
+refer to https://github.com/Clewsy/grinder_timer
+$Comp
+L Motor_AC M?
+U 1 1 5A24B1A4
+P -3250 3650
+F 0 "M?" H -3150 3750 50  0001 L CNN
+F 1 "Grinder_Motor" H -3150 3450 50  0000 L TNN
+F 2 "" H -3250 3560 50  0001 C CNN
+F 3 "" H -3250 3560 50  0001 C CNN
+	1    -3250 3650
+	1    0    0    -1  
+$EndComp
+Text GLabel -4700 3300 0    60   Input ~ 0
+Active
+Text GLabel -4700 4150 0    60   Input ~ 0
+Neutral
 Wire Wire Line
 	1700 5750 1450 5750
 Wire Wire Line
@@ -809,30 +862,6 @@ Wire Wire Line
 Wire Wire Line
 	4400 4200 4400 4300
 Connection ~ 4950 4200
-$Comp
-L +5V #PWR019
-U 1 1 5A1ABE2B
-P 8300 3200
-F 0 "#PWR019" H 8300 3050 50  0001 C CNN
-F 1 "+5V" H 8300 3340 50  0000 C CNN
-F 2 "" H 8300 3200 50  0000 C CNN
-F 3 "" H 8300 3200 50  0000 C CNN
-	1    8300 3200
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR020
-U 1 1 5A1ABE75
-P 8700 3600
-F 0 "#PWR020" H 8700 3350 50  0001 C CNN
-F 1 "GND" H 8700 3450 50  0000 C CNN
-F 2 "" H 8700 3600 50  0000 C CNN
-F 3 "" H 8700 3600 50  0000 C CNN
-	1    8700 3600
-	1    0    0    -1  
-$EndComp
-Text Notes 8950 4150 0    60   ~ 0
-NOTE:\nA 10uF electrolytinc capacitor was\nadded to the oled across the reset\npin to simulate a delayed hard reset\non power-up.  This can be avoided\nby using another GPIO output from\nthe micro and programming a toggle\nof the reset pin at initialisation.\nCapcitor not shown here as it is to\nbe attached directly to the OLED\nmodule (not wanted on the PCB).
 Wire Notes Line
 	7400 6400 10800 6400
 Wire Notes Line
@@ -841,14 +870,54 @@ Wire Notes Line
 	10800 2400 7400 2400
 Wire Notes Line
 	7400 2400 7400 6400
-Text Notes 9000 2650 0    60   ~ 0
-OLED Module with SSD1306 Driver
-Text Notes 7400 7500 0    60   ~ 0
-grinder_timer
-Text Notes 8150 7650 0    60   ~ 0
-04/12/2017
-Text Notes 10600 7650 0    60   ~ 0
-1
-Text Notes 8000 6950 0    60   ~ 0
-refer to https://github.com/Clewsy/grinder_timer
+Text Notes -4850 3800 0    60   ~ 0
+   ∿\n240VAC
+Wire Notes Line
+	-4900 3550 -4900 3900
+Wire Notes Line
+	-4900 3900 -4450 3900
+Wire Notes Line
+	-4450 3900 -4450 3550
+Wire Notes Line
+	-4450 3550 -4900 3550
+Wire Notes Line
+	-4650 3550 -4650 3300
+Wire Notes Line
+	-4650 3900 -4650 4150
+$Comp
+L SW_Push_Dual_x2 SW?
+U 1 1 5A24B8DF
+P -3600 4150
+F 0 "SW?" H -3550 4250 50  0001 L CNN
+F 1 "Grind_Button" H -3600 4090 50  0000 C CNN
+F 2 "" H -3600 4350 50  0000 C CNN
+F 3 "" H -3600 4350 50  0000 C CNN
+	1    -3600 4150
+	1    0    0    -1  
+$EndComp
+$Comp
+L SW_DPST_x2 SW?
+U 1 1 5A24BDC9
+P -4350 4150
+F 0 "SW?" H -4350 4275 50  0001 C CNN
+F 1 "Power_Switch" H -4350 4050 50  0000 C CNN
+F 2 "" H -4350 4150 50  0000 C CNN
+F 3 "" H -4350 4150 50  0000 C CNN
+	1    -4350 4150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	-4700 4150 -4550 4150
+Wire Wire Line
+	-4150 4150 -3800 4150
+Wire Wire Line
+	-3400 4150 -3250 4150
+Wire Wire Line
+	-3250 4150 -3250 3950
+Wire Wire Line
+	-4700 3300 -3250 3300
+Wire Wire Line
+	-3250 3300 -3250 3450
+Text Notes -4250 3800 0    60   ~ 0
+Rancilio Rocky\nCoffee Grinder\n  Schematic
 $EndSCHEMATC
