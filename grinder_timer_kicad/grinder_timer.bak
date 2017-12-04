@@ -832,5 +832,5 @@ F 3 "" H 9100 3750 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Text Notes 9350 4300 0    60   ~ 0
-NOTE:\nA 10uF electrolytinc capacitor was\nadded to the oled across the reset\npin to simulate a delayed hard reset\non power-up.  This can be avoided\nby using another GPIO output from\nthe micro and programming a toggle\nof the reset pin at initialisation.\nCapcitor not shown here as it is to\nbe attached directly to the OLED\nmodule.
+NOTE:\nA 10uF electrolytinc capacitor was\nadded to the oled across the reset\npin to simulate a delayed hard reset\non power-up.  This can be avoided\nby using another GPIO output from\nthe micro and programming a toggle\nof the reset pin at initialisation.\nCapcitor not shown here as it is to\nbe attached directly to the OLED\nmodule (not wanted on the PCB).
 $EndSCHEMATC
