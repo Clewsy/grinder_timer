@@ -8,8 +8,9 @@
 #include "ssd1306.h"		//Module for controling the oled display.
 #include "rtc.h"		//Module for utilising timer/counter 2 as a real-time-clock (externally connected 32.768kHz crystal).
 
-#define OLED_SLEEP_OFF		0
-#define OLED_SLEEP_ON		1
+//Oled sleep definitions (not true sleep, just turns the display on/off)
+#define OLED_SLEEP_OFF		0	//Flag value to indicate the oled is not sleeping (display on)
+#define OLED_SLEEP_ON		1	//Flag value to indicate the oled is sleeping (display off)
 #define OLED_SLEEP_TIMER	3662	//This value is used to determine the duration after which the oled display is switched off.
 					//This function uses Timer/Counter 0 in overflow mode with prescaler set to F_CPU/1024.
 					//Therefore, the counter overflows at 256/(8000000/1024)Hz = 0.032768Hz.  Every overflow increments
@@ -34,7 +35,7 @@
 #define BUTTON_PCI_VECTOR		PCINT2_vect	//The ISR (interrupt sub-routine) vector for the function that is triggered upon any pin-change (button press).
 #define BUTTON_DEBOUNCE_DURATION	10		//The duration in milliseconds used for the button debounce.
 #define BUTTON_HOLD_DURATION		1000		//The button hold duration after which a fast increment/decrement will begin
-#define BUTTON_FAST_CHANGE_DURATION	10		//The duration between fast increments/decrements.
+#define BUTTON_FAST_CHANGE_DURATION	10		//The duration between fast increments/decrements (in milliseconds).
 
 //Output definitions
 #define RELAY_PORT	PORTC	//Port to which the relay is connected.
@@ -46,7 +47,7 @@
 #define PRESET_B		1	//Value to indicate the currently selected preset is preset 'B'
 #define PRESET_C		2	//Value to indicate the currently selected preset is preset 'C'
 #define PRESET_D		3	//Value to indicate the currently selected preset is preset 'D'
-#define PRESET_MAX		960	//The maximum possible 16ths for the countdown duration (equates to 60 seconds)
+#define PRESET_MAX		960	//The maximum possible 16ths for the countdown duration (960 equates to 60 seconds)
 #define PRESET_EEPROM_ADDRESS	0	//Address in eeprom at which the presets are saved (4x16-bit words)
 
 //Global variables defined here.

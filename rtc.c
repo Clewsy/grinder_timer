@@ -1,22 +1,23 @@
 //Timer/Counter 2 (TC2) will be configured to use an external 32.768kHz crystal and therefore act as a real-time clock (RTC).
 
-#include "rtc.h" 
+#include "rtc.h"
 
 //Initialise the hardware as required.
 void rtc_init(void)
 {
-	_delay_ms(1000);	//A 32.768kHz crystal requires up to one second to stabilize after power-up.
+	//_delay_ms(1000);	//A 32.768kHz crystal requires up to one second to stabilize after power-up.
+				//I have disabled this delay as there is a one-second delay used at power-up to display a splash-screen.
 
 	TIMSK2 &= ~((1 << OCIE2B) | (1 << OCIE2A) | (1 << TOIE2));	//Ensure all TC2 interrupts are disabled during configuration.
 									//TIMSK2: Timer/Counter 2 Interrupt Mask Register
 									//OCIE2B: TC2 Output Compare B Match Interrupt Enable
 									//OCIE2A: TC2 Output Compare A Match Interrupt Enable
 									//TOIE2: TC2 Overflow Interrupt Enable
-	
+
 	ASSR |= (1 << AS2);	//Set TC2 to use the external clock source on pins TOSC1 & TOSC2
 				//ASSR: Asynchronous Status Register
 				//AS2: Asynchronous Timer/Counter 2
-	
+
 	TCNT2 = 0;		//Reset the counter
 				//TCNT2: TC2 Counter Value Register
 
@@ -51,7 +52,7 @@ void rtc_enable(void)
 				//TOIE2: TC2 Overflow Interrupt.  This will trigger "ISR(TIMER2_OVF_vect)" when TCNT2 overflows.
 }
 
-//Function to effectively disable the timer by disabling the overflow interrupt. 
+//Function to effectively disable the timer by disabling the overflow interrupt.
 void rtc_disable(void)
 {
 	TIMSK2 &= ~(1 << TOIE2);	//Disable overflow interrupt TOIE2.

@@ -51,13 +51,13 @@ ISR(BUTTON_PCI_VECTOR)
 				case PRESET_A :
 					global_sixteenths = global_presets[PRESET_A];
 					break;
-					case PRESET_B :
+				case PRESET_B :
 					global_sixteenths = global_presets[PRESET_B];
 					break;
-					case PRESET_C :
+				case PRESET_C :
 					global_sixteenths = global_presets[PRESET_C];
 					break;
-					case PRESET_D :
+				case PRESET_D :
 					global_sixteenths = global_presets[PRESET_D];
 					break;
 			}
@@ -322,7 +322,7 @@ int main(void)
 	display_splash_screen();
 
 	//Set an initial boot-up timer value and display menu and tiomer on-screen.
-	presets_init();
+	presets_init();		//pull presets from eeprom and validate
 	global_sixteenths = global_presets[global_current_preset];
 	display_clock();
 	display_menu(global_current_preset);
