@@ -61,6 +61,8 @@ uint8_t global_oled_sleep_flag = OLED_SLEEP_OFF;	//flag to determine if the scre
 ISR(TIMER2_OVF_vect);
 ISR(BUTTON_PCI_VECTOR);
 ISR(TIMER0_OVF_vect);
+void increment_current_preset(void);
+void decrement_current_preset(void);
 void reset_oled_sleep_timer(void);
 void display_clock(void);
 void display_menu(uint8_t selected_preset);
