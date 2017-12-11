@@ -1,6 +1,6 @@
 #include "grinder_timer.h"
 
-//The following interrupt subroutine will be triggered every 1/16th of a second.  This timer is configures to use an external 32.768kHz oscillator
+//The following interrupt subroutine will be triggered every 1/16th of a second.  This timer is configured to use an external 32.768kHz oscillator.
 //so that accurate timing can be achieved for the actual grinder countdown timer.
 ISR(TIMER2_OVF_vect)
 {
@@ -9,7 +9,7 @@ ISR(TIMER2_OVF_vect)
 	{
 		RELAY_PORT &= ~(1 << RELAY_PIN);				//Switch the grinder motor relay back off.
 		rtc_disable();							//Disable the timer.
-		presets_update_eeprom();					//If the preset was changed, save it to eeprom (after grind to not increase duration).
+		presets_update_eeprom();					//If the preset changed, save to eeprom (after grind to not increase duration).
 		_delay_ms(1000);						//Pause for one second with the timer display at zero.
 		global_sixteenths = global_presets[global_current_preset];	//Reset the countdown duration to the current preset.
 		PCICR |= (1 << BUTTON_PCIE);					//Effectively re-enable the buttons.
@@ -40,7 +40,7 @@ ISR(BUTTON_PCI_VECTOR)
 	//Switch statement to run a specific case for each button.
 	switch(~BUTTON_PINS & ((1 << BUTTON_GRIND) | (1 << BUTTON_UP) | (1 << BUTTON_DOWN) | (1 << BUTTON_LEFT) | (1 << BUTTON_RIGHT)))
 	{
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//GRIND BUTTON - If statement to capture actuation of the grind button.
 		//This button triggers the relay and begins counting down the timer for the duration in accordance with the selected preset.
 		case (1 << BUTTON_GRIND) :
@@ -49,7 +49,7 @@ ISR(BUTTON_PCI_VECTOR)
 			rtc_enable();			//Enable the countdown timer.
 			return;				//The grinder motor should now be running.  Exit from the ISR.
 
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//LEFT BUTTON - If statement to capture actuation of the left button.
 		//This button changes the selected preset scrolls backwards through them (A->D->C->B->A)
 		case (1 << BUTTON_LEFT) :
@@ -61,7 +61,7 @@ ISR(BUTTON_PCI_VECTOR)
 			presets_update_eeprom();			//If the previous preset was changed, this will save it to eeprom.
 			break;
 
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//RIGHT BUTTON - If statement to capture actuation of the right button.
 		//This button changes the selected preset scrolls forwards through them (A->B->C->D->A)
 		case (1 << BUTTON_RIGHT) :
@@ -73,7 +73,7 @@ ISR(BUTTON_PCI_VECTOR)
 			presets_update_eeprom();			//If the previous preset was changed, this will save it to eeprom.
 			break;
 
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//UP BUTTON
 		//If statement to capture actuation of the up button.
 		//This button adjusts upwards the duration of the selected preset.
@@ -97,7 +97,7 @@ ISR(BUTTON_PCI_VECTOR)
 			}
 			break;
 
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//DOWN BUTTON
 		//If statement to capture actuation of the down button.
 		//This button adjusts downwards the duration of the selected preset.
@@ -130,7 +130,8 @@ ISR(BUTTON_PCI_VECTOR)
 
 }//Interrupt flag PCIF0 (pin-change interrupt flag 0) on PCIFR (pin-change interrupt flag register) is automatically cleared upon exit of this ISR.
 
-//This function is called when the up button is pressed.  It increments the value of the current preset which represents a countdown duration in sixteenths of a second.
+//This function is called when the up button is pressed.
+//It increments the value of the current preset which represents a countdown duration in sixteenths of a second.
 void increment_current_preset(void)
 {
 	global_presets[global_current_preset] = (global_presets[global_current_preset] + 4);	//Increment the preset value by 4 sixteenths (0.25s).
@@ -138,10 +139,11 @@ void increment_current_preset(void)
 	{
 		global_presets[global_current_preset] = PRESET_MAX;
 	}
-	global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the countdown timer in prep for grinding and/or updating timer display.
+	global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding and/or display update.
 }
 
-//This function is called when the down button is pressed.  It decrements the value of the current preset which represents a countdown duration in sixteenths of a second.
+//This function is called when the down button is pressed.
+//It decrements the value of the current preset which represents a countdown duration in sixteenths of a second.
 void decrement_current_preset(void)
 {
 	global_presets[global_current_preset] = (global_presets[global_current_preset] - 4);	//Deccrement the preset value by 4 sixteenths (0.25s).
@@ -149,44 +151,43 @@ void decrement_current_preset(void)
 	{
 		global_presets[global_current_preset] = 0;
 	}
-	global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the countdown timer in prep for grinding and/or updating timer display.
+	global_sixteenths = global_presets[global_current_preset];	//Set the current preset to the timer in prep for grinding and/or display update.
 
 }
 
 //Timer/Counter 0 overflow interrupt vector.
 //TC0 is used as a simple counter prescaled by 1024 (~7812Hz) that triggers this interrupt at overflow.
-//The interrupt function just increments a counter, but when the counter reaches a nominated value,
-//the oled is put to "sleep" (screen turned off).
+//The interrupt function just increments a counter, but when the counter reaches a nominated value, the OLED is put to "sleep" (screen turned off).
 ISR(TIMER0_OVF_vect)
 {
-	global_oled_sleep_timer++;			//Increment the oled sleep timer counter.
+	global_oled_sleep_timer++;			//Increment the OLED sleep timer counter.
 	if(global_oled_sleep_timer > OLED_SLEEP_TIMER)	//If the counter reaches a determined value.
 	{
 		global_oled_sleep_timer = 0;		//Reset the counter.
-		global_oled_sleep_flag = OLED_SLEEP_ON;	//Flag that the oled is "sleeping".
-		oled_send_command(SET_DISPLAY_OFF);	//Turn off the oled.
+		global_oled_sleep_flag = OLED_SLEEP_ON;	//Flag that the OLED is "sleeping".
+		oled_send_command(SET_DISPLAY_OFF);	//Turn off the OLED.
 	}
 }
 
-//This function resets the counter that would otherwise eventually put the oled to "sleep".
-//Whenever called, this function will effectively reset a countdown (countup) to turning off the oled.
+//This function resets the counter that would otherwise eventually put the OLED to "sleep".
+//Whenever called, this function will effectively reset a countdown (countup) to turning off the OLED.
 void reset_oled_sleep_timer(void)
 {
-	oled_send_command(SET_DISPLAY_ON);		//Ensure the oled is turned on
-	global_oled_sleep_flag = OLED_SLEEP_OFF;	//Flag that the oled is not "sleeping".
-	global_oled_sleep_timer = 0;			//Reset the oled sleep timer counter.
+	oled_send_command(SET_DISPLAY_ON);		//Ensure the OLED is turned on
+	global_oled_sleep_flag = OLED_SLEEP_OFF;	//Flag that the OLED is not "sleeping".
+	global_oled_sleep_timer = 0;			//Reset the OLED sleep timer counter.
 	return;
 }
 
-//This function displays the current value of the timer by converting the quantity of "global_sixteenths" to seconds.
-//The digits are displayed with the large seven-segment style font.
+//This function displays the current value of the timer by converting the quantity of "global_sixteenths" to seconds rounded to two decimal places.
+//The digits are displayed with the large seven-segment style font (font_7_seg_digits).
 void display_clock(void)
 {
-	oled_type_digit_large(((global_sixteenths >> 4) / 10), 4, 2);			//Tens of seconds. RShift 4 bits to divide by 16. Print with top left at column 4, page 2.
-	oled_type_digit_large(((global_sixteenths >> 4) % 10), 28, 2);			//Ones of seconds. % (i.e. mod) gives remainder after dividing.
-	oled_type_digit_large(11, 52, 2);						//The eleventh character in this font is a period ('.').  This serves as a separator.
-	oled_type_digit_large(((uint16_t)(global_sixteenths*0.625) % 10), 76, 2);	//Tenths of seconds. Note division and modulus operators ignore fractions.
-	oled_type_digit_large(((uint16_t)(global_sixteenths*6.25) % 10), 100, 2);	//Hudredths of a second. Note modulus operation (%) only works on integers.
+	oled_type_digit_large(((global_sixteenths >> 4) / 10), 4, 2);			//Tens of seconds. RShift 4 bits to divide by 16.
+	oled_type_digit_large(((global_sixteenths >> 4) % 10), 28, 2);			//Ones of seconds. % (i.e. modulus) gives remainder after dividing.
+	oled_type_digit_large(11, 52, 2);						//The 11th character in this font (period '.') serves as a separator.
+	oled_type_digit_large(((uint16_t)(global_sixteenths*0.625) % 10), 76, 2);	//Tenths of seconds. Note / and % operators ignore fractions.
+	oled_type_digit_large(((uint16_t)(global_sixteenths*6.25) % 10), 100, 2);	//Hudredths of a second. Note mod operation (%) only works on integers.
 }
 
 //Draws the preset menu at the top of the screen.  Presets represented by A, B, C and D.
@@ -196,9 +197,8 @@ void display_menu(uint8_t selected_preset)
 	uint8_t i;
 	for(i=0;i<4;i++)	//Repeat four times for presets A, B, C and D.
 	{
-		//If statement will usually just draw the characters A to D, except in the case of the
-		//selected_preset character.  By adding 4 to the font map, the alternate character Will
-		//be selected (same character but within a box)
+		//If statement will usually just draw the characters A to D, except in the case of the selected_preset character.
+		//By adding 4 to the font map, the alternate character Will be selected (same character but within a box).
 		if(i == selected_preset)
 		{
 			oled_type_menu_char(i+4,((i*24)+22),0);
@@ -221,7 +221,7 @@ void display_splash_screen(void)
 	oled_clear_screen();			//Clear the screen again.
 }
 
-//This function is run on start-up to pull the presets saved to EEPROM and make them easily, globally accessible.
+//This function is run on start-up to pull the presets saved to EEPROM and make them easily (globally) accessible.
 //It will also set the presets to zero if they are not a valid number (such as after flashing a new AVR or changing the eeprom storage address).
 //To be valid, the preset must be a multiple of 4 (only possible increments/decrements of sixteenths) and also less than PRESET_MAX.
 void presets_init(void)
@@ -239,7 +239,7 @@ void presets_init(void)
 }
 
 //This function compares the presets in use to those stored in eeprom.  If they differ then the eeprom is updated.
-//It will be called when changing betwwen presets or starting the grinder as these are the times the presets have possibly been changed.
+//It will be called when changing between presets or starting the grinder as these are the times the presets have possibly been changed.
 void presets_update_eeprom(void)
 {
 	uint8_t i;
@@ -288,7 +288,7 @@ void hardware_init(void)
 
 int main(void)
 {
-	//Initialise AVR peripherals and external devices (oled).
+	//Initialise AVR peripherals and external devices (OLED).
 	hardware_init();
 
 	//Test string for USART initialisation.
@@ -300,12 +300,12 @@ int main(void)
 	//Initialise the presets (pull from eeprom and validate).
 	presets_init();
 
-	//Set an initial boot-up timer value and display menu and timer on-screen.
+	//Set an initial boot-up timer value (preset A) and display menu and timer on-screen.
 	global_sixteenths = global_presets[global_current_preset];
 	display_clock();
 	display_menu(global_current_preset);
 
-	//Now ready for button presses.
+	//Now ready to detect button presses.
 	PCICR |= (1 << BUTTON_PCIE);	//Enable pin-change interrupt for buttons.
 
 	while (1)

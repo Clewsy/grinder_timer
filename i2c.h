@@ -1,7 +1,8 @@
-#include <avr/io.h>
 //These functions are required to utilise the I2C functionality of the AVR (referred to in the AVR datasheet as TWI).
 //Note, these functions were written for use with an oled module (SDD1306) that does not have the capability to send data, only receive
-//(at least when controlled in a serial mode). Therefore I have not written functions for receivind I2C data to the AVR.
+//(at least when controlled in a serial mode). Therefore I have not written functions for receiving I2C data to the AVR.
+
+#include <avr/io.h>
 
 //Function declarations
 void i2c_init(void);			//Initialise the I2C hardware.

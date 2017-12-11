@@ -57,8 +57,8 @@ void oled_init(void)
 }
 
 //This function sets the address to  which oled image data will be written.
-//Note, in page address mode, the column is automatically incremented with every data byte writte, but the page must be set manually.
-//Consider the column to be the x co-ords (0to127) and the page to be the y co-ords (0 to 7).
+//Note, in page address mode, the column is automatically incremented with every data byte written, but the page must be set manually.
+//Consider the column to be the x co-ords (0to127, left to right) and the page to be the y co-ords (0 to 7, top to bottom).
 //Each data byte is referred to as a segment and effectively represents a vertical line of 8 pixels.
 void oled_set_address(uint8_t column, uint8_t page)
 {
@@ -99,8 +99,8 @@ void oled_test_pattern(void)
 	}
 }
 
-//Draws a box at outside edges of segments starting at <column>, <page> and of size <width> columns and <height pages>.
-//A box of maximum side along all outside edges would therefore be drawn with coled_draw_box(0,0,128,8);
+//Draws a box at outside edges of segments starting at <column>, <page> and of size <width> columns and <height> pages.
+//E.g. A box of maximum size along all outside edges would therefore be drawn with oled_draw_box(0,0,128,8);
 void oled_draw_box(uint8_t column, uint8_t page, uint8_t width, uint8_t height)
 {
 	oled_set_address(column,page);				//Set the start address in accordavce with passed variables column, page.
@@ -119,8 +119,8 @@ void oled_draw_box(uint8_t column, uint8_t page, uint8_t width, uint8_t height)
 	}
 	oled_send_data(0xFF);					//Forms right vertical line for last segment in first page.
 
-	if(height != 1)						//If box height is only one page then the box is done.  Else the following is required for side and bottom lines.
-	{
+	if(height != 1)						//If box height is only one page then the box is done.
+	{							//Else the following is required for side and bottom lines.
 		for(i=page+1;i<(page+height);i++)		//Here i runs through the segments for the left and right lines.
 		{
 			oled_set_address(column,i);		//Set address for left segment on current page.
@@ -129,7 +129,7 @@ void oled_draw_box(uint8_t column, uint8_t page, uint8_t width, uint8_t height)
 			oled_send_data(0xFF);			//Forms right vertical line.
 		}
 
-		oled_set_address(column,page+height-1);
+		oled_set_address(column,page+height-1);		//Move the address pointer to the bottom left.
 		oled_send_data(0xFF);				//Forms left vertical line for first segment in last page.
 		for(i=column;i<(column+width-2);i++)		//Here i runs through the segments containing the bottom line of the box.
 		{
@@ -147,10 +147,11 @@ void oled_type_char(char character)
 	for(i=0;i<6;i++)	//Cycle through each of the 8 segments that make up the character.
 	{
 		oled_send_data(pgm_read_byte(&(font_6x8[character-32][i])));	//Send the data that corresponds to the segments defined in the font.
-	}									//Note "-32" is required to map the decimal value of the <char> to the defined font.
-}										//The font characters start with " " (space) at 0 which is offset by 32 to the standard ascii set.
+	}									//Note "-32" is required to map the decimal value of <char> to the defined font.
+}										//The font character map starts with ' ' (space) at 0 which is offset by 32 to
+ 										//match the standard ascii set.
 
-//Types the characters from with a string to the screen.  Effectively calls function "oled_type_char" for each char within the string.
+//Types the characters from a string to the screen.  Effectively calls function "oled_type_char" for each char within the string.
 //Note, the address must be set before calling this function and there is no check for characters being printed outside the 128col x 8page grid.
 void oled_type_string(char string[])
 {
@@ -170,12 +171,12 @@ void oled_type_menu_char(uint8_t character, uint8_t column, uint8_t page)
 	oled_set_address(column, page);	//Set the start address to input variables column, page (top left segment).
 	for(i=0;i<12;i++)		//First set of 12 segments (first page)
 	{
-		oled_send_data(pgm_read_byte(&(font_menu[character][i])));
+		oled_send_data(pgm_read_byte(&(font_menu[character][i])));	//First 12 segments of the character (top).
 	}
 	oled_set_address(column, (page+1));
-	for(i=0;i<12;i++)	//Second set of 12 segments (second page)
+	for(i=0;i<12;i++)		//Second set of 12 segments (second page)
 	{
-		oled_send_data(pgm_read_byte(&(font_menu[character][i+12])));
+		oled_send_data(pgm_read_byte(&(font_menu[character][i+12])));	//Second 12 segments of the character (bottom).
 	}
 }
 
@@ -188,7 +189,7 @@ void oled_type_byte(uint8_t byte)
 	oled_type_char('0'+ (byte % 10));	//Ones
 }
 
-//Types to screen a single digit in the 7-seg style font I made.  Digit will start at <column>, <row>.
+//Types to screen a single digit in the 7-seg style font.  Digit will start at <column>, <row>.
 //Size of digits is 24 columns x 6 pages (or 24x48 pixels).
 void oled_type_digit_large(uint8_t digit, uint8_t column, uint8_t page)
 {
@@ -198,8 +199,7 @@ void oled_type_digit_large(uint8_t digit, uint8_t column, uint8_t page)
 		oled_set_address(column,(page+j));	//Set the start address for the next set of 24 segments.
 		for(i=0;i<24;i++)			//Cycle through 24 times for each column.
 		{
-			//Send the data byte (segment) to be drawn.
-			//The byte is found in program space (flash).
+			//Send the data byte (segment) to be drawn. The byte is found in program space (flash).
 			oled_send_data(pgm_read_byte(&(font_7_seg_digits[digit][i+(24*j)])));
 		}
 	}
