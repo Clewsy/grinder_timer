@@ -38,8 +38,8 @@ void oled_init(void)
 	oled_send_command(SET_DISPLAY_OFFSET);
 	oled_send_command(DISPLAY_OFFSET_0);
 	oled_send_command(SET_DISPLAY_START_LINE_0);
-	oled_send_command(SET_SEGMENT_REMAP_0);
-	oled_send_command(SET_COM_OUTPUT_SCAN_DIR_NORMAL);
+	oled_send_command(SET_SEGMENT_REMAP_127);
+	oled_send_command(SET_COM_OUTPUT_SCAN_DIR_REVERSE);
 	oled_send_command(SET_COM_PINS_HARDWARE_CONFIG);
 	oled_send_command(COM_PINS_HARDWARE_DEFAULT);
 	oled_send_command(SET_DISPLAY_CONTRAST);
