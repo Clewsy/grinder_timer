@@ -8,3 +8,6 @@ This is a programmable timer tethered to a Rancilio Rocky coffee grinder. The Ro
 - Single cable (3-core) tether to grinder for power and control.
 
 The code , schematic and PCB layout are all included here on github.
+
+Proudly mentioned at hackaday.com.
+https://hackaday.com/2017/12/14/dumb-coffee-grinder-gets-smarter-with-time/
