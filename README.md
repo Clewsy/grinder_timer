@@ -13,7 +13,7 @@ The code, [schematic][link_repo_schematic] and [PCB layout][link_repo_pcb] are a
 
 Proudly mentioned at [hackaday.com][link_web_hackaday_grinder_timer].
 
-![The completed grinder_timer.][images_grinder_timer_photo]
+![The completed grinder_timer.][image_grinder_timer_photo]
 
 [link_web_rancilio_rocky]:https://www.ranciliogroup.com/rancilio/rocky/rocky/
 [link_repo_schematic]:grinder_timer_kicad/grinder_timer_schematic.pdf
