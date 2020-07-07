@@ -1,3 +1,0 @@
-(fp_lib_table
-  (lib (name grinder_timer)(type KiCad)(uri "$(KIPRJMOD)/grinder_timer.pretty")(options "")(descr ""))
-)
