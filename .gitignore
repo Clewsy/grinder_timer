@@ -1,4 +1,3 @@
-grinder_timer
 *.elf
 *.o
 *.hex
