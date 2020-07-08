@@ -1,6 +1,25 @@
 # grinder_timer
 
-# NOTE: Rev_2 of grinder_timer is currently under development.
+---
+## NOTE: Rev_2 of grinder_timer is currently under development.
+Planned improvements
+- Hardware:
+	- [ ] Pull-ups on I2C SDA and CLK lines.
+	- [ ] Drive relay properly - with a transistor.
+	- [ ] Add flyback diode protection to relay coil.
+	- [ ] Smaller transformer.
+	- [ ] Smaller relay.
+	- [ ] Switch to SMD for where possible.
+	- [ ] Two-sided PCB (have it fabricated instead of etching).
+	- [ ] Make buttons SMD instead of panel-mount.
+	- [ ] Balanced caps for the 32.768kHz crystal.
+	- [ ] Put grind button LED on a PWM output.
+- Firmware:
+	- [ ] Switch from C to C++.
+	- [ ] New OLED driver (change from SSD1306 to SH1106 controller).
+	- [ ] Pulse/fade effect for grind button LED.
+
+---
 
 This is a programmable timer tethered to a [Rancilio Rocky][link_web_rancilio_rocky] coffee grinder. The Rocky is a "dumb" grinder and electrically very simple. Basically it's an ac motor with an on/off switch and a momentary push-button to grind. This project adds an electronic timer so that repeatable grind quantities can be produced without having to stand over the grinder. Features:
 - Four programmable presets (A, B, C or D) stored in EEPROM to survive powercycle.
