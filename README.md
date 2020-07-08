@@ -37,8 +37,8 @@ Proudly mentioned at [hackaday.com][link_web_hackaday_grinder_timer].
 ![The completed grinder_timer.][image_grinder_timer]
 
 [link_web_rancilio_rocky]:https://www.ranciliogroup.com/rancilio/rocky/rocky/
-[link_repo_schematic]:grinder_timer_kicad/grinder_timer_schematic.pdf
-[link_repo_pcb]:grinder_timer_kicad/
+[link_repo_schematic]:schematic/grinder_timer/
+[link_repo_pcb]:schematic/grinder_timer/
 [link_web_hackaday_grinder_timer]:https://hackaday.com/2017/12/14/dumb-coffee-grinder-gets-smarter-with-time/
 
 [image_grinder_timer]:images/grinder_timer_photo.jpg
