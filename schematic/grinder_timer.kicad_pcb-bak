@@ -348,8 +348,8 @@
     )
   )
 
-  (module Crystal:Crystal_SMD_Abracon_ABS25-4Pin_8.0x3.8mm (layer F.Cu) (tedit 5C44C7B6) (tstamp 5F099BA3)
-    (at 148.52 -85.44)
+  (module Crystal:Crystal_SMD_Abracon_ABS25-4Pin_8.0x3.8mm (layer F.Cu) (tedit 5C44C7B6) (tstamp 5F0925FF)
+    (at 172.65 122.84)
     (descr "Abracon Miniature Ceramic SMD Crystal ABS25 https://abracon.com/Resonators/abs25.pdf, 8.0x3.8mm^2 package")
     (tags "SMD SMT crystal")
     (path /5F012F2F)
@@ -440,8 +440,8 @@
     )
   )
 
-  (module Package_QFP:TQFP-32_7x7mm_P0.8mm (layer F.Cu) (tedit 5A02F146) (tstamp 5F099996)
-    (at 64.33 -77.73)
+  (module Package_QFP:TQFP-32_7x7mm_P0.8mm (layer F.Cu) (tedit 5A02F146) (tstamp 5F0925CD)
+    (at 135.89 -67.31)
     (descr "32-Lead Plastic Thin Quad Flatpack (PT) - 7x7x1.0 mm Body, 2.00 mm [TQFP] (see Microchip Packaging Specification 00000049BS.pdf)")
     (tags "QFP 0.8")
     (path /5F00CADF)
@@ -706,7 +706,7 @@
   )
 
   (module Button_Switch_SMD:SW_Push_1P1T_NO_6x6mm_H9.5mm (layer F.Cu) (tedit 5CA1CA7F) (tstamp 5F092512)
-    (at 86.36 -104.14)
+    (at 110.49 104.14)
     (descr "tactile push button, 6x6mm e.g. PTS645xx series, height=9.5mm")
     (tags "tact sw push 6mm smd")
     (path /5F0151C0)
@@ -825,7 +825,7 @@
   )
 
   (module Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder (layer F.Cu) (tedit 5B301BBD) (tstamp 5F0924D6)
-    (at 108.88 -81.23)
+    (at 133.01 127.05)
     (descr "Resistor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (path /5F017606)
@@ -861,7 +861,7 @@
   )
 
   (module Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder (layer F.Cu) (tedit 5B301BBD) (tstamp 5F0924C5)
-    (at 28.83 -102.5)
+    (at 211.71 71.49)
     (descr "Resistor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (path /5F016EBC)
@@ -897,7 +897,7 @@
   )
 
   (module Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder (layer F.Cu) (tedit 5B301BBD) (tstamp 5F0924B4)
-    (at 108.88 -84.52)
+    (at 133.01 123.76)
     (descr "Resistor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
     (tags "resistor handsolder")
     (path /5F01731E)
@@ -1087,7 +1087,7 @@
   )
 
   (module Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Horizontal (layer B.Cu) (tedit 59FED5CB) (tstamp 5F092426)
-    (at 120.62 -102.8)
+    (at 144.75 105.48)
     (descr "Through hole angled pin header, 1x06, 2.54mm pitch, 6mm pin length, single row")
     (tags "Through hole angled pin header THT 1x06 2.54mm single row")
     (path /5F23AF4C)
@@ -1212,7 +1212,7 @@
   )
 
   (module Connector_IDC:IDC-Header_2x03_P2.54mm_Vertical (layer B.Cu) (tedit 59DE0819) (tstamp 5F0923BF)
-    (at 102.87 -55.88)
+    (at 135.17 111.125)
     (descr "Through hole straight IDC box header, 2x03, 2.54mm pitch, double rows")
     (tags "Through hole IDC box header THT 2x03 2.54mm double row")
     (path /5F0142D8)
@@ -1314,7 +1314,7 @@
   )
 
   (module Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder (layer F.Cu) (tedit 5B301BBE) (tstamp 5F092382)
-    (at 137.75 -81.51)
+    (at 161.88 126.77)
     (descr "Capacitor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
     (tags "capacitor handsolder")
     (path /5F013BB4)
@@ -1350,7 +1350,7 @@
   )
 
   (module Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder (layer F.Cu) (tedit 5B301BBE) (tstamp 5F092371)
-    (at 28.83 -95.92)
+    (at 211.71 78.07)
     (descr "Capacitor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
     (tags "capacitor handsolder")
     (path /5F0137FD)

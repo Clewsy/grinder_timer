@@ -25,20 +25,9 @@ U 1 1 5F0022EB
 P 1900 2750
 F 0 "T1" H 1900 3000 50  0000 C CNN
 F 1 "1P1S" H 1900 2500 50  0000 C CNN
-F 2 "" H 1900 2750 50  0001 C CNN
+F 2 "grinder_timer:transformer" H 1900 2750 50  0001 C CNN
 F 3 "~" H 1900 2750 50  0001 C CNN
 	1    1900 2750
-	1    0    0    -1  
-$EndComp
-$Comp
-L Relay:G5LE-1 K1
-U 1 1 5F008431
-P 2800 1400
-F 0 "K1" H 3230 1446 50  0000 L CNN
-F 1 "RELAY" H 3230 1355 50  0000 L CNN
-F 2 "Relay_THT:Relay_SPDT_Omron-G5LE-1" H 3250 1350 50  0001 L CNN
-F 3 "http://www.omron.com/ecb/products/pdf/en-g5le.pdf" H 2800 1400 50  0001 C CNN
-	1    2800 1400
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -47,7 +36,7 @@ U 1 1 5F009CE5
 P 2800 2900
 F 0 "B1" H 2850 3100 50  0000 L CNN
 F 1 "D_Bridge" H 2850 2700 50  0000 L CNN
-F 2 "" H 2800 2900 50  0001 C CNN
+F 2 "Diode_SMD:Diode_Bridge_Vishay_DFS" H 2800 2900 50  0001 C CNN
 F 3 "~" H 2800 2900 50  0001 C CNN
 	1    2800 2900
 	1    0    0    -1  
@@ -58,7 +47,7 @@ U 1 1 5F00BA7C
 P 3550 3100
 F 0 "C2" H 3550 3200 50  0000 L CNN
 F 1 "0.1uF" H 3550 3000 50  0000 L CNN
-F 2 "" H 3588 2950 50  0001 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 3588 2950 50  0001 C CNN
 F 3 "~" H 3550 3100 50  0001 C CNN
 	1    3550 3100
 	1    0    0    -1  
@@ -69,7 +58,7 @@ U 1 1 5F00BD5C
 P 4250 3100
 F 0 "C3" H 4250 3200 50  0000 L CNN
 F 1 "0.1uF" H 4250 3000 50  0000 L CNN
-F 2 "" H 4288 2950 50  0001 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 4288 2950 50  0001 C CNN
 F 3 "~" H 4250 3100 50  0001 C CNN
 	1    4250 3100
 	1    0    0    -1  
@@ -80,7 +69,7 @@ U 1 1 5F00C1D1
 P 3300 3100
 F 0 "C1" H 3300 3200 50  0000 L CNN
 F 1 "470uF" H 3300 3000 50  0000 L CNN
-F 2 "" H 3338 2950 50  0001 C CNN
+F 2 "Capacitor_SMD:C_Elec_8x10.2" H 3338 2950 50  0001 C CNN
 F 3 "~" H 3300 3100 50  0001 C CNN
 	1    3300 3100
 	1    0    0    -1  
@@ -91,7 +80,7 @@ U 1 1 5F00C5BF
 P 4500 3100
 F 0 "C4" H 4500 3200 50  0000 L CNN
 F 1 "10uF" H 4500 3000 50  0000 L CNN
-F 2 "" H 4538 2950 50  0001 C CNN
+F 2 "Capacitor_SMD:C_Elec_5x5.4" H 4538 2950 50  0001 C CNN
 F 3 "~" H 4500 3100 50  0001 C CNN
 	1    4500 3100
 	1    0    0    -1  
@@ -113,7 +102,7 @@ U 1 1 5F0142D8
 P 4050 6750
 F 0 "J1" H 3721 6846 50  0000 R CNN
 F 1 "AVR-ISP-6" H 3721 6755 50  0000 R CNN
-F 2 "" V 3800 6800 50  0001 C CNN
+F 2 "Connector_IDC:IDC-Header_2x03_P2.54mm_Vertical" V 3800 6800 50  0001 C CNN
 F 3 " ~" H 2775 6200 50  0001 C CNN
 	1    4050 6750
 	1    0    0    -1  
@@ -124,7 +113,7 @@ U 1 1 5F0151C0
 P 4000 5550
 F 0 "S0" H 4100 5650 50  0000 C CNN
 F 1 "RESET" H 4000 5500 50  0000 C CNN
-F 2 "" H 4000 5750 50  0001 C CNN
+F 2 "Button_Switch_SMD:SW_Push_1P1T_NO_6x6mm_H9.5mm" H 4000 5750 50  0001 C CNN
 F 3 "~" H 4000 5750 50  0001 C CNN
 	1    4000 5550
 	1    0    0    -1  
@@ -135,7 +124,7 @@ U 1 1 5F0159D7
 P 2350 5950
 F 0 "S1" H 2450 6050 50  0000 C CNN
 F 1 "UP" H 2350 5900 50  0000 C CNN
-F 2 "" H 2350 6150 50  0001 C CNN
+F 2 "grinder_timer:tact" H 2350 6150 50  0001 C CNN
 F 3 "~" H 2350 6150 50  0001 C CNN
 	1    2350 5950
 	1    0    0    -1  
@@ -146,7 +135,7 @@ U 1 1 5F015D1F
 P 2350 6200
 F 0 "S2" H 2450 6300 50  0000 C CNN
 F 1 "DOWN" H 2350 6150 50  0000 C CNN
-F 2 "" H 2350 6400 50  0001 C CNN
+F 2 "grinder_timer:tact" H 2350 6400 50  0001 C CNN
 F 3 "~" H 2350 6400 50  0001 C CNN
 	1    2350 6200
 	1    0    0    -1  
@@ -157,7 +146,7 @@ U 1 1 5F016EBC
 P 3850 5000
 F 0 "R2" H 3900 5050 50  0000 L CNN
 F 1 "10k" H 3900 4950 50  0000 L CNN
-F 2 "" V 3780 5000 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 3780 5000 50  0001 C CNN
 F 3 "~" H 3850 5000 50  0001 C CNN
 	1    3850 5000
 	1    0    0    -1  
@@ -168,7 +157,7 @@ U 1 1 5F01731E
 P 3450 5000
 F 0 "R1" H 3500 5050 50  0000 L CNN
 F 1 "10k" H 3500 4950 50  0000 L CNN
-F 2 "" V 3380 5000 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 3380 5000 50  0001 C CNN
 F 3 "~" H 3450 5000 50  0001 C CNN
 	1    3450 5000
 	1    0    0    -1  
@@ -179,7 +168,7 @@ U 1 1 5F017606
 P 4250 5000
 F 0 "R3" H 4300 5050 50  0000 L CNN
 F 1 "10k" H 4300 4950 50  0000 L CNN
-F 2 "" V 4180 5000 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 4180 5000 50  0001 C CNN
 F 3 "~" H 4250 5000 50  0001 C CNN
 	1    4250 5000
 	1    0    0    -1  
@@ -434,7 +423,7 @@ U 1 1 5F013BB4
 P 3000 4950
 F 0 "C6" V 3050 4850 50  0000 C CNN
 F 1 "17pF" V 3050 5100 50  0000 C CNN
-F 2 "" H 3038 4800 50  0001 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 3038 4800 50  0001 C CNN
 F 3 "~" H 3000 4950 50  0001 C CNN
 	1    3000 4950
 	0    1    1    0   
@@ -445,7 +434,7 @@ U 1 1 5F0137FD
 P 3000 4500
 F 0 "C5" V 2950 4400 50  0000 C CNN
 F 1 "7pF" V 2950 4600 50  0000 C CNN
-F 2 "" H 3038 4350 50  0001 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 3038 4350 50  0001 C CNN
 F 3 "~" H 3000 4500 50  0001 C CNN
 	1    3000 4500
 	0    1    1    0   
@@ -456,7 +445,7 @@ U 1 1 5F012F2F
 P 2800 4700
 F 0 "Y1" V 2650 4500 50  0000 L CNN
 F 1 "32.768kHz" V 2800 4600 25  0000 L CNN
-F 2 "" H 2800 4700 50  0001 C CNN
+F 2 "Crystal:Crystal_SMD_Abracon_ABS25-4Pin_8.0x3.8mm" H 2800 4700 50  0001 C CNN
 F 3 "~" H 2800 4700 50  0001 C CNN
 	1    2800 4700
 	0    1    1    0   
@@ -553,7 +542,7 @@ U 1 1 5F0163F9
 P 2350 6700
 F 0 "S4" H 2450 6800 50  0000 C CNN
 F 1 "RIGHT" H 2350 6650 50  0000 C CNN
-F 2 "" H 2350 6900 50  0001 C CNN
+F 2 "grinder_timer:tact" H 2350 6900 50  0001 C CNN
 F 3 "~" H 2350 6900 50  0001 C CNN
 	1    2350 6700
 	1    0    0    -1  
@@ -564,7 +553,7 @@ U 1 1 5F016052
 P 2350 6450
 F 0 "S3" H 2450 6550 50  0000 C CNN
 F 1 "LEFT" H 2350 6400 50  0000 C CNN
-F 2 "" H 2350 6650 50  0001 C CNN
+F 2 "grinder_timer:tact" H 2350 6650 50  0001 C CNN
 F 3 "~" H 2350 6650 50  0001 C CNN
 	1    2350 6450
 	1    0    0    -1  
@@ -586,7 +575,7 @@ U 1 1 5F23AF4C
 P 5650 6800
 F 0 "J2" H 5600 7100 50  0000 L CNN
 F 1 "SERIAL" H 5550 6400 50  0000 L CNN
-F 2 "" H 5650 6800 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Horizontal" H 5650 6800 50  0001 C CNN
 F 3 "~" H 5650 6800 50  0001 C CNN
 	1    5650 6800
 	-1   0    0    1   
@@ -601,7 +590,7 @@ U 1 1 5F241E8E
 P 6050 5300
 F 0 "O1" V 5800 5250 79  0000 L CNN
 F 1 "OLED" V 6300 5250 79  0000 L CNN
-F 2 "" H 6050 5550 79  0001 C CNN
+F 2 "grinder_timer:oled" H 6050 5550 79  0001 C CNN
 F 3 "" H 6050 5550 79  0001 C CNN
 	1    6050 5300
 	0    1    1    0   
@@ -657,7 +646,7 @@ U 1 1 5F2FE408
 P 2350 7050
 F 0 "S5" H 2450 7250 50  0000 C CNN
 F 1 "GRIND" H 2400 6950 50  0000 C CNN
-F 2 "" H 2350 7350 50  0001 C CNN
+F 2 "grinder_timer:tact_led" H 2350 7350 50  0001 C CNN
 F 3 "~" H 2350 7350 50  0001 C CNN
 	1    2350 7050
 	1    0    0    -1  
@@ -680,7 +669,7 @@ U 1 1 5F349A8F
 P 2500 2000
 F 0 "Q1" H 2691 2046 50  0000 L CNN
 F 1 "NPN" H 2691 1955 50  0000 L CNN
-F 2 "" H 2700 2100 50  0001 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-223-3_TabPin2" H 2700 2100 50  0001 C CNN
 F 3 "~" H 2500 2000 50  0001 C CNN
 	1    2500 2000
 	1    0    0    -1  
@@ -691,7 +680,7 @@ U 1 1 5F34ACA3
 P 2250 1400
 F 0 "D1" V 2150 1400 50  0000 L CNN
 F 1 "4148" V 2350 1200 50  0000 L CNN
-F 2 "" H 2250 1400 50  0001 C CNN
+F 2 "Diode_SMD:D_SOD-123" H 2250 1400 50  0001 C CNN
 F 3 "~" H 2250 1400 50  0001 C CNN
 	1    2250 1400
 	0    1    1    0   
@@ -702,7 +691,7 @@ U 1 1 5F380CA6
 P 2100 7250
 F 0 "R4" H 2150 7300 50  0000 L CNN
 F 1 "150" H 2150 7200 50  0000 L CNN
-F 2 "" V 2030 7250 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 2030 7250 50  0001 C CNN
 F 3 "~" H 2100 7250 50  0001 C CNN
 	1    2100 7250
 	-1   0    0    1   
@@ -868,7 +857,7 @@ U 1 1 5F001DA1
 P 1050 2300
 F 0 "P1" H 1050 2350 79  0000 C CNN
 F 1 "MOTOR" H 1050 2250 79  0000 C CNN
-F 2 "" H 1050 2300 79  0001 C CNN
+F 2 "grinder_timer:pcb_tab" H 1050 2300 79  0001 C CNN
 F 3 "" H 1050 2300 79  0001 C CNN
 	1    1050 2300
 	1    0    0    -1  
@@ -879,7 +868,7 @@ U 1 1 5F001AFE
 P 1050 2900
 F 0 "P3" H 1050 2950 79  0000 C CNN
 F 1 "NEUTRAL" H 1050 2850 79  0000 C CNN
-F 2 "" H 1050 2900 79  0001 C CNN
+F 2 "grinder_timer:pcb_tab" H 1050 2900 79  0001 C CNN
 F 3 "" H 1050 2900 79  0001 C CNN
 	1    1050 2900
 	1    0    0    -1  
@@ -890,7 +879,7 @@ U 1 1 5F001657
 P 1050 2600
 F 0 "P2" H 1050 2650 79  0000 C CNN
 F 1 "ACTIVE" H 1050 2550 79  0000 C CNN
-F 2 "" H 1050 2600 79  0001 C CNN
+F 2 "grinder_timer:pcb_tab" H 1050 2600 79  0001 C CNN
 F 3 "" H 1050 2600 79  0001 C CNN
 	1    1050 2600
 	1    0    0    -1  
@@ -913,8 +902,6 @@ F 3 "http://www.diodes.com/datasheets/AP1117.pdf" H 4000 2650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 NoConn ~ 2900 1100
-Text Notes 7050 5100 0    79   ~ 0
-BOM\n----------------------------------------\nB1 - DF04S - Bridge Rectifier\nC1 - EMVY160ADA471MHA0G - 470uF Electrolytic Capacitor\nC2 - 0.1uF 1206 Ceramic Capacitor\nC3 - 0.1uF 1206 Ceramic Capacitor\nC4 - MCESL35V106M5X5.2 - 10uF Electrolytic Capacitor\nC5 - 7pF 1206 Ceramic Capacitor\nC6 - 17pF 1206 Ceramic Capacitor\nD1 - 1N4148W SOD-123 Diode\nJ1 - 6-Pin (2x3) ISP Header\nJ2 - 6-Pin (1x6) Serial Header\nK1 - SRM-1C-SL-5VDC - Relay\nO1 - OLED Display w/ SH1106 Driver in I2C Mode\nP1 - 19708-4001 - PCB-Mount Spade Terminal\nP2 - 19708-4001 - PCB-Mount Spade Terminal\nP3 - 19708-4001 - PCB-Mount Spade Terminal\nQ1 - PBSS4350Z - NPN Transistor\nR1 - 10k Ohm 1206 Resistor\nR2 - 10k Ohm 1206 Resistor\nR3 - 10k Ohm 1206 Resistor\nR4 - 150Ohm 1206 Resistor\nR5 - 10k Ohm 1206 Resistor\nS0 - PTS645SM43SMTR92LFS - Surface Mount 6mm Tact Switch\nS1 - 3FSH9 - Surface Mount Tact Switch\nS2 - 3FSH9 - Surface Mount Tact Switch\nS3 - 3FSH9 - Surface Mount Tact Switch\nS4 - 3FSH9 - Surface Mount Tact Switch\nS5 - 5GSH93561 - Surface Mount Tact Switch w/ LED\nT1 - 45001 - 6V Transformer\nU1 - ATMEGA328PB - Microcontroller\nU2 - MIC39100-5 - 5V LDO Linear Regulator\nY1 - FSRLF - 32.768kHz Crystal
 Wire Wire Line
 	5850 7000 6050 7000
 Wire Wire Line
@@ -989,7 +976,7 @@ U 1 1 5F765E44
 P 2100 2000
 F 0 "R5" H 2150 2050 50  0000 L CNN
 F 1 "10k" H 2150 1950 50  0000 L CNN
-F 2 "" V 2030 2000 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 2030 2000 50  0001 C CNN
 F 3 "~" H 2100 2000 50  0001 C CNN
 	1    2100 2000
 	0    1    1    0   
@@ -1031,4 +1018,17 @@ Wire Wire Line
 	3000 2450 3000 1700
 Wire Wire Line
 	2600 2250 2600 2200
+Text Notes 7050 5100 0    79   ~ 0
+BOM\n----------------------------------------\nB1 - DF04S - Bridge Rectifier\nC1 - EMVY160ADA471MHA0G - 470uF Electrolytic Capacitor\nC2 - 0.1uF 1206 Ceramic Capacitor\nC3 - 0.1uF 1206 Ceramic Capacitor\nC4 - MCESL35V106M5X5.2 - 10uF Electrolytic Capacitor\nC5 - 7pF 1206 Ceramic Capacitor\nC6 - 17pF 1206 Ceramic Capacitor\nD1 - T4 1N4148W SOD-123 Diode\nJ1 - 6-Pin (2x3) ISP Header\nJ2 - 6-Pin (1x6) Serial Header\nK1 - SRM-1C-SL-5VDC - Relay\nO1 - OLED Display w/ SH1106 Driver in I2C Mode\nP1 - 19708-4001 - PCB-Mount Spade Terminal\nP2 - 19708-4001 - PCB-Mount Spade Terminal\nP3 - 19708-4001 - PCB-Mount Spade Terminal\nQ1 - PBSS4350Z - NPN Transistor\nR1 - 10k Ohm 1206 Resistor\nR2 - 10k Ohm 1206 Resistor\nR3 - 10k Ohm 1206 Resistor\nR4 - 150 Ohm 1206 Resistor\nR5 - 10k Ohm 1206 Resistor\nS0 - PTS645SM43SMTR92LFS - Surface Mount 6mm Tact Switch\nS1 - 3FSH9 - Surface Mount Tact Switch\nS2 - 3FSH9 - Surface Mount Tact Switch\nS3 - 3FSH9 - Surface Mount Tact Switch\nS4 - 3FSH9 - Surface Mount Tact Switch\nS5 - 5GSH93561 - Surface Mount Tact Switch w/ LED\nT1 - 45001 - 6V Transformer\nU1 - ATMEGA328PB - Microcontroller\nU2 - MIC39100-5 - 5V LDO Linear Regulator\nY1 - FSRLF - 32.768kHz Crystal
+$Comp
+L Relay:FINDER-32.21-x000 K1
+U 1 1 5F0C6F1B
+P 2800 1400
+F 0 "K1" H 3230 1446 50  0000 L CNN
+F 1 "Relay" H 3230 1355 50  0000 L CNN
+F 2 "Relay_THT:Relay_SPDT_Finder_36.11" H 4070 1370 50  0001 C CNN
+F 3 "https://gfinder.findernet.com/assets/Series/355/S32EN.pdf" H 2800 1400 50  0001 C CNN
+	1    2800 1400
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
