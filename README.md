@@ -1,6 +1,5 @@
 # grinder_timer
 
----
 ## NOTE: Rev_2 of grinder_timer is currently under development.
 Planned improvements
 - Hardware:
