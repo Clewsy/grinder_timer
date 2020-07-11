@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/jc/projects/grinder_timer/schematic/grinder_timer.sch)
-    (date "Fri 10 Jul 2020 21:51:32")
+    (date "Sat 11 Jul 2020 14:33:04")
     (tool "Eeschema 5.1.5+dfsg1-2build2")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -17,7 +17,7 @@
   (components
     (comp (ref T1)
       (value 1P1S)
-      (footprint grinder_timer:transformer)
+      (footprint grinder_timer:transformer_big)
       (datasheet ~)
       (libsource (lib Device) (part Transformer_1P_1S) (description "Transformer, single primary, single secondary"))
       (sheetpath (names /) (tstamps /))
@@ -150,7 +150,7 @@
       (tstamp 5F016052))
     (comp (ref J2)
       (value SERIAL)
-      (footprint Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Horizontal)
+      (footprint Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical)
       (datasheet ~)
       (libsource (lib Connector_Generic) (part Conn_01x06) (description "Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)"))
       (sheetpath (names /) (tstamps /))

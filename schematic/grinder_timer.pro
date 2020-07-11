@@ -1,4 +1,4 @@
-update=Fri 10 Jul 2020 22:23:39
+update=Sat 11 Jul 2020 14:41:51
 version=1
 last_client=kicad
 [general]
@@ -25,7 +25,7 @@ ERC_TestSimilarLabels=1
 [pcbnew]
 version=1
 PageLayoutDescrFile=
-LastNetListRead=
+LastNetListRead=grinder_timer.net
 CopperLayerCount=2
 BoardThickness=1.6
 AllowMicroVias=0
@@ -248,7 +248,7 @@ dPairGap=0.25
 dPairViaGap=0.25
 [pcbnew/Netclasses/1]
 Name=Power
-Clearance=0.4
+Clearance=0.2
 TrackWidth=0.5
 ViaDiameter=1.6
 ViaDrill=0.8

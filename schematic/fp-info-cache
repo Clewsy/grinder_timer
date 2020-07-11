@@ -1,4 +1,4 @@
-16927352017211777
+16933729804751777
 Battery
 BatteryHolder_Bulgin_BX0036_1xC
 Bulgin Battery Holder, BX0036, Battery Type C (https://www.bulgin.com/products/pub/media/bulgin/data/Battery_holders.pdf)
@@ -75257,12 +75257,33 @@ varistor SIOV
 2
 2
 grinder_timer
+clews_logo_10mm
+
+
+0
+0
+0
+grinder_timer
+clews_logo_30mm
+
+
+0
+0
+0
+grinder_timer
 oled
 
 
 0
 8
 4
+grinder_timer
+oshw_logo_10mm
+
+
+0
+0
+0
 grinder_timer
 pcb_tab
 
@@ -75286,6 +75307,13 @@ tact_led
 4
 grinder_timer
 transformer
+
+
+0
+4
+4
+grinder_timer
+transformer_big
 
 
 0
