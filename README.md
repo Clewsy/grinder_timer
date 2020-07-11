@@ -10,12 +10,12 @@ Planned improvements
 	- [ ] Smaller relay.
 	- [ ] Switch to SMD for where possible.
 	- [ ] Two-sided PCB (have it fabricated instead of etching).
-	- [ ] Make buttons SMD instead of panel-mount.
+	- [ ] Switch buttons from mushy panel-mount to tactile SMD.
 	- [ ] Balanced caps for the 32.768kHz crystal.
 	- [ ] Put grind button LED on a PWM output.
 - Firmware:
 	- [ ] Switch from C to C++.
-	- [ ] New OLED driver (change from SSD1306 to SH1106 controller).
+	- [ ] New OLED driver (change from SPI SSD1306 to IIC SSD1315 controller).
 	- [ ] Pulse/fade effect for grind button LED.
 
 ---
