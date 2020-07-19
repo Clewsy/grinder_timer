@@ -575,7 +575,7 @@ U 1 1 5F23AF4C
 P 5650 6800
 F 0 "J2" H 5600 7100 50  0000 L CNN
 F 1 "SERIAL" H 5550 6400 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Horizontal" H 5650 6800 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical" H 5650 6800 50  0001 C CNN
 F 3 "~" H 5650 6800 50  0001 C CNN
 	1    5650 6800
 	-1   0    0    1   
@@ -640,17 +640,6 @@ Wire Wire Line
 	3800 5550 3750 5550
 Wire Wire Line
 	3750 5550 3750 5600
-$Comp
-L Switch:SW_Push_LED S5
-U 1 1 5F2FE408
-P 2350 7050
-F 0 "S5" H 2450 7250 50  0000 C CNN
-F 1 "GRIND" H 2400 6950 50  0000 C CNN
-F 2 "grinder_timer:tact_led" H 2350 7350 50  0001 C CNN
-F 3 "~" H 2350 7350 50  0001 C CNN
-	1    2350 7050
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	2000 5650 1950 5650
 Wire Wire Line
@@ -1029,6 +1018,17 @@ F 1 "Relay" H 3230 1355 50  0000 L CNN
 F 2 "Relay_THT:Relay_SPDT_Finder_36.11" H 4070 1370 50  0001 C CNN
 F 3 "https://gfinder.findernet.com/assets/Series/355/S32EN.pdf" H 2800 1400 50  0001 C CNN
 	1    2800 1400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Switch:SW_MEC_5G_LED S5
+U 1 1 5F144751
+P 2350 7050
+F 0 "S5" H 2450 7250 50  0000 C CNN
+F 1 "GRIND" H 2350 6950 50  0000 C CNN
+F 2 "" H 2350 7350 50  0001 C CNN
+F 3 "http://www.apem.com/int/index.php?controller=attachment&id_attachment=488" H 2350 7350 50  0001 C CNN
+	1    2350 7050
 	1    0    0    -1  
 $EndComp
 $EndSCHEMATC
