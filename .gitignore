@@ -3,3 +3,5 @@
 *.hex
 *.swp
 schematic/gerber_export
+firmware/.vscode
+firmware.pio
