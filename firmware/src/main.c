@@ -24,9 +24,13 @@ int main(void)
 
 usart_init();
 
+uint8_t i=0;
+
 	while (1)
 	{
-		usart_print_string("testink 123 ");
+		usart_print_string("testing 123\r\n");
+		usart_print_byte(i);
+		i++;
 		//Everything is interrupt driven.
 	}
 
