@@ -1,6 +1,7 @@
 
 #include "usart.h"
 #include "keypad.h"
+#include "pwm.h"
 
 #define RELAY_PORT	PORTC
 #define RELAY_DDR	DDRC
@@ -9,3 +10,4 @@
 
 keypad buttons;
 usart serial;
+pwm led;

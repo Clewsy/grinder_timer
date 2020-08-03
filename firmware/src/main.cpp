@@ -11,7 +11,7 @@ ISR(BUTTON_PCI_VECTOR)
 	if (buttons.state(BUTTON_UP))
 	{
 		serial.print_string((char*)"UP\r\n");
-		BUTTON_PORT &= ~(1 << BUTTON_LED);
+//		BUTTON_PORT &= ~(1 << BUTTON_LED);
 //		RELAY_PORT &= ~(1 << RELAY_PIN);
 	}
 	else if (buttons.state(BUTTON_DOWN))	serial.print_string((char*)"DOWN\r\n");
@@ -20,7 +20,7 @@ ISR(BUTTON_PCI_VECTOR)
 	else if (buttons.state(BUTTON_GRIND))
 	{
 		serial.print_string((char*)"GRIND\r\n");
-		BUTTON_PORT |= (1 << BUTTON_LED);
+//		BUTTON_PORT |= (1 << BUTTON_LED);
 //		RELAY_PORT |= (1 << RELAY_PIN);
 	}	
 
@@ -36,15 +36,15 @@ void hardware_init()
 {
 	serial.init();
 
-	BUTTON_DDR |= (1 << BUTTON_LED);		//Set as an output the pin to which the LED is connected.
-
 	RELAY_DDR |= (1 << RELAY_PIN);
 
 	buttons.init();
 	buttons.enable();
 
-	sei();	//Enable all interrupts.
+	led.init();
+	led.enable();
 
+	sei();	//Enable all interrupts.
 }
 
 
@@ -56,9 +56,13 @@ int main(void)
 
 	serial.print_string((char*)"testing 123\r\n");
 
+	uint8_t i=0;
+
 	while (1)
 	{
-		_delay_ms(1000);
+		_delay_ms(10);
+		led.set(i);
+		i++;
 	}
 
 	return 0;	//Never reached.
