@@ -24,3 +24,8 @@ void pwm::set(uint8_t duty)
 {
 	PWM_SET = duty;		//Set the 8-bit duty cycle value: 0 to 255.
 }
+
+uint8_t pwm::get(void)
+{
+	return PWM_SET;
+}

@@ -29,5 +29,6 @@ class pwm
 		void enable(void);
 		void disable(void);
 		void set(uint8_t duty);
+		uint8_t get(void);
 };
 
