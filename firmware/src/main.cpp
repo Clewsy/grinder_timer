@@ -23,11 +23,13 @@ ISR(BUTTON_PCI_VECTOR)
 	{
 		serial.print_string((char*)"LEFT\r\n");
 		oled.invert_screen(true);
+		oled.map_bits(LOGO_CLEWS, sizeof(LOGO_CLEWS));
 	}
 	else if (buttons.state(BUTTON_RIGHT))
 	{
 		serial.print_string((char*)"RIGHT\r\n");
 		oled.invert_screen(false);
+		oled.map_bits(LOGO_HAD, sizeof(LOGO_HAD));
 	}
 	else if (buttons.state(BUTTON_GRIND))
 	{
@@ -53,6 +55,7 @@ void hardware_init()
 
 	//Initialsie serial input/output (USART class).
 	serial.init();
+	serial.print_string((char*)"testing 123\r\n");
 
 	RELAY_DDR |= (1 << RELAY_PIN);
 
@@ -88,7 +91,6 @@ int main(void)
 
 	hardware_init();
 
-	serial.print_string((char*)"testing 123\r\n");
 
 
 	while (1)

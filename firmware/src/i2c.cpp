@@ -3,8 +3,8 @@
 //Initialise the I2C hardware.
 void i2c::init(void)
 {
-//	I2C_TWBR = 32;	//TWBR = 32 Gives SCL Frequency = 100kHz if F_CPU is 8MHz.
-	I2C_TWBR = 2;	//TWBR = 2 Gives SCL Frequency = 400kHz if F_CPU is 8MHz.
+	I2C_TWBR = 32;	//TWBR = 32 Gives SCL Frequency = 100kHz if F_CPU is 8MHz, 12.5kHz if F_CPU is 1MHz.
+//	I2C_TWBR = 2;	//TWBR = 2 Gives SCL Frequency = 400kHz if F_CPU is 8MHz, 50kHz if F_CPU is 1MHz.
 			//TWBR: TWI Bit-Rate Register - Used to set the TWI (I2C) Frequency (SCL).
 			//SCL frequency = (CPU Freq)/( 16 + 2*(TWBR)*(PrescalerValue)).
 			//Note, PrescalerValue default = 1, otherwise set in TWSR with bits TWPS[1:0].

@@ -74,17 +74,30 @@ void sh1106::set_address(uint8_t page, uint8_t column)
 	set_column(column);
 }
 
-void sh1106::clear_screen(void)
+//void sh1106::clear_screen(void)
+//{
+//	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_HORIZONTAL);	// Temporarily set memory addressing mode to Horizontal Mode.
+//	send_command(OLED_ADDRESS_PAGE, 0, 7);								// Set page address range.
+//	send_command(OLED_ADDRESS_COLUMN, 0, 127);							// Set column address range.
+//	
+//	for (uint8_t i = 0; i < 64; i++)	// Can send packets of maximum 16 bytes at a time.  Therefore need to repeat 64 times for all segments.
+//	{
+//		twi.start();
+//		twi.transmit(OLED_ADDR_WRITE);
+//		twi.transmit(OLED_CONTROL_BYTE_BULK_DATA);
+//		for (uint8_t j = 0; j < 16; j++)
+//		{
+//			twi.transmit(0b00000000);		// Segment index increases every write.
+//		}
+//		twi.stop();
+//	}
+//	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Reset memory addressing mode back to Page Mode.
+//}
+void sh1106::clear_screen()
 {
-	for (uint8_t page = 0; page < 8; page ++)
-	{
-		for (uint8_t col = 0; col < 128; col++)
-		{
-			set_address(page, col);
-			send_data(0x00);
-		}
-	}
+	map_bits(BLANK, sizeof(BLANK));
 }
+
 
 // Send a data byte - i.e. 8-bits to set/clear the 8 pixels at the current address.
 void sh1106::send_data(uint8_t data)
@@ -121,136 +134,65 @@ void sh1106::init(void)
 {
 	twi.init();
 
-//_delay_ms(500);	//At boot just give the capacitors a bit of time to charge up.
-
-
 //send_command(0xAE);
+send_command(OLED_OFF);
+
 //send_command(0xD5);
 //send_command(0x80);
+send_command(OLED_SET_DISPLAY_CLOCK, 0x00);
+
 //send_command(0xA8);
 //send_command(0x3F);
+send_command(OLED_SET_MULTIPLEX_RATIO, OLED_SET_MULTIPLEX_RATIO_DEFAULT);
+
 //send_command(0xD3);
 //send_command(0x00);
+send_command(OLED_SET_DISPLAY_OFFSET, OLED_SET_DISPLAY_OFFSET_DEFAULT);
+
 //send_command(0x40 | 0x00);
+send_command(OLED_SET_DISPLAY_START_LINE | 0x00);
+
 //send_command(0x8D);
-//send_command(0x10);
+//send_command(0x14);
+send_command(OLED_SET_CHARGE_PUMP, OLED_SET_CHARGE_PUMP_DEFAULT);
+
 //send_command(0x20);
 //send_command(0x00);
+send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_HORIZONTAL);
+
+
 //send_command(0xA0 | 0x1);
+send_command(OLED_SET_SEGMENT_REMAP_COL127);
+
+
 //send_command(0xC8);
+send_command(OLED_SET_COM_OUTPUT_SCAN_DIR_REVERSE);
+
 //send_command(0xDA);
 //send_command(0x12);
+send_command(OLED_SET_COM_PINS_HARDWARE_CONFIG, OLED_SET_COM_PINS_HARDWARE_CONFIG_DEFAULT);
+
 //send_command(0x81);
-//send_command(0x9F);
+//send_command(0xCF);   DEFAULT IS 0x7F
+send_command(OLED_SET_CONTRAST, OLED_SET_CONTRAST_DEFAULT);
+
 //send_command(0xD9);
-//send_command(0x22);
+//send_command(0xF1);	DEFAULT IS 0x22
+send_command(OLED_SET_CHARGE_PERIOD, 0xF1);
+
 //send_command(0xDB);
-//send_command(0x40);
+//send_command(0x40);	DEFAULT IS 0x35
+send_command(OLED_SET_VCOMH_DESELECT_LEVEL, 0x40);
+
 //send_command(0xA4);
+send_command(OLED_ALL_ON_RESUME);
+
 //send_command(0xA6);
+send_command(OLED_INVERSE_DISABLE);
+
 //send_command(0xAF);
-//send_command(0xA7);
+send_command(OLED_ON);
 
-
-send_command(0xAE);
-send_command(0xD5);
-send_command(0x80);
-send_command(0xA8);
-send_command(0x3F);
-send_command(0xD3);
-send_command(0x00);
-send_command(0x40 | 0x00);
-send_command(0x8D);
-send_command(0x14);
-send_command(0x20);
-send_command(0x00);
-send_command(0xA0 | 0x1);
-send_command(0xC8);
-send_command(0xDA);
-send_command(0x12);
-send_command(0x81);
-send_command(0xCF);
-send_command(0xD9);
-send_command(0xF1);
-send_command(0xDB);
-send_command(0x40);
-send_command(0xA4);
-send_command(0xA6);
-send_command(0xAF);
-//send_command(0xA7);
-
-
-//	send_command(OLED_SET_MULTIPLEX_RATIO, OLED_SET_MULTIPLEX_RATIO_DEFAULT);			// Set MUX ratio.
-//	send_command(OLED_SET_DISPLAY_OFFSET, OLED_SET_DISPLAY_OFFSET_DEFAULT);				// Set display offset.
-//	send_command(OLED_SET_DISPLAY_START_LINE);							// Set display start line.
-////	send_command(OLED_SET_SEGMENT_REMAP_COL0);							// Set segment re-map.  COL 0 is default.
-//	send_command(OLED_SET_SEGMENT_REMAP_COL127);							// Set segment re-map.  COL 0 is default.
-////	send_command(OLED_SET_COM_OUTPUT_SCAN_DIR_NORMAL);						// Set COM output scan direction.  Normal is default.
-//	send_command(OLED_SET_COM_OUTPUT_SCAN_DIR_REVERSE);						// Set COM output scan direction.  Normal is default.
-//	send_command(OLED_SET_COM_PINS_HARDWARE_CONFIG, OLED_SET_COM_PINS_HARDWARE_CONFIG_DEFAULT);	// Set COM pins hardware configuration.
-//	send_command(OLED_SET_CONTRAST, OLED_SET_CONTRAST_DEFAULT);					// Set contrast control.
-//	send_command(OLED_ALL_ON_RESUME);								// Disable entire display on.
-//	send_command(OLED_INVERSE_DISABLE);								// Set Normal display (i.e. not inverse).
-//	send_command(OLED_SET_DISPLAY_CLOCK, OLED_SET_DISPLAY_CLOCK_DEFAULT);				// Set Osc frequency.
-//	send_command(OLED_SET_CHARGE_PUMP, OLED_SET_CHARGE_PUMP_DEFAULT);				// Enable charge pump regulator.
-//	send_command(OLED_SET_PRECHARGE_PERIOD, OLED_SET_PRECHARGE_PERIOD_DEFAULT);			// Set charge pump pre-charge period.
-//	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Set memory addressing mode to Page Addressing Mode.
-//	send_command(OLED_ON);										// Turn display on.
-
-
-
-//	send_command(OLED_SET_MULTIPLEX_RATIO);			// Set MUX ratio.
-//	send_command(OLED_SET_MULTIPLEX_RATIO_DEFAULT);			// Set MUX ratio.
-//	send_command(OLED_SET_DISPLAY_OFFSET);				// Set display offset.
-//	send_command(OLED_SET_DISPLAY_OFFSET_DEFAULT);				// Set display offset.
-//	send_command(OLED_SET_DISPLAY_START_LINE);							// Set display start line.
-////	send_command(OLED_SET_SEGMENT_REMAP_COL0);							// Set segment re-map.  COL 0 is default.
-//	send_command(OLED_SET_SEGMENT_REMAP_COL127);							// Set segment re-map.  COL 0 is default.
-////	send_command(OLED_SET_COM_OUTPUT_SCAN_DIR_NORMAL);						// Set COM output scan direction.  Normal is default.
-//	send_command(OLED_SET_COM_OUTPUT_SCAN_DIR_REVERSE);						// Set COM output scan direction.  Normal is default.
-//	send_command(OLED_SET_COM_PINS_HARDWARE_CONFIG);	// Set COM pins hardware configuration.
-//	send_command(OLED_SET_COM_PINS_HARDWARE_CONFIG_DEFAULT);	// Set COM pins hardware configuration.
-//	send_command(OLED_SET_CONTRAST);					// Set contrast control.
-//	send_command(OLED_SET_CONTRAST_DEFAULT);					// Set contrast control.
-//	send_command(OLED_ALL_ON_RESUME);								// Disable entire display on.
-//	send_command(OLED_INVERSE_DISABLE);								// Set Normal display (i.e. not inverse).
-//	send_command(OLED_SET_DISPLAY_CLOCK);				// Set Osc frequency.
-//	send_command(OLED_SET_DISPLAY_CLOCK_DEFAULT);				// Set Osc frequency.
-//	send_command(OLED_SET_CHARGE_PUMP);				// Enable charge pump regulator.
-//	send_command(OLED_SET_CHARGE_PUMP_DEFAULT);				// Enable charge pump regulator.
-//	send_command(OLED_SET_PRECHARGE_PERIOD);			// Set charge pump pre-charge period.
-//	send_command(OLED_SET_PRECHARGE_PERIOD_DEFAULT);			// Set charge pump pre-charge period.
-//	send_command(OLED_SET_MEMORY_ADDRESSING_MODE);		// Set memory addressing mode to Page Addressing Mode.
-//	send_command(OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Set memory addressing mode to Page Addressing Mode.
-//	send_command(OLED_ON);										// Turn display on.
-
-
-
-
-
-
-
-
-//	send_command(OLED_OFF);										// Turn display off.
-//	send_command(OLED_SET_DISPLAY_CLOCK, OLED_SET_DISPLAY_CLOCK_DEFAULT);				// Set Osc frequency.
-//	send_command(OLED_SET_MULTIPLEX_RATIO, OLED_SET_MULTIPLEX_RATIO_DEFAULT);			// Set MUX ratio.
-//	send_command(OLED_SET_DISPLAY_OFFSET, OLED_SET_DISPLAY_OFFSET_DEFAULT);				// Set display offset.
-//	send_command(OLED_SET_DISPLAY_START_LINE);							// Set display start line.
-//	send_command(OLED_SET_CHARGE_PUMP, OLED_SET_CHARGE_PUMP_DEFAULT);				// Enable charge pump regulator.
-//	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_HORIZONTAL);		// Set memory addressing mode to Page Addressing Mode.
-//	send_command(OLED_SET_SEGMENT_REMAP_COL127);							// Set segment re-map.  COL 0 is default.
-//	send_command(OLED_SET_COM_OUTPUT_SCAN_DIR_REVERSE);						// Set COM output scan direction.  Normal is default.
-//	send_command(OLED_SET_COM_PINS_HARDWARE_CONFIG, OLED_SET_COM_PINS_HARDWARE_CONFIG_DEFAULT);	// Set COM pins hardware configuration.
-//	send_command(OLED_SET_CONTRAST, OLED_SET_CONTRAST_DEFAULT);					// Set contrast control.
-//	send_command(OLED_SET_PRECHARGE_PERIOD, OLED_SET_PRECHARGE_PERIOD_DEFAULT);			// Set charge pump pre-charge period.
-//send_command(OLED_SET_VCOMH_DESELECT_LEVEL, 0x20);
-//	send_command(OLED_ALL_ON_RESUME);								// Disable entire display on.
-//	send_command(OLED_INVERSE_DISABLE);								// Set Normal display (i.e. not inverse).
-//	send_command(OLED_ON);										// Turn display on.
-//
-//	send_command(0x00);
-//	send_command(0x10);
-//	send_command(0x40);
 
 }
 
@@ -311,7 +253,7 @@ void sh1106::test_pattern(void)
 //			twi.transmit(0b11111111);		// Segment index increases every write.
 		}
 		twi.stop();
-		_delay_ms(20);				// Delay for dramatic effect.
+//		_delay_ms(20);				// Delay for dramatic effect.
 	}
 	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Reset memory addressing mode back to Page Mode.
 }
@@ -396,37 +338,40 @@ void sh1106::test_pattern(void)
 //		character++;												// Increment to the next character in the string.
 //	}
 //}
-//
-//// Print a full-resolution (128x64) image to screen.
-//void ssd1306::map_bits(const uint8_t *bitmap, const uint16_t bitmap_size)
-//{
-//	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_HORIZONTAL);	// Temporarily set memory addressing mode to Horizontal Mode.
-//	send_command(OLED_ADDRESS_PAGE, 0, 7);								// Set page address range.
-//	send_command(OLED_ADDRESS_COLUMN, 0, 127);							// Set column address range.
-//
-//	uint16_t seg = 0;		// seg will increment for every segment sent to the OLED.
-//	while(seg < bitmap_size)	// Send every segment in the bitmap.
-//	{
-//		if(!(seg % 16))	// Can send bulk packets of maximum 16 bytes at a time.  Therefore need to restart every 16 transmissions.
-//		{
-//			Wire.endTransmission(OLED_ADDR);
-//			Wire.beginTransmission(OLED_ADDR);
-//			Wire.write(OLED_CONTROL_BYTE_BULK_DATA);
-//		}
-//		Wire.write(pgm_read_byte(&bitmap[seg]));	// Bitmap address increments 16 times in j loop, 64 times in i loop, total 1024 bytes.
-//		seg++;
-//	}
-//	while(seg < 1024)	// Bitmap may have had fewer than the total 1024 bytes so the rest should be zeros.
-//	{
-//		if(!(seg % 16))	// Can send bulk packets of maximum 16 bytes at a time.  Therefore need to restart every 16 transmissions.
-//		{
-//			Wire.endTransmission(OLED_ADDR);
-//			Wire.beginTransmission(OLED_ADDR);
-//			Wire.write(OLED_CONTROL_BYTE_BULK_DATA);
-//		}
-//		Wire.write(0x00);	// Just send zeros (blank segments).
-//		seg++;
-//	}
-//	Wire.endTransmission(OLED_ADDR);
-//
-//	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Reset memory addressing mode back to Page Mode.
+
+// Print a full-resolution (128x64) image to screen.
+void sh1106::map_bits(const uint8_t *bitmap, const uint16_t bitmap_size)
+{
+	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_HORIZONTAL);	// Temporarily set memory addressing mode to Horizontal Mode.
+	send_command(OLED_ADDRESS_PAGE, 0, 7);								// Set page address range.
+	send_command(OLED_ADDRESS_COLUMN, 0, 127);							// Set column address range.
+
+	uint16_t seg = 0;		// seg will increment for every segment sent to the OLED.
+	while(seg < bitmap_size)	// Send every segment in the bitmap.
+	{
+		if(!(seg % 16))	// Can send bulk packets of maximum 16 bytes at a time.  Therefore need to restart every 16 transmissions.
+		{
+			twi.stop();
+			twi.start();
+			twi.transmit(OLED_ADDR_WRITE);
+			twi.transmit(OLED_CONTROL_BYTE_BULK_DATA);
+		}
+		twi.transmit(pgm_read_byte(&bitmap[seg]));	// Bitmap address increments 16 times in j loop, 64 times in i loop, total 1024 bytes.
+		seg++;
+	}
+	while(seg < 1024)	// Bitmap may have had fewer than the total 1024 bytes so the rest should be zeros.
+	{
+		if(!(seg % 16))	// Can send bulk packets of maximum 16 bytes at a time.  Therefore need to restart every 16 transmissions.
+		{
+			twi.stop();
+			twi.start();
+			twi.transmit(OLED_ADDR_WRITE);
+			twi.transmit(OLED_CONTROL_BYTE_BULK_DATA);
+		}
+		twi.transmit(0x00);	// Just send zeros (blank segments).
+		seg++;
+	}
+	twi.stop();
+
+	send_command(OLED_SET_MEMORY_ADDRESSING_MODE, OLED_SET_MEMORY_ADDRESSING_MODE_DEFAULT);		// Reset memory addressing mode back to Page Mode.
+}

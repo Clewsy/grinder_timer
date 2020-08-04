@@ -1026,7 +1026,7 @@ U 1 1 5F144751
 P 2350 7050
 F 0 "S5" H 2450 7250 50  0000 C CNN
 F 1 "GRIND" H 2350 6950 50  0000 C CNN
-F 2 "" H 2350 7350 50  0001 C CNN
+F 2 "grinder_timer:tact_led" H 2350 7350 50  0001 C CNN
 F 3 "http://www.apem.com/int/index.php?controller=attachment&id_attachment=488" H 2350 7350 50  0001 C CNN
 	1    2350 7050
 	1    0    0    -1  
