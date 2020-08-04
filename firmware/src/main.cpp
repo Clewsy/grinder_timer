@@ -1,7 +1,6 @@
 #include "grinder_timer.h"
 
 
-
 ISR(BUTTON_PCI_VECTOR)
 {
 	buttons.disable();	//Disable button pin-change interrupt while this ISR is executed..
@@ -12,11 +11,24 @@ ISR(BUTTON_PCI_VECTOR)
 	{
 		serial.print_string((char*)"UP\r\n");
 		led.disable();
+		oled.test_pattern();
 //		RELAY_PORT &= ~(1 << RELAY_PIN);
 	}
-	else if (buttons.state(BUTTON_DOWN))	serial.print_string((char*)"DOWN\r\n");
-	else if (buttons.state(BUTTON_LEFT))	serial.print_string((char*)"LEFT\r\n");
-	else if (buttons.state(BUTTON_RIGHT))	serial.print_string((char*)"RIGHT\r\n");
+	else if (buttons.state(BUTTON_DOWN))
+	{
+		serial.print_string((char*)"DOWN\r\n");
+		oled.clear_screen();
+	}
+	else if (buttons.state(BUTTON_LEFT))
+	{
+		serial.print_string((char*)"LEFT\r\n");
+		oled.invert_screen(true);
+	}
+	else if (buttons.state(BUTTON_RIGHT))
+	{
+		serial.print_string((char*)"RIGHT\r\n");
+		oled.invert_screen(false);
+	}
 	else if (buttons.state(BUTTON_GRIND))
 	{
 		serial.print_string((char*)"GRIND\r\n");
@@ -38,6 +50,7 @@ ISR(TIMER_INT_VECTOR)
 
 void hardware_init()
 {
+
 	//Initialsie serial input/output (USART class).
 	serial.init();
 
@@ -55,8 +68,17 @@ void hardware_init()
 	pulse.init();
 	pulse.enable();
 
+
+//twi.init();
+//oled.invert_screen(true);
+//oled.test_pattern();
 	//Enable all interrupts.
 	sei();
+
+oled.init();
+oled.test_pattern();
+oled.clear_screen();
+
 }
 
 

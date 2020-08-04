@@ -1,5 +1,7 @@
 //Definitions and declarations used for serial communications via USART
 
+//#define F_CPU 8000000
+
 #ifndef BAUD		//If BAUD isn't already defined,
 #define BAUD  9600	//Set BAUD to 9600.
 #endif

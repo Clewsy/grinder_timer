@@ -1,8 +1,13 @@
+//#include <avr/power.h>	//To set the clock prescaler in code.
+
 
 #include "usart.h"
 #include "keypad.h"
 #include "pwm.h"
 #include "timer.h"
+//#include "i2c.h"
+#include "sh1106.h"
+
 
 #define RELAY_PORT	PORTC
 #define RELAY_DDR	DDRC
@@ -16,3 +21,4 @@ keypad buttons;
 usart serial;
 pwm led;
 timer pulse;
+sh1106 oled;
