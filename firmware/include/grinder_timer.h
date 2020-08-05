@@ -1,11 +1,7 @@
-//#include <avr/power.h>	//To set the clock prescaler in code.
-
-
-#include "usart.h"
+//#include "usart.h"
 #include "keypad.h"
 #include "pwm.h"
 #include "timer.h"
-//#include "i2c.h"
 #include "sh1106.h"
 
 
@@ -18,7 +14,7 @@
 int8_t pulse_dir = -1;
 
 keypad buttons;
-usart serial;
+//usart serial;
 pwm led;
 timer pulse;
 sh1106 oled;

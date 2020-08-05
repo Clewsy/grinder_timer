@@ -3,44 +3,45 @@
 
 ISR(BUTTON_PCI_VECTOR)
 {
-	buttons.disable();	//Disable button pin-change interrupt while this ISR is executed..
+	buttons.disable();	// Disable button pin-change interrupt while this ISR is executed..
 
-	_delay_ms(BUTTON_DEBOUNCE_MS);	//Wait for the button de-bounce duration.
+	_delay_ms(BUTTON_DEBOUNCE_MS);	// Wait for the button de-bounce duration.
 
 	if (buttons.state(BUTTON_UP))
 	{
-		serial.print_string((char*)"UP\r\n");
+		pulse.disable();
 		led.disable();
-		oled.test_pattern();
+		oled.test_pattern(0b01010101);
 //		RELAY_PORT &= ~(1 << RELAY_PIN);
 	}
 	else if (buttons.state(BUTTON_DOWN))
 	{
-		serial.print_string((char*)"DOWN\r\n");
+		pulse.disable();
+		led.disable();
 		oled.clear_screen();
 	}
 	else if (buttons.state(BUTTON_LEFT))
 	{
-		serial.print_string((char*)"LEFT\r\n");
-		oled.invert_screen(true);
+		pulse.disable();
+		led.disable();
 		oled.map_bits(LOGO_CLEWS, sizeof(LOGO_CLEWS));
 	}
 	else if (buttons.state(BUTTON_RIGHT))
 	{
-		serial.print_string((char*)"RIGHT\r\n");
-		oled.invert_screen(false);
+		pulse.disable();
+		led.disable();
 		oled.map_bits(LOGO_HAD, sizeof(LOGO_HAD));
 	}
 	else if (buttons.state(BUTTON_GRIND))
 	{
-		serial.print_string((char*)"GRIND\r\n");
+		pulse.enable();
 		led.enable();
 //		RELAY_PORT |= (1 << RELAY_PIN);
 	}	
 
-	while (~BUTTON_PINS & BUTTON_MASK) {}	//Wait until all buttons are released.
+	while (~BUTTON_PINS & BUTTON_MASK) {}	// Wait until all buttons are released.
 
-	buttons.enable();	//Re-enable button pin-change interrupt.
+	buttons.enable();	// Re-enable button pin-change interrupt.
 
 }
 
@@ -53,50 +54,53 @@ ISR(TIMER_INT_VECTOR)
 void hardware_init()
 {
 
-	//Initialsie serial input/output (USART class).
-	serial.init();
-	serial.print_string((char*)"testing 123\r\n");
+	// Initialsie serial input/output (USART class).
+//	serial.init();
+//	serial.print_string((char*)"testing 123\r\n");
 
 	RELAY_DDR |= (1 << RELAY_PIN);
 
-	//Initialise then enable the buttons (keypad class).
+	// Initialise then enable the buttons (keypad class).
 	buttons.init();	
 	buttons.enable();
 
-	//Initialise then enable the led (pwm class).
+	// Initialise then enable the led (pwm class).
 	led.init();
 	led.enable();
 
-	//Initialise then enable the led pulse effect (timer class).
+	// Initialise then enable the led pulse effect (timer class).
 	pulse.init();
 	pulse.enable();
 
+	// Initialise the OLED display and show a splash-screen of sorts.
+	oled.init();
+	oled.test_pattern(0b00110011, 1);
+	oled.clear_screen();
+	oled.draw_box(0, 0, 8, 128);
+	oled.print_string((unsigned char*)"grind(coffee);", Roboto_Black_12, 3, 26);
+	oled.scroll(SCROLL_DN, 8, 1);
+	oled.scroll(SCROLL_UP, 8, 1);
+	oled.scroll(SCROLL_DN, 4, 2);
+	oled.scroll(SCROLL_UP, 4, 2);
+	oled.scroll(SCROLL_DN, 2, 4);
+	oled.scroll(SCROLL_UP, 2, 4);
+	oled.scroll(SCROLL_DN, 1, 8);
+	oled.scroll(SCROLL_UP, 1, 8);
 
-//twi.init();
-//oled.invert_screen(true);
-//oled.test_pattern();
-	//Enable all interrupts.
+	// Globally enable all interrupts.
 	sei();
-
-oled.init();
-oled.test_pattern();
-oled.clear_screen();
-
 }
 
 
 
 int main(void)
 {
-
 	hardware_init();
 
-
-
-	while (1)
+	while(1)
 	{
 		//Driven by interrupts.
 	}
 
-	return 0;	//Never reached.
+	return(7);
 }
