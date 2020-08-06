@@ -2,6 +2,7 @@
 #include "keypad.h"
 #include "pwm.h"
 #include "timer.h"
+#include "clock.hpp"
 #include "sh1106.h"
 
 
@@ -17,4 +18,5 @@ keypad buttons;
 //usart serial;
 pwm led;
 timer pulse;
+clock rtc;
 sh1106 oled;

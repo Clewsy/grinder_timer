@@ -1,6 +1,5 @@
 #include "grinder_timer.h"
 
-
 ISR(BUTTON_PCI_VECTOR)
 {
 	buttons.disable();	// Disable button pin-change interrupt while this ISR is executed..
@@ -47,8 +46,27 @@ ISR(BUTTON_PCI_VECTOR)
 
 ISR(TIMER_INT_VECTOR)
 {
-	if ((led.get() == MAX_BRIGHTNESS) || (led.get() == 0)) pulse_dir *= -1;	//Reverse the pulse direction at either end of the count.
-	led.set(led.get() + pulse_dir);						//Update the led brightness.
+	if ((led.get() == MAX_BRIGHTNESS) || (led.get() == 0)) pulse_dir *= -1;	// Reverse the pulse direction at either end of the count.
+	led.set(led.get() + pulse_dir);						// Update the led brightness.
+}
+
+char c = ' ';
+ISR(CLOCK_INT_VECTOR)
+{
+	oled.print_char(c, Roboto_Black_12, 5, 20);
+	c++;
+}
+
+void splash(void)
+{
+	oled.test_pattern(0b00110011, 1);
+	oled.clear_screen();
+	oled.draw_box(0, 0, 8, 128);
+	oled.print_string((unsigned char*)"grind(coffee);", Roboto_Black_12, 3, 26);
+	oled.scroll(SCROLL_DN, 8, 1);
+	oled.scroll(SCROLL_DN, 4, 2);
+	oled.scroll(SCROLL_DN, 2, 4);
+	oled.scroll(SCROLL_DN, 1, 8);
 }
 
 void hardware_init()
@@ -72,20 +90,12 @@ void hardware_init()
 	pulse.init();
 	pulse.enable();
 
+	// Initialise the real-time clock.
+	rtc.init();
+	rtc.enable();
+
 	// Initialise the OLED display and show a splash-screen of sorts.
 	oled.init();
-	oled.test_pattern(0b00110011, 1);
-	oled.clear_screen();
-	oled.draw_box(0, 0, 8, 128);
-	oled.print_string((unsigned char*)"grind(coffee);", Roboto_Black_12, 3, 26);
-	oled.scroll(SCROLL_DN, 8, 1);
-	oled.scroll(SCROLL_UP, 8, 1);
-	oled.scroll(SCROLL_DN, 4, 2);
-	oled.scroll(SCROLL_UP, 4, 2);
-	oled.scroll(SCROLL_DN, 2, 4);
-	oled.scroll(SCROLL_UP, 2, 4);
-	oled.scroll(SCROLL_DN, 1, 8);
-	oled.scroll(SCROLL_UP, 1, 8);
 
 	// Globally enable all interrupts.
 	sei();
@@ -96,6 +106,8 @@ void hardware_init()
 int main(void)
 {
 	hardware_init();
+
+	splash();
 
 	while(1)
 	{
