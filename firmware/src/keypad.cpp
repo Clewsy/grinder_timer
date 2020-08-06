@@ -1,4 +1,4 @@
-#include "keypad.h"
+#include "keypad.hpp"
 
 // Initialise the keypad hardware.
 void keypad::init(void)

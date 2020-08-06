@@ -1,4 +1,4 @@
-#include "i2c.h"
+#include "i2c.hpp"
 
 // Initialise the I2C hardware.
 void i2c::init(void)

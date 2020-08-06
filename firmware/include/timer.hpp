@@ -1,6 +1,7 @@
-#include <stdint.h>
+// Header file to define a generic hardware timer that triggers an interrupt sub-routine.
+
 #include <avr/io.h>
-#include <avr/interrupt.h>	//For using inetrrupt registers and sub-routine vectors.
+#include <avr/interrupt.h>	//For using interrupt sub-routine vectors.
 
 #define TIMER_TCCRA		TCCR1A	//Timer/Counter Control Register A
 #define TIMER_TCCRB		TCCR1B	//Timer/Counter Control Register B

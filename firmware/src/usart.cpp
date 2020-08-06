@@ -1,6 +1,6 @@
-//Functions used for serial communications via USART
+// Functions used for serial communications via USART
 
-#include <usart.h>
+#include <usart.hpp>
 
 //Initialise the hardware to use the USART peripheral.
 void usart::init(void)

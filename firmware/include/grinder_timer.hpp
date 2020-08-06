@@ -1,9 +1,11 @@
 //#include "usart.h"
-#include "keypad.h"
-#include "pwm.h"
-#include "timer.h"
+#include "keypad.hpp"
+#include "pwm.hpp"
+#include "timer.hpp"
 #include "clock.hpp"
-#include "sh1106.h"
+#include "sh1106.hpp"
+
+#define BUTTON_DEBOUNCE_MS	10	// Button de-bounce duration in milliseconds.
 
 
 #define RELAY_PORT	PORTC

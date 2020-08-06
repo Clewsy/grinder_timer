@@ -1,14 +1,11 @@
-//Definitions and declarations used for serial communications via USART
+// Header file for defining a hardware serial comms receiver/transmitter.
 
-//#define F_CPU 8000000
+#include <avr/io.h>		//Needed to identify AVR registers and bits.
+#include <util/setbaud.h>	//Used to caluculate Usart Baud Rate Register (High and Low) values as a function of F_CPU and BAUD
 
 #ifndef BAUD		//If BAUD isn't already defined,
 #define BAUD  9600	//Set BAUD to 9600.
 #endif
-
-#include <stdint.h>		//Defines integer types such as uint8_t.
-#include <avr/io.h>		//Needed to identify AVR registers and bits.
-#include <util/setbaud.h>	//Used to caluculate Usart Baud Rate Register (High and Low) values as a function of F_CPU and BAUD
 
 //Define a USART universal synchronous/asynchronous receiver/transmitter serial peripheral.
 class usart

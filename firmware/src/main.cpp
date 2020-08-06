@@ -1,4 +1,4 @@
-#include "grinder_timer.h"
+#include "grinder_timer.hpp"
 
 ISR(BUTTON_PCI_VECTOR)
 {

@@ -1,4 +1,4 @@
-#include "pwm.h"
+#include "pwm.hpp"
 
 void pwm::init(void)
 {

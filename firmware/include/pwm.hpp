@@ -1,10 +1,7 @@
-//Header file for pwm output.
+// Header file for defineing a hardware timer/counter to generate a pwm output.
 
-#include <stdint.h>
 #include <avr/io.h>
-#include <avr/interrupt.h>	//For using inetrrupt registers and sub-routine vectors.
-#include <util/delay.h>		//Needed to use _delau_ms() for de-bouncing buttons.
-
+#include <avr/interrupt.h>	//For using interrupt sub-routine vectors.
 
 #define PWM_PIN		PD2	//In PWM mode, using PD3 as OC3B.
 #define PWM_PORT	PORTD	//IO Port that includes the PWM pin.

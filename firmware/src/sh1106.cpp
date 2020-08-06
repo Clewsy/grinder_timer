@@ -1,4 +1,4 @@
-#include "sh1106.h"
+#include "sh1106.hpp"
 
 ///////////////////////////////////
 ///// Begin Private Functions /////

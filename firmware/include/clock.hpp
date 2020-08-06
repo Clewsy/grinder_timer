@@ -1,4 +1,8 @@
+// Header file for configuring an asynchronous hardware timer to operate as a real-time clock.
+// Uses an externally connected 32.768kHz crystal oscillator.
+
 #include <avr/io.h>
+#include <avr/interrupt.h>	//For using interrupt sub-routine vectors.
 
 #define CLOCK_TIMSK	TIMSK2	// Timer/Counter 2 Interrupt Mask Register.
 #define CLOCK_ASSR	ASSR	// Asynchronous Status Register.
@@ -23,7 +27,7 @@
 #define CLOCK_CS1	CS21	// TCCR2B Clock Select Bit 1.
 #define CLOCK_CS0	CS20	// TCCR2B Clock Select Bit 0.
 
-#define CLOCK_INT_VECTOR	TIMER2_OVF_vect
+#define CLOCK_INT_VECTOR	TIMER2_OVF_vect	// Interrupt Sub-Routine ISR vector.
 
 class clock
 {

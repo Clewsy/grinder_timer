@@ -1,8 +1,9 @@
-#include <stdint.h>
-#include <util/delay.h>
+// Header file for using a 128x64 pixel OLED display with an SH1106 driver.
+
 #include <avr/io.h>
-#include <avr/pgmspace.h>
-#include "i2c.h"
+#include <util/delay.h>		// Included as _delay_ms() is used for some animation effects.
+#include <avr/pgmspace.h>	// Required for reading from program memory - fonts and bitmaps.
+#include "i2c.hpp"		// OLED hardware configured for I2C comms.
 #include "sh1106_fonts.h"
 #include "sh1106_bitmaps.h"
 
