@@ -2,17 +2,24 @@
 
 void timer::init(void)
 {
-//	TIMER_TCCRB |= ((1 << TIMER_WGM2) | (1 << TIMER_CS2) | (1 << TIMER_CS0));	// Nice slow pulse with F_CPU=8MHz
-	TIMER_TCCRB |= ((1 << TIMER_WGM2) | (1 << TIMER_CS2));				// Nice slow pulse with F_CPU=1MHz
+	// WGM[3:0] set to 0100 : CTC mode, counts from 0 to value of output compare register.
+	// COM[1:0] set to 00 : Normal pin modes - not connected to timer.
+	// CS[2:0] set to 001 : clk/1 (no prescaling).
+	TIMER_TCCRB |= ((1 << TIMER_WGM2) | (1 << TIMER_CS1));
+
+	// Set the value of the output compare register (16-bit register).
+	// Use this value to determine the pulse "speed".
 	TIMER_SET_REG = TIMER_SET_VAL;
 }
 
 void timer::enable(void)
 {
-	TIMER_TIMSK |= (1 << OCIE1A);
+	// Enable the output compare interrupt.
+	TIMER_TIMSK |= (1 << TIMER_IE);
 }
 
 void timer::disable(void)
 {
-	TIMER_TIMSK &= ~(1 << OCIE1A);
+	// Disable the output compare interrupt.
+	TIMER_TIMSK &= ~(1 << TIMER_IE);
 }

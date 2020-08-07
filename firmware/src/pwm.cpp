@@ -2,30 +2,39 @@
 
 void pwm::init(void)
 {
-	PWM_DDR |= (1 << PWM_PIN);	//Set as an output the pin to which the LED is connected.
+	// Set as an output the pin to which the LED is connected.
+	PWM_DDR |= (1 << PWM_PIN);
 
-	PWM_TCCRA |= (1 << PWM_COM1);	//Set the Timer/Counter Control Registers (A and B).
-	PWM_TCCRA |= (1 << PWM_WGM0);
-	PWM_TCCRB |= (1 << PWM_WGM2);
-	PWM_TCCRB |= (1 << PWM_CS1);
+	// WGM[3:0] set to 0101 : Fast PWM 8-bit.
+	// COM[1:0] set to 10 : Clear on compare match, set at bottom (non-inverting mode).
+	// CS[2:0] set to 010 : clk/8 (from prescaler).
+	PWM_TCCRA |= ((1 << PWM_COM1) | (1 << PWM_WGM0));
+	PWM_TCCRB |= ((1 << PWM_WGM2) | (1 << PWM_CS1));
+
+	// When initialised, duty cycle will be at a known value.
+	PWM_SET = 0x00;
 }
 
 void pwm::enable(void)
 {
-	PWM_PORT |= (1 << PWM_PIN);	//Set the PWM pin to enable the PWM output.
+	// Set the PWM pin to enable the PWM output.
+	PWM_PORT |= (1 << PWM_PIN);
 }
 
 void pwm::disable(void)
 {
-	PWM_PORT &= ~(1 << PWM_PIN);	//Clear the PWM pin to disable the PWM output.
+	// Clear the PWM pin to disable the PWM output.
+	PWM_PORT &= ~(1 << PWM_PIN);
 }
 
 void pwm::set(uint8_t duty)
 {
-	PWM_SET = duty;		//Set the 8-bit duty cycle value: 0 to 255.
+	// Set the 8-bit duty cycle value: 0 to 255.
+	PWM_SET = duty;
 }
 
 uint8_t pwm::get(void)
 {
+	// Return the current duty cycle value: 0 to 255.
 	return PWM_SET;
 }

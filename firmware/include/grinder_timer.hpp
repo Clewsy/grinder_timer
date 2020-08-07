@@ -17,7 +17,7 @@
 
 // The value of pulse_dir switches between 1 and -1.
 // Enables tracking of the LED pulse effect, i.e. 1:getting brighter, 2:getting dimmer.
-int8_t pulse_dir = 1;
+int8_t pulse_dir = -1;
 
 // Initialise the various classes used.
 keypad buttons;	// 5-button keypad.

@@ -51,14 +51,14 @@ ISR(TIMER_INT_VECTOR)
 ISR(CLOCK_INT_VECTOR)
 {
 	counter++;
-//	if(counter == 480) counter = 0;	// Timer resets at 480 counts = 30 seconds.
+//	if(counter == 480) counter = 0;		// Timer resets at 480 counts = 30 seconds.
 	if(counter == 1600) counter = 0;	// Timer resets at 480 counts = 100 seconds.
 
 	unsigned char digits_string[6] = {'0', '0', '.', '0', '0', 0};
-	digits_string[0] = (((counter >> 4) / 10) + '0');
-	digits_string[1] = (((counter >> 4) % 10) + '0');
-	digits_string[3] = (((uint16_t)(counter * 0.625) % 10) + '0');
-	digits_string[4] = (((uint16_t)(counter * 6.25) % 10) + '0');
+	digits_string[0] = (((counter >> 4) / 10) + '0');		// Convert counter value 10s to ascii.
+	digits_string[1] = (((counter >> 4) % 10) + '0');		// Convert counter value 1s to ascii.
+	digits_string[3] = (((uint16_t)(counter * 0.625) % 10) + '0');	// Convert counter value 10ths to ascii.
+	digits_string[4] = (((uint16_t)(counter * 6.25) % 10) + '0');	// Convert counter value 100ths to ascii.
 
 	oled.print_string(digits_string, DSEG7_Classic_Bold_32, 3, 5);
 }
@@ -73,7 +73,6 @@ void splash(void)
 	oled.scroll(SCROLL_DN, 4, 2);
 	oled.scroll(SCROLL_DN, 2, 4);
 	oled.scroll(SCROLL_DN, 1, 8);
-	oled.scroll(SCROLL_UP, 1, 8);
 }
 
 void hardware_init()
