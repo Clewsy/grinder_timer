@@ -48,18 +48,19 @@ ISR(TIMER_INT_VECTOR)
 }
 
 
-uint16_t counter = 0;
-unsigned char digits_string[6] = {'0', '0', '.', '0', '0', 0};
 ISR(CLOCK_INT_VECTOR)
 {
 	counter++;
-	if(counter == 480) counter = 0;
+//	if(counter == 480) counter = 0;	// Timer resets at 480 counts = 30 seconds.
+	if(counter == 1600) counter = 0;	// Timer resets at 480 counts = 100 seconds.
+
+	unsigned char digits_string[6] = {'0', '0', '.', '0', '0', 0};
 	digits_string[0] = (((counter >> 4) / 10) + '0');
 	digits_string[1] = (((counter >> 4) % 10) + '0');
 	digits_string[3] = (((uint16_t)(counter * 0.625) % 10) + '0');
 	digits_string[4] = (((uint16_t)(counter * 6.25) % 10) + '0');
 
-	oled.print_string(digits_string, DSEG7_Classic_Bold_32, 1, 0);
+	oled.print_string(digits_string, DSEG7_Classic_Bold_32, 3, 5);
 }
 
 void splash(void)
@@ -84,9 +85,8 @@ void hardware_init()
 
 	RELAY_DDR |= (1 << RELAY_PIN);
 
-	// Initialise then enable the buttons (keypad class).
+	// Initialise the buttons (keypad class).
 	buttons.init();	
-	buttons.enable();
 
 	// Initialise then enable the led (pwm class).
 	led.init();
@@ -96,10 +96,10 @@ void hardware_init()
 	pulse.init();
 //	pulse.enable();
 
-	// Initialise the real-time clock.
+	// Initialise the real-time clock (clock class).
 	rtc.init();
 
-	// Initialise the OLED display and show a splash-screen of sorts.
+	// Initialise the OLED display (sh1106 class)
 	oled.init();
 
 	// Globally enable all interrupts.
@@ -113,6 +113,8 @@ int main(void)
 	hardware_init();
 
 	splash();
+
+	buttons.enable();
 
 	while(1)
 	{

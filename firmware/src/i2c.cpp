@@ -3,13 +3,6 @@
 // Initialise the I2C hardware.
 void i2c::init(void)
 {
-
-//	I2C_PORT |= ((1 << I2C_SDA_PIN) | (1 << I2C_SCL_PIN));	// Enable Internal pull-up resistors.  Can be implemented in hardware.
-
-//I2C_TWSR |= ((1 << ))
-
-
-
 //	I2C_TWBR = 32;	// TWBR = 32 Gives SCL Frequency = 100kHz if F_CPU is 8MHz, 12.5kHz if F_CPU is 1MHz.
 	I2C_TWBR = 2;	// TWBR = 2 Gives SCL Frequency = 400kHz if F_CPU is 8MHz, 50kHz if F_CPU is 1MHz.
 			// TWBR: TWI Bit-Rate Register - Used to set the TWI (I2C) Frequency (SCL).
