@@ -87,7 +87,8 @@ void sh1106::init(void)
 	send_command(OLED_SET_SEGMENT_REMAP_COL127);
 	send_command(OLED_SET_COM_OUTPUT_SCAN_DIR_REVERSE);
 	send_command(OLED_SET_COM_PINS_HARDWARE_CONFIG, OLED_SET_COM_PINS_HARDWARE_CONFIG_DEFAULT);
-	send_command(OLED_SET_CONTRAST, OLED_SET_CONTRAST_DEFAULT);
+//	send_command(OLED_SET_CONTRAST, OLED_SET_CONTRAST_DEFAULT);
+	send_command(OLED_SET_CONTRAST, 0x70);
 	send_command(OLED_SET_CHARGE_PERIOD, OLED_SET_CHARGE_PERIOD_VALUE);
 	send_command(OLED_SET_VCOMH_DESELECT_LEVEL, OLED_SET_VCOMH_DESELECT_LEVEL_DEFAULT);
 	send_command(OLED_ALL_ON_RESUME);
@@ -109,7 +110,6 @@ void sh1106::invert_screen(bool invert)
 {
 	send_command(OLED_INVERSE_DISABLE + invert);
 }
-
 
 // Take a character, obtain the character map data from the defined font, and print that character to the defined co-ordinates.
 // Note, the string must be an array of unsigned characters.  Unsigned allows character integer values up to 255, instead of just 127.
@@ -260,31 +260,21 @@ void sh1106::test_pattern(uint8_t pattern, uint8_t delay)
 }
 
 // Vertical scrolling effect.
-// "sdirection" is either SCROLL_UP or SCROL_DN.
+// "direction" is either SCROLL_UP or SCROL_DN.
 // "iterations" is how many times to scroll the full screen.
 // "delay" is the duration in milliseconds between each offset change.
 void sh1106::scroll(int8_t direction, uint8_t iterations, uint8_t delay)
 {
 	for(uint8_t i = 0; i < iterations; i++)
 	{
-		if(direction == SCROLL_UP)
+		// Valid values for "direction" are -1 (=SCROLL_DN) or 1 (SCROLL_UP).
+		// Therefore, the following for loop will be equivalent to either of the following:
+		// SCROLL_UP:	for(int8_t j = 0; j != 64; j++)		i.e. count from 00 to 64.
+		// SCROLL_DN:	for(int8_t j = 64; j != 0; j--)		i.e. count from 64 to 00.
+		for(int8_t j = ((direction - 1) * -32); j != ((1 + direction) * 32); j += direction)
 		{
-			for(uint8_t j = 0; j < 64; j++)
-			{
-				send_command(OLED_SET_DISPLAY_START_LINE | j);
-				for(uint8_t d = delay; d > 0; d--) _delay_ms(1);
-			}
-			send_command(OLED_SET_DISPLAY_START_LINE | 0x00);
-		}
-
-		if(direction == SCROLL_DN)
-		{
-			for(uint8_t j = 64; j > 0; j--)
-			{
-				send_command(OLED_SET_DISPLAY_START_LINE | j);
-				for(uint8_t d = delay; d > 0; d--) _delay_ms(1);
-			}
-			send_command(OLED_SET_DISPLAY_START_LINE | 0x00);
+			send_command(OLED_SET_DISPLAY_START_LINE | (j + direction));
+			for(uint8_t d = delay; d > 0; d--) _delay_ms(1);
 		}
 	}
 }

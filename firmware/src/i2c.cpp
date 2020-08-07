@@ -3,7 +3,12 @@
 // Initialise the I2C hardware.
 void i2c::init(void)
 {
-	I2C_PORT |= ((1 << I2C_SDA_PIN) | (1 << I2C_SCL_PIN));	// Enable Pull-Ups.  Can be implemented in hardware.
+
+//	I2C_PORT |= ((1 << I2C_SDA_PIN) | (1 << I2C_SCL_PIN));	// Enable Internal pull-up resistors.  Can be implemented in hardware.
+
+//I2C_TWSR |= ((1 << ))
+
+
 
 //	I2C_TWBR = 32;	// TWBR = 32 Gives SCL Frequency = 100kHz if F_CPU is 8MHz, 12.5kHz if F_CPU is 1MHz.
 	I2C_TWBR = 2;	// TWBR = 2 Gives SCL Frequency = 400kHz if F_CPU is 8MHz, 50kHz if F_CPU is 1MHz.
@@ -47,7 +52,6 @@ void i2c::send_byte(uint8_t address)
 // Wait until the TWI (I2C) interrupt flag is set indicating an operation has just completed.
 void i2c::wait_for_complete(void)
 {
-//OCR3B = 255;
 	while(!(TWCR0 & (1 << TWINT))) {}	// Loop until current TWI (I2C) operation is complete (bit is set).
 						// TWINT: TWI Interrupt Flag - Set flag indicates current job has finished.
 						// Note, TWINT must be cleared by software - this indicates start of next operation.

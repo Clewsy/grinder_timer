@@ -41,8 +41,9 @@
 #define OLED_SET_DISPLAY_CLOCK_DEFAULT			0x00	//* I.e. default settings osc freq 0b10000, divide ratio 1.
 #define OLED_SET_CHARGE_PUMP				0x8D	//* Enable or disable inetrnal charge pump regulator with the next byte.
 #define OLED_SET_CHARGE_PUMP_DEFAULT			0x14	//* Enable by default - 0x14.  (Use 0x10 to disable).
-#define OLED_SET_CHARGE_PERIOD				0xD9	//* Set pre-charge and dis-charge periods with next byte.  Default is 0b10000000 = 0x80
-#define OLED_SET_CHARGE_PERIOD_VALUE			0x22	//* I.e. Phase 1 period 0x2, phase 2 period 0x2.
+#define OLED_SET_CHARGE_PERIOD				0xD9	//* Set pre-charge and dis-charge periods with next byte.
+#define OLED_SET_CHARGE_PERIOD_VALUE			0x22	//* Default is 0x22, i.e. Dis-charge period 0x2 cycles, Pre-charge period 0x2 cycles.
+//#define OLED_SET_CHARGE_PUMP_VOLTAGE			0x32	// 0x30 OR'd with 0x0 to 0x3 to set 6.4V, 7.4V, 8.0V (default) or 9.0V.
 #define OLED_SET_VCOMH_DESELECT_LEVEL			0xDB	// Set Vcomh deselect voltage level with next byte (default 0b00100000 = 0x20).
 #define OLED_SET_VCOMH_DESELECT_LEVEL_DEFAULT		0x35	// I.e. ~0.77xVcc.
 #define OLED_NO_OP					0xE3	// Command for no operation.
@@ -50,8 +51,8 @@
 #define OLED_ADDRESS_FIRST_COLUMN_HIGHER		0x10	// Command to set higher nibble of column address to first column.  Or with higher nibble of column 0 to 127.
 #define OLED_ADDRESS_FIRST_PAGE				0xB0	// Command to set address to first page.  Or with 0 to 7 to set address to pages 0 to 7.
 
-#define SCROLL_UP	0	// Used with the scroll function - will scroll the screen upwards.
-#define SCROLL_DN	1	// Used with the scroll function - will scroll the screen downwards.
+#define SCROLL_UP	1	// Used with the scroll function - will scroll the screen upwards.
+#define SCROLL_DN	-1	// Used with the scroll function - will scroll the screen downwards.
 
 // Define class for an oled display with onboard sh1106 driver.
 class sh1106
