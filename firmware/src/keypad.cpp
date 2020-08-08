@@ -20,7 +20,7 @@ void keypad::disable(void)
 	PCICR &= ~(1 << BUTTON_PCIE);	// PCICR: Pin Change Interrupt Control Register.
 }
 
-// Returns true (i.e. 1) if button is pressed.
+// Returns true (i.e. 1) if "button" is pressed.
 bool keypad::state(uint8_t button)
 {
 	return ((~BUTTON_PINS & (1 << button)) >> button);

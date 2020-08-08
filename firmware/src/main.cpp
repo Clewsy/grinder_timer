@@ -68,7 +68,7 @@ void splash(void)
 	oled.test_pattern(0b00110011, 1);
 	oled.clear_screen();
 	oled.draw_box(0, 0, 8, 128);
-	oled.print_string((unsigned char*)"grind(coffee);", Roboto_Black_12, 3, 26);
+	oled.print_string((unsigned char*)"grind(coffee);", Roboto_Mono_12, 3, 15);
 	oled.scroll(SCROLL_DN, 8, 1);
 	oled.scroll(SCROLL_DN, 4, 2);
 	oled.scroll(SCROLL_DN, 2, 4);
@@ -77,10 +77,9 @@ void splash(void)
 
 void hardware_init()
 {
-
 	// Initialsie serial input/output (USART class).
 //	serial.init();
-//	serial.print_string((char*)"testing 123\r\n");
+//	serial.print_string((char*)"grind(coffee);\r\n");
 
 	RELAY_DDR |= (1 << RELAY_PIN);
 

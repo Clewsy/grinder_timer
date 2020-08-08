@@ -1,4 +1,4 @@
-//#include "usart.h"
+//#include "usart.hpp"
 #include "keypad.hpp"
 #include "pwm.hpp"
 #include "timer.hpp"
@@ -20,8 +20,8 @@
 int8_t pulse_dir = -1;
 
 // Initialise the various classes used.
-keypad buttons;	// 5-button keypad.
 //usart serial;	// Serial interface - really only used for debugging.
+keypad buttons;	// 5-button keypad.
 pwm led;	// LED is connected to a pwm output to enable variable brightness.
 timer pulse;	// A timer is used to create a pulsing effectwith the LED. 
 clock rtc;	// A real-time clock (using an external 32.768kHz crystal) is used for acurate timing.
