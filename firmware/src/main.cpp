@@ -60,12 +60,13 @@ ISR(CLOCK_INT_VECTOR)
 	digits_string[3] = (((uint16_t)(counter * 0.625) % 10) + '0');	// Convert counter value 10ths to ascii.
 	digits_string[4] = (((uint16_t)(counter * 6.25) % 10) + '0');	// Convert counter value 100ths to ascii.
 
+	oled.print_string((unsigned char*)"ABCDEFGH", Preset_Icons, 0, 0);
 	oled.print_string(digits_string, DSEG7_Classic_Bold_32, 3, 5);
 }
 
 void splash(void)
 {
-	oled.test_pattern(0b00110011, 1);
+//	oled.test_pattern(0b00110011, 1);
 	oled.clear_screen();
 	oled.draw_box(0, 0, 8, 128);
 	oled.print_string((unsigned char*)"grind(coffee);", Roboto_Mono_12, 3, 15);
