@@ -81,12 +81,13 @@ void refresh_preset_menu(void)
 void splash(void)
 {
 //	oled.test_pattern(0b00110011, 1);
+
 	oled.map_bits(LOGO_CLEWS, sizeof(LOGO_CLEWS));
 	_delay_ms(500);
 	oled.map_bits(LOGO_HAD, sizeof(LOGO_HAD));
 	_delay_ms(500);
 	oled.clear_screen();
-	oled.draw_box(0, 0, 8, 128);
+	oled.draw_box(0, 0, 64, 128);
 	oled.print_string((unsigned char*)"grind(coffee);", Roboto_Mono_12, 3, 15);
 	oled.scroll(SCROLL_DN, 8, 1);
 	oled.scroll(SCROLL_DN, 4, 2);

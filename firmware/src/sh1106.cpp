@@ -183,34 +183,48 @@ void sh1106::print_string(unsigned char *string, const uint8_t *font, uint8_t st
 	}
 }
 
-// Draw a box with top left corner at upper pixel of [start page] and column [start_column],
-// with dimensions [width] pixels wide by [height]x8 pixels height (i.e. height is in incrments of page = 8-bits).
-void sh1106::draw_box(uint8_t start_page, uint8_t start_column, uint8_t height, uint8_t width)
+// Draw a box defined by the co-ordinates of the top left corner plus the height/width dimensions.
+// start_row:	0 to 63 starting at the top.
+// start_col:	0 to 127 starting at the left.
+// height:	1 to 64 pixels.
+// width:	1 to 128 pixels.
+void sh1106::draw_box(uint8_t start_row, uint8_t start_column, uint8_t height, uint8_t width)
 {
-	send_segment(0xFF, start_page, start_column);					// Location of top left box corner.
+	uint8_t start_page = (start_row / 8);	// Addressing is done by (page, column), so calculate the first page from the start row.
 
-	for(uint8_t c = start_column; c < (start_column + width - 2); c++)		// Run through top row first page for all columns.
+	set_address(start_page, start_column);	// Set address for the first segment.
+
+	if(height > 8)	// Boxes with height larger than 8 pixels.
 	{
-		if(height > 1)	send_data(0b00000001);					// Top row only.
-		else		send_data(0b10000001);					// Top and bottom rows (box is a single page in height).
+		send_data(0xFF << (start_row % 8));						// Top left box segment.
+		for(uint8_t c = (start_column + 1); c < (start_column + width - 1); c++)	// Cycle through columns for box top row.
+		{
+			send_data(0x01 << (start_row % 8));
+		}
+		send_data(0xFF << (start_row % 8));						// Top right box segment.
+		for(uint8_t p = (start_page + 1); p < (start_page + (height / 8) - 1); p++)	// Cycle through pages.
+		{
+			set_address(p, start_column);
+			send_data(0xFF);							// Left side box segments.
+			set_address(p, (start_column + width - 1));
+			send_data(0xFF);							// Right side box segments.
+		}
+		set_address((start_page + (height / 8) - 1), start_column);
+		send_data(0xFF >> (height % 8));						// Bottom left box segment.
+		for(uint8_t c = (start_column + 1); c < (start_column + width - 1); c++)	// Cycle through columns for box bottom row.
+		{
+			send_data(0x80 >> (height % 8));
+		}
+		send_data(0xFF >> (height % 8));						// Bottom right box segment.
 	}
-
-	send_data(0xFF);								// Right-most column, first page.
-
-	if(height > 1)									// Box is more than a single page in height.
+	else	// Boxes with height less than or equal to 8 pixels.
 	{
-		for(uint8_t p = (start_page+ 1 ); p < (start_page + height); p++)	// Run through left- and right-most column, all pages between first and last.
+		send_data((0xFF >> (8 - height)) << (start_row % 8));				// Left box segment.
+		for(uint8_t c = start_column; c < (start_column + width - 2); c++)		// Cycle through for box top and bottom rows.
 		{
-			send_segment(0xFF, p, start_column);				// Left column.
-			send_segment(0xFF, p, (start_column + width - 1));		// Right column
+			send_data(((0x01 << (height - 1)) + 1) << (start_row % 8));
 		}
-
-		send_segment(0xFF, (start_page + height - 1), start_column);		// Location of bottom left box corner.
-		for(uint8_t c = start_column; c < (start_column + width - 2); c++)	// Run through bottom row last page for all columns.
-		{
-			send_data(0b10000000);						// Bottom row only.
-		}
-		send_data(0xFF);							// Right-most column, last page. 
+		send_data((0xFF >> (8 - height)) << (start_row % 8));				// Right box segment.
 	}
 }
 
