@@ -8,6 +8,12 @@
 // Button de-bounce duration in milliseconds.
 #define BUTTON_DEBOUNCE_MS	10
 
+// Timer presets.
+#define PRESET_A	0
+#define PRESET_B	1
+#define PRESET_C	2
+#define PRESET_D	3
+
 #define RELAY_PORT	PORTC
 #define RELAY_DDR	DDRC
 #define RELAY_PIN	PC0
@@ -30,3 +36,17 @@ sh1106 oled;	// A 128x64 pixel oled with a sh1106 driver.
 // When the rtc timer is running, "counter" is incremented by the timer overflow ISR.
 // This timer is configured such that every increment represents a sixteenth of a second.
 uint16_t counter = 0;
+
+// This variable contains a numerical value corresponding to the currently selected timer preset - A, B, C or D.
+uint8_t current_preset = PRESET_A;
+
+
+
+// Function declarations.
+ISR(BUTTON_PCI_VECTOR);		// Interrupt subroutine triggered by a button press.
+ISR(TIMER_INT_VECTOR);		// Interrupt subroutine triggered by the LED pulse effect timer.
+ISR(CLOCK_INT_VECTOR);		// Interrupt subroutine triggered by the real-time clock tiomer.
+void refresh_preset_menu(void);	// Update the preset selection icons to show which preset is currently selected.
+void splash(void);		// Silly animation that runs at poer on.
+void hardware_init();		// Initialise peripherals.
+int main(void);			// contains the infinite loop.

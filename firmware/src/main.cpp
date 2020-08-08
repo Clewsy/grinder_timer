@@ -21,11 +21,17 @@ ISR(BUTTON_PCI_VECTOR)
 	}
 	else if (buttons.state(BUTTON_LEFT))
 	{
-		oled.map_bits(LOGO_CLEWS, sizeof(LOGO_CLEWS));
+		current_preset--;
+		if(current_preset > PRESET_D) current_preset = PRESET_D;
+
+		refresh_preset_menu();
 	}
 	else if (buttons.state(BUTTON_RIGHT))
 	{
-		oled.map_bits(LOGO_HAD, sizeof(LOGO_HAD));
+		current_preset++;
+		if(current_preset > PRESET_D) current_preset = PRESET_A;
+
+		refresh_preset_menu();
 	}
 	else if (buttons.state(BUTTON_GRIND))
 	{
@@ -40,6 +46,7 @@ ISR(BUTTON_PCI_VECTOR)
 	buttons.enable();	// Re-enable button pin-change interrupt.
 
 }
+
 
 ISR(TIMER_INT_VECTOR)
 {
@@ -60,13 +67,24 @@ ISR(CLOCK_INT_VECTOR)
 	digits_string[3] = (((uint16_t)(counter * 0.625) % 10) + '0');	// Convert counter value 10ths to ascii.
 	digits_string[4] = (((uint16_t)(counter * 6.25) % 10) + '0');	// Convert counter value 100ths to ascii.
 
-	oled.print_string((unsigned char*)"ABCDEFGH", Preset_Icons, 0, 0);
+//	oled.print_string((unsigned char*)"ABCDEFGH", Preset_Icons, 0, 0);
 	oled.print_string(digits_string, DSEG7_Classic_Bold_32, 3, 5);
+}
+
+void refresh_preset_menu(void)
+{
+	unsigned char preset_icons[5] = {'A','B','C','D',0};	// Default icons i.e. not selected.
+	preset_icons[current_preset] += 4;			// Charaters E, F, G & H actually show as inverted A, B, C & D to identify selected preset.
+	oled.print_string(preset_icons, Preset_Icons, 0, 5);
 }
 
 void splash(void)
 {
 //	oled.test_pattern(0b00110011, 1);
+	oled.map_bits(LOGO_CLEWS, sizeof(LOGO_CLEWS));
+	_delay_ms(500);
+	oled.map_bits(LOGO_HAD, sizeof(LOGO_HAD));
+	_delay_ms(500);
 	oled.clear_screen();
 	oled.draw_box(0, 0, 8, 128);
 	oled.print_string((unsigned char*)"grind(coffee);", Roboto_Mono_12, 3, 15);
