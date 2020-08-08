@@ -59,14 +59,6 @@ void sh1106::set_address(uint8_t page, uint8_t column)
 }
 
 
-// Send a segment (8-pixel column) to the ssd1306.
-void sh1106::send_segment(uint8_t byte, uint8_t page, uint8_t column)
-{
-	set_address(page, column);
-	send_data(byte);
-}
-
-
 //////////////////////////////////
 ///// Begin Public Functions /////
 //////////////////////////////////

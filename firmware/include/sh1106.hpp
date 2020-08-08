@@ -63,7 +63,7 @@ class sh1106
 		void invert_screen(bool invert);
 		void print_char(unsigned char character, const uint8_t *font, uint8_t start_page, uint8_t start_column);
 		void print_string(unsigned char *string, const uint8_t *font, uint8_t start_page, uint8_t start_column);
-		void draw_box(uint8_t start_page, uint8_t start_column, uint8_t height, uint8_t width);
+		void draw_box(uint8_t start_row, uint8_t start_column, uint8_t height, uint8_t width);
 		void map_bits(const uint8_t *bitmap, const uint16_t bitmap_size);
 		void test_pattern(uint8_t pattern);
 		void test_pattern(uint8_t pattern, uint8_t delay_ms);
@@ -77,5 +77,4 @@ class sh1106
 		void set_page(uint8_t page);
 		void set_column(uint8_t column);
 		void set_address(uint8_t page, uint8_t column);
-		void send_segment(uint8_t byte, uint8_t page, uint8_t column);
 };

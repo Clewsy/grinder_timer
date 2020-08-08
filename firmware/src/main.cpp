@@ -76,6 +76,7 @@ void refresh_preset_menu(void)
 	unsigned char preset_icons[5] = {'A','B','C','D',0};	// Default icons i.e. not selected.
 	preset_icons[current_preset] += 4;			// Charaters E, F, G & H actually show as inverted A, B, C & D to identify selected preset.
 	oled.print_string(preset_icons, Preset_Icons, 0, 5);
+//	oled.draw_box(0, 4, 26, 66);
 }
 
 void splash(void)
