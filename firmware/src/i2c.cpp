@@ -35,11 +35,19 @@ void i2c::stop(void)
 }
 
 // Transmit a byte.
-void i2c::send_byte(uint8_t address)
+void i2c::write_byte(uint8_t address)
 {
 	I2C_TWDR = address;				// TWDR: TWI (I2C) Data Register.
 	I2C_TWCR = ((1 << TWEN) | (1 << TWINT));	// Have to clear the int flag (and keep enabled).
 	wait_for_complete();	// Wait until the int flag is again set.
+}
+
+// Receive a byte (with acknowledgement).
+uint8_t i2c::read_byte(void)
+{
+	I2C_TWCR |= ((1 << TWINT) | (1 << TWEN) | (1 << TWEA));	// Have to clear the int flag, keep enabled and set the acknowledge bit.
+	wait_for_complete();					// Wait until the int flag is again set.
+	return(I2C_TWDR);					// TWDR: TWI (I2C) Data Register.
 }
 
 // Wait until the TWI (I2C) interrupt flag is set indicating an operation has just completed.

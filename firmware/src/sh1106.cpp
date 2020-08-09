@@ -36,23 +36,6 @@ void sh1106::send_data(uint8_t data)
 	twi.stop();
 }
 
-uint8_t sh1106::read_data(void)
-{
-	twi.start();
-	twi.write_byte(OLED_ADDR_READ_RAM);
-	twi.read_byte();
-	uint8_t byte = twi.read_byte();
-	twi.stop();
-
-	return(byte);
-}
-
-void sh1106::overlay_data(uint8_t data)
-{
-	send_data(data | read_data());
-}
-
-
 // Set page address.  A page is a horizontalk row of 8-bit segments.
 // Valid pages are 0 to 7 (top to bottom).
 void sh1106::set_page(uint8_t page)
