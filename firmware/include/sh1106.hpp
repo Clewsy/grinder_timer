@@ -9,10 +9,6 @@
 
 // SH1106 Address Byte.
 #define OLED_ADDR_WRITE		0x78	// 0b01111000 i2c address to write of the OLED SSD1306 driver module with the read/write bit set to write.
-#define OLED_ADDR_READ_RAM	0x7B	// 0b i2c address to write of the OLED SSD1306 driver module with the read/write bit set to write.
-//0b01111011
-
-
 
 // SH1106 Control Bytes.
 #define OLED_CTL_LAST_COMMAND	0x00	// 0b00000000 Co=0 D/!C=0 Last control byte, only data bytes to follow.  Following data byte/s are COMMAND operations.
