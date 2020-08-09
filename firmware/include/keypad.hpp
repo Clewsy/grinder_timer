@@ -24,6 +24,7 @@ class keypad
 		void init(void);
 		void enable(void);
 		void disable(void);
-		bool state(uint8_t button);
+		bool check(uint8_t button);
+		bool any(void);
 };
 

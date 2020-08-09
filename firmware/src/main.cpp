@@ -1,78 +1,71 @@
 #include "grinder_timer.hpp"
 
+// A pin-change on any keypad button triggers this sub-routine.
 ISR(BUTTON_PCI_VECTOR)
 {
-	buttons.disable();	// Disable button pin-change interrupt while this ISR is executed..
-
+	buttons.disable();		// Disable button pin-change interrupt while this ISR is executed..
 	_delay_ms(BUTTON_DEBOUNCE_MS);	// Wait for the button de-bounce duration.
 
-	if	(buttons.state(BUTTON_UP))	handle_up_down(BUTTON_UP);
-	else if	(buttons.state(BUTTON_DOWN))	handle_up_down(BUTTON_DOWN);
-	else if (buttons.state(BUTTON_LEFT))	handle_left_right(BUTTON_LEFT);
-	else if (buttons.state(BUTTON_RIGHT))	handle_left_right(BUTTON_RIGHT);
-	else if (buttons.state(BUTTON_GRIND))	grind(true);
-
-
-	if(!grinding)
+	if(grinding && buttons.any())	grind(false);	// If grinding, cancel grind with any button.
+	else if(!grinding)
 	{
-		while (~BUTTON_PINS & BUTTON_MASK) {}	// Wait until all buttons are released.
-		buttons.enable();	// Re-enable button pin-change interrupt.
+		if	(buttons.check(BUTTON_UP))	handle_up_down(BUTTON_UP);		// Increase current preset timer.
+		else if	(buttons.check(BUTTON_DOWN))	handle_up_down(BUTTON_DOWN);		// Decrease current preset timer.
+		else if (buttons.check(BUTTON_LEFT))	handle_left_right(BUTTON_LEFT);		// Select preset to the left.
+		else if (buttons.check(BUTTON_RIGHT))	handle_left_right(BUTTON_RIGHT);	// Select preset to the right.
+		else if (buttons.check(BUTTON_GRIND))	grind(true);				// Start grinding.
 	}
+
+	if(!grinding) while (~BUTTON_PINS & BUTTON_MASK) {}	// Wait until all buttons are released, unless the grind button was pressed.
+	buttons.enable();					// Re-enable button pin-change interrupt.
+}
+
+// An overflow of the timer output compare register triggers this interrupt sub-routine.
+// Configured to vary the LED brightness at desired interval to create a pulsing effect.
+ISR(TIMER_INT_VECTOR)
+{
+	if ((led.get() == LED_MAX_BRIGHTNESS) || (led.get() == 0)) pulse_dir *= -1;	// Reverse the pulse direction at either end of the count.
+	led.set(led.get() + pulse_dir);							// Update the led brightness.
+}
+
+// An overflow of the timer counter register triggers this interrupt sub-routine.
+// Configured to use external 32.768kHz crystal and therefore provide accurate timing in sixteenths of a second.
+ISR(CLOCK_INT_VECTOR)
+{
+	if(counter > 0)	counter--;	// Count down to zero.
+	else		grind(false);	// If reached zero, stop grinding.
+
+	refresh_timer();		// Update the display with the remaining countdown duration.
 }
 
 // Set the LED as either on, off or pulsing.
+// Valid values for led_mode are:
+// LED_OFF	00
+// LED_ON	01
+// LED_PULSE	10
 void led_control(uint8_t led_mode)
 {
-	pulse.disable();
+	pulse.disable();	// Start by assuming LED_OFF.
+	led.disable();
 
-	if(led_mode)
+	if(led_mode)		// LED_ON or LED_PULSE.
 	{
-		if(led_mode >> 1)	pulse.enable();
-		else			led.set(LED_MAX_BRIGHTNESS);
-
+		if(led_mode >> 1)	pulse.enable();			// LED_PULSE.
+		else			led.set(LED_MAX_BRIGHTNESS);	// LED_ON.
 		led.enable();
 	}
-	else	led.disable();
 }
 
-// Initiate or cease grinding.
-void grind(bool grind)
-{
-	if(grind)
-	{
-		grinding = true;
-		rtc.enable();
-		RELAY_ON;
-		led_control(LED_OFF);
-	}
-
-	else
-	{
-		grinding = false;
-		rtc.disable();
-		RELAY_OFF;
-
-		_delay_ms(1000);
-
-		led_control(LED_ON);
-		counter = preset_timer[current_preset];
-//		refresh_timer();
-		buttons.enable();
-	}
-}
-
-// Functioned called to update display when scrolling up or down.
+// Function called to update display when scrolling up or down.
 void handle_up_down(uint8_t up_or_down)
 {
 	switch(up_or_down)
 	{
 		case BUTTON_UP:
-			oled.test_pattern(0b01010101);
-			led_control(LED_PULSE);
+			oled.test_pattern(0b01010101);	//Placeholder
 			break;
 		case BUTTON_DOWN:
-			oled.clear_screen();
-			led_control(LED_OFF);
+			oled.clear_screen();		//Placeholder
 			break;
 	}
 }
@@ -83,80 +76,91 @@ void handle_left_right(uint8_t left_or_right)
 	switch(left_or_right)
 	{
 		case BUTTON_LEFT:
-			current_preset--;
+			current_preset--;	// A<-B<-C<-D
 			if(current_preset > PRESET_D) current_preset = PRESET_D;
 			break;
 
 		case BUTTON_RIGHT:
-			current_preset++;
+			current_preset++;	// A->B->C->D
 			if(current_preset > PRESET_D) current_preset = PRESET_A;
 			break;
 	}
 
-	counter = preset_timer[current_preset];
-	refresh_timer();
-	refresh_menu();
-
+	counter = preset_timer[current_preset];	// Update the timer value.
+	refresh_timer();			// Update the timer display.
+	refresh_menu();				// Update the presets menu.
 }
 
-ISR(TIMER_INT_VECTOR)
+// Initiate or cease grinding.
+void grind(bool grind)
 {
-	// Reverse the pulse direction at either end of the count.
-	if ((led.get() == LED_MAX_BRIGHTNESS) || (led.get() == 0)) pulse_dir *= -1;
+	grinding = grind;	// Set or clear the grinding flag.
 
-	// Update the led brightness.
-	led.set(led.get() + pulse_dir);						
+	if(grind)
+	{
+		rtc.enable();	// Enable the countdown.
+//		RELAY_ON;
+		led_control(LED_OFF);
+	}
+
+	else
+	{
+		rtc.disable();	// Disable the countdown.
+//		RELAY_OFF;
+
+		_delay_ms(1000);
+
+		led_control(LED_ON);
+		counter = preset_timer[current_preset];
+		refresh_timer();
+	}
 }
 
-
-ISR(CLOCK_INT_VECTOR)
-{
-	if(counter > 0)	counter--;
-	else		grind(false);
-
-	refresh_timer();
-}
-
+// Update the clock/timer section of the OLED.
 void refresh_timer(void)
 {
-	unsigned char digits_string[6] = {'0', '0', '.', '0', '0', 0};
+	unsigned char digits_string[6] = {'0', '0', '.', '0', '0', 0};	// Want to display the current timer value as ##.## seconds.
 	digits_string[0] = (((counter >> 4) / 10) + '0');		// Convert counter value 10s to ascii.
 	digits_string[1] = (((counter >> 4) % 10) + '0');		// Convert counter value 1s to ascii.
 	digits_string[3] = (((uint16_t)(counter * 0.625) % 10) + '0');	// Convert counter value 10ths to ascii.
 	digits_string[4] = (((uint16_t)(counter * 6.25) % 10) + '0');	// Convert counter value 100ths to ascii.
 
-	oled.print_string(digits_string, DSEG7_Classic_Bold_32, 3, 5);
-
+	oled.print_string(digits_string, DSEG7_Classic_Bold_32, 3, 5);	// Write the array to the display.
 }
 
+// Update the preset selection menu section of the OLED.
 void refresh_menu(void)
 {
 	unsigned char preset_icons[5] = {'A','B','C','D',0};	// Default icons i.e. not selected.
 	preset_icons[current_preset] += 4;			// Charaters E, F, G & H actually show as inverted A, B, C & D to identify selected preset.
-	oled.print_string(preset_icons, Preset_Icons, 0, 34);
+	oled.print_string(preset_icons, Preset_Icons, 0, 34);	// Print the preset icons string to the OLED.
 
-	oled.print_char(LEFT_ARROW, Arrows, 0, 19);
-	oled.print_char(RIGHT_ARROW, Arrows, 0, 94);
+	oled.print_char(LEFT_ARROW, Arrows, 0, 19);		// Print a left-pointing arrow to the left of the preset icons.
+	oled.print_char(RIGHT_ARROW, Arrows, 0, 94);		// Print a right-pointing arrow to the right of the preset icons.
 }
 
+// Display a silly "animation" when powered on.
 void splash(void)
 {
 	oled.map_bits(LOGO_CLEWS, sizeof(LOGO_CLEWS));					// Show bitmap for a duration.
-	_delay_ms(500);
+	_delay_ms(250);
 	oled.map_bits(LOGO_HAD, sizeof(LOGO_HAD));					// Show bitmap for a duration.
-	_delay_ms(500);
+	_delay_ms(250);
 	oled.clear_screen();
 	oled.draw_box(0, 0, 64, 128);							// Box around the outermost border of the oled.
-	oled.print_string((unsigned char*)"grind(coffee);", Roboto_Mono_12, 3, 15);	// Text centered.
-
-	// Scrolling animation, iterates 4 times:
-	// 1st: 8 cycles, 1ms delay.
-	// 2nd: 4 cycles, 2ms delay.
-	// 3rd: 2 cycles, 4ms delay.
-	// 4th: 1 cycle,  8ms delay.
-	for(uint8_t i = 1; i < 16; i*=2) oled.scroll(SCROLL_DN, (8 / i), i);
+	oled.print_string((unsigned char*)"grind(coffee);", Roboto_Mono_12, 3, 15);	// Text centered (roughly).
+	for(uint8_t i = 1; i < 16; i*=2) oled.scroll(SCROLL_DN, (8 / i), i);		// Scrolling animation, iterates 4 times:
+											// 1st: 8 cycles, 1ms delay.
+											// 2nd: 4 cycles, 2ms delay.
+											// 3rd: 2 cycles, 4ms delay.
+											// 4th: 1 cycle,  8ms delay.
+	_delay_ms(1000);
+	oled.clear_screen();
+	refresh_menu();									// Show the preset menu.
+	refresh_timer();								// Show the current preset value.
 }
 
+// Initialise the various hardware peripherals.
 void hardware_init()
 {
 	// Initialsie serial input/output (USART class).
@@ -169,14 +173,12 @@ void hardware_init()
 	// Initialise the buttons (keypad class).
 	buttons.init();	
 
-	// Initialise then enable the led (pwm class).
+	// Initialise the led (pwm class for variable brightness).
 	led.init();
-//	led.enable();
 
 	// Initialise then set the speed of the led pulse effect (timer class).
 	pulse.init();
 	pulse.set(LED_PULSE_SPEED);
-//	pulse.enable();
 
 	// Initialise the real-time clock (clock class).
 	rtc.init();
@@ -187,8 +189,6 @@ void hardware_init()
 	// Globally enable all interrupts.
 	sei();
 }
-
-
 
 int main(void)
 {

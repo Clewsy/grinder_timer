@@ -21,7 +21,14 @@ void keypad::disable(void)
 }
 
 // Returns true (i.e. 1) if "button" is pressed.
-bool keypad::state(uint8_t button)
+bool keypad::check(uint8_t button)
 {
 	return ((~BUTTON_PINS & (1 << button)) >> button);
+}
+
+// Returns true (i.e. 1) if any button is pressed.
+bool keypad::any(void)
+{
+	if(~BUTTON_PINS & BUTTON_MASK)	return(true);
+	else				return(false);
 }
