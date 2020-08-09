@@ -13,7 +13,6 @@
 #define TIMER_CS1		CS11			// Timer/Counter Clock Select Bit 1
 #define TIMER_CS0		CS10			// Timer/Counter Clock Select Bit 0
 #define TIMER_SET_REG		OCR1A			// Timer/Counter Output Compare Register
-#define TIMER_SET_VAL		10000			// Timer/Counter Output Compare Value
 #define TIMER_TIMSK		TIMSK1			// Timer/Counter Timer Interrupt Mask Register
 #define TIMER_IE		OCIE1A			// Timer Output Compare Interrupt Enable Bit.
 #define TIMER_INT_VECTOR	TIMER1_COMPA_vect	// Interrupt subroutine name.
@@ -24,4 +23,5 @@ class timer
 		void init(void);
 		void enable(void);
 		void disable(void);
+		void set(uint16_t value);
 };

@@ -6,71 +6,127 @@ ISR(BUTTON_PCI_VECTOR)
 
 	_delay_ms(BUTTON_DEBOUNCE_MS);	// Wait for the button de-bounce duration.
 
+	if	(buttons.state(BUTTON_UP))	handle_up_down(BUTTON_UP);
+	else if	(buttons.state(BUTTON_DOWN))	handle_up_down(BUTTON_DOWN);
+	else if (buttons.state(BUTTON_LEFT))	handle_left_right(BUTTON_LEFT);
+	else if (buttons.state(BUTTON_RIGHT))	handle_left_right(BUTTON_RIGHT);
+	else if (buttons.state(BUTTON_GRIND))	grind(true);
 
-	if (buttons.state(BUTTON_UP))
-	{
-		oled.test_pattern(0b01010101);
-//		RELAY_PORT &= ~(1 << RELAY_PIN);
-	}
-	else if (buttons.state(BUTTON_DOWN))
-	{
-		oled.clear_screen();
-		pulse.disable();
-		led.disable();
-		rtc.enable();
 
-		refresh_menu();
-	}
-	else if (buttons.state(BUTTON_LEFT))
+	if(!grinding)
 	{
-		current_preset--;
-		if(current_preset > PRESET_D) current_preset = PRESET_D;
+		while (~BUTTON_PINS & BUTTON_MASK) {}	// Wait until all buttons are released.
+		buttons.enable();	// Re-enable button pin-change interrupt.
+	}
+}
 
-		refresh_menu();
-	}
-	else if (buttons.state(BUTTON_RIGHT))
-	{
-		current_preset++;
-		if(current_preset > PRESET_D) current_preset = PRESET_A;
+// Set the LED as either on, off or pulsing.
+void led_control(uint8_t led_mode)
+{
+	pulse.disable();
 
-		refresh_menu();
-	}
-	else if (buttons.state(BUTTON_GRIND))
+	if(led_mode)
 	{
-		rtc.disable();
+		if(led_mode >> 1)	pulse.enable();
+		else			led.set(LED_MAX_BRIGHTNESS);
+
 		led.enable();
-		pulse.enable();
-//		RELAY_PORT |= (1 << RELAY_PIN);
-	}	
+	}
+	else	led.disable();
+}
 
-	while (~BUTTON_PINS & BUTTON_MASK) {}	// Wait until all buttons are released.
+// Initiate or cease grinding.
+void grind(bool grind)
+{
+	if(grind)
+	{
+		grinding = true;
+		rtc.enable();
+		RELAY_ON;
+		led_control(LED_OFF);
+	}
 
-	buttons.enable();	// Re-enable button pin-change interrupt.
+	else
+	{
+		grinding = false;
+		rtc.disable();
+		RELAY_OFF;
+
+		_delay_ms(1000);
+
+		led_control(LED_ON);
+		counter = preset_timer[current_preset];
+//		refresh_timer();
+		buttons.enable();
+	}
+}
+
+// Functioned called to update display when scrolling up or down.
+void handle_up_down(uint8_t up_or_down)
+{
+	switch(up_or_down)
+	{
+		case BUTTON_UP:
+			oled.test_pattern(0b01010101);
+			led_control(LED_PULSE);
+			break;
+		case BUTTON_DOWN:
+			oled.clear_screen();
+			led_control(LED_OFF);
+			break;
+	}
+}
+
+// Functioned called to update display when scrolling left or right.
+void handle_left_right(uint8_t left_or_right)
+{
+	switch(left_or_right)
+	{
+		case BUTTON_LEFT:
+			current_preset--;
+			if(current_preset > PRESET_D) current_preset = PRESET_D;
+			break;
+
+		case BUTTON_RIGHT:
+			current_preset++;
+			if(current_preset > PRESET_D) current_preset = PRESET_A;
+			break;
+	}
+
+	counter = preset_timer[current_preset];
+	refresh_timer();
+	refresh_menu();
 
 }
 
-
 ISR(TIMER_INT_VECTOR)
 {
-	if ((led.get() == MAX_BRIGHTNESS) || (led.get() == 0)) pulse_dir *= -1;	// Reverse the pulse direction at either end of the count.
-	led.set(led.get() + pulse_dir);						// Update the led brightness.
+	// Reverse the pulse direction at either end of the count.
+	if ((led.get() == LED_MAX_BRIGHTNESS) || (led.get() == 0)) pulse_dir *= -1;
+
+	// Update the led brightness.
+	led.set(led.get() + pulse_dir);						
 }
 
 
 ISR(CLOCK_INT_VECTOR)
 {
-	counter++;
-//	if(counter == 480) counter = 0;		// Timer resets at 480 counts = 30 seconds.
-	if(counter == 1600) counter = 0;	// Timer resets at 480 counts = 100 seconds.
+	if(counter > 0)	counter--;
+	else		grind(false);
 
+	refresh_timer();
+}
+
+void refresh_timer(void)
+{
 	unsigned char digits_string[6] = {'0', '0', '.', '0', '0', 0};
 	digits_string[0] = (((counter >> 4) / 10) + '0');		// Convert counter value 10s to ascii.
 	digits_string[1] = (((counter >> 4) % 10) + '0');		// Convert counter value 1s to ascii.
 	digits_string[3] = (((uint16_t)(counter * 0.625) % 10) + '0');	// Convert counter value 10ths to ascii.
 	digits_string[4] = (((uint16_t)(counter * 6.25) % 10) + '0');	// Convert counter value 100ths to ascii.
 
-//	oled.print_string((unsigned char*)"ABCDEFGH", Preset_Icons, 0, 0);
 	oled.print_string(digits_string, DSEG7_Classic_Bold_32, 3, 5);
+
 }
 
 void refresh_menu(void)
@@ -107,6 +163,7 @@ void hardware_init()
 //	serial.init();
 //	serial.print_string((char*)"grind(coffee);\r\n");
 
+	// Configure the relay pin as an output.
 	RELAY_DDR |= (1 << RELAY_PIN);
 
 	// Initialise the buttons (keypad class).
@@ -116,8 +173,9 @@ void hardware_init()
 	led.init();
 //	led.enable();
 
-	// Initialise then enable the led pulse effect (timer class).
+	// Initialise then set the speed of the led pulse effect (timer class).
 	pulse.init();
+	pulse.set(LED_PULSE_SPEED);
 //	pulse.enable();
 
 	// Initialise the real-time clock (clock class).
@@ -137,6 +195,8 @@ int main(void)
 	hardware_init();
 
 	splash();
+
+	led_control(LED_PULSE);
 
 	buttons.enable();
 

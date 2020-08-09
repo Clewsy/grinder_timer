@@ -17,9 +17,15 @@
 #define RELAY_PORT	PORTC
 #define RELAY_DDR	DDRC
 #define RELAY_PIN	PC0
+#define RELAY_ON	RELAY_PORT |= (1 << RELAY_PIN)
+#define RELAY_OFF	RELAY_PORT &= ~(1 << RELAY_PIN)
 
-// 8-bit value (0-255) for max LED brightness.
-#define MAX_BRIGHTNESS	100
+// Definitions used by the led_control() function.
+#define LED_OFF			00
+#define LED_ON			01
+#define LED_PULSE		10
+#define LED_PULSE_SPEED		8000
+#define LED_MAX_BRIGHTNESS	150
 
 // The value of pulse_dir switches between 1 and -1.
 // Enables tracking of the LED pulse effect, i.e. 1:getting brighter, 2:getting dimmer.
@@ -35,17 +41,28 @@ sh1106 oled;	// A 128x64 pixel oled with a sh1106 driver.
 
 // When the rtc timer is running, "counter" is incremented by the timer overflow ISR.
 // This timer is configured such that every increment represents a sixteenth of a second.
-uint16_t counter = 0;
+uint16_t counter = 1280;
 
 // This variable contains a numerical value corresponding to the currently selected timer preset - A, B, C or D.
 uint8_t current_preset = PRESET_A;
+
+// This array contains the preset timer values (as multiples of sixteenths of a secons).
+uint16_t preset_timer[4] = {160, 320, 640, 1280};
+
+// A flag that indicates whether the grinder motor is currently running.
+bool grinding = false;
 
 
 
 // Function declarations.
 ISR(BUTTON_PCI_VECTOR);		// Interrupt subroutine triggered by a button press.
+void led_control(uint8_t led_mode);
+void grind(bool grind);
+void handle_up_down(uint8_t left_or_right);
+void handle_left_right(uint8_t left_or_right);
 ISR(TIMER_INT_VECTOR);		// Interrupt subroutine triggered by the LED pulse effect timer.
 ISR(CLOCK_INT_VECTOR);		// Interrupt subroutine triggered by the real-time clock tiomer.
+void refresh_timer(void);	// 
 void refresh_menu(void);	// Update the preset selection icons to show which preset is currently selected.
 void splash(void);		// Silly animation that runs at poer on.
 void hardware_init();		// Initialise peripherals.
