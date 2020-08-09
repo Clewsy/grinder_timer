@@ -53,7 +53,7 @@ uint8_t i2c::read_byte_ack(void)
 // Receive a byte (without sending acknowledgement).
 uint8_t i2c::read_byte_nack(void)
 {
-	I2C_TWCR |= ((1 << TWINT) | (1 << TWEN);	// Have to clear the int flag and keep enabled.
+	I2C_TWCR |= ((1 << TWINT) | (1 << TWEN));	// Have to clear the int flag and keep enabled.
 	wait_for_complete();				// Wait until the int flag is again set.
 	return(I2C_TWDR);				// TWDR: TWI (I2C) Data Register.
 }
