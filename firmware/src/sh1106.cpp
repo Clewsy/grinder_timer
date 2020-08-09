@@ -8,9 +8,9 @@
 void sh1106::send_command(uint8_t command)
 {
 	twi.start();
-	twi.send_byte(OLED_ADDR_WRITE);
-	twi.send_byte(OLED_CTL_LAST_COMMAND);
-	twi.send_byte(command);
+	twi.write_byte(OLED_ADDR_WRITE);
+	twi.write_byte(OLED_CTL_LAST_COMMAND);
+	twi.write_byte(command);
 	twi.stop();
 }
 
@@ -18,11 +18,11 @@ void sh1106::send_command(uint8_t command)
 void sh1106::send_command(uint8_t command1, uint8_t command2)
 {
 	twi.start();
-	twi.send_byte(OLED_ADDR_WRITE);
-	twi.send_byte(OLED_CTL_CONT_COMMAND);
-	twi.send_byte(command1);
-	twi.send_byte(OLED_CTL_LAST_COMMAND);
-	twi.send_byte(command2);
+	twi.write_byte(OLED_ADDR_WRITE);
+	twi.write_byte(OLED_CTL_CONT_COMMAND);
+	twi.write_byte(command1);
+	twi.write_byte(OLED_CTL_LAST_COMMAND);
+	twi.write_byte(command2);
 	twi.stop();
 }
 
@@ -30,11 +30,28 @@ void sh1106::send_command(uint8_t command1, uint8_t command2)
 void sh1106::send_data(uint8_t data)
 {
 	twi.start();
-	twi.send_byte(OLED_ADDR_WRITE);
-	twi.send_byte(OLED_CTL_LAST_RAM);
-	twi.send_byte(data);
+	twi.write_byte(OLED_ADDR_WRITE);
+	twi.write_byte(OLED_CTL_LAST_RAM);
+	twi.write_byte(data);
 	twi.stop();
 }
+
+uint8_t sh1106::read_data(void)
+{
+	twi.start();
+	twi.write_byte(OLED_ADDR_READ_RAM);
+	twi.read_byte();
+	uint8_t byte = twi.read_byte();
+	twi.stop();
+
+	return(byte);
+}
+
+void sh1106::overlay_data(uint8_t data)
+{
+	send_data(data | read_data());
+}
+
 
 // Set page address.  A page is a horizontalk row of 8-bit segments.
 // Valid pages are 0 to 7 (top to bottom).
@@ -211,12 +228,12 @@ void sh1106::draw_box(uint8_t start_row, uint8_t start_column, uint8_t height, u
 	}
 	else	// Boxes with height less than or equal to 8 pixels.
 	{
-		send_data((0xFF >> (8 - height)) << (start_row % 8));				// Left box segment.
+		send_data((0xFF >> (8 - height)) << (8 - (start_row % 8)));				// Left box segment.
 		for(uint8_t c = start_column; c < (start_column + width - 2); c++)		// Cycle through for box top and bottom rows.
 		{
-			send_data(((0x01 << (height - 1)) + 1) << (start_row % 8));
+			send_data(((0x01 << (height - 1)) + 1) << (8 - (start_row % 8)));
 		}
-		send_data((0xFF >> (8 - height)) << (start_row % 8));				// Right box segment.
+		send_data((0xFF >> (8 - height)) << (8 - (start_row % 8)));				// Right box segment.
 	}
 }
 
@@ -230,13 +247,13 @@ void sh1106::map_bits(const uint8_t *bitmap, const uint16_t bitmap_size)
 		set_address(page, 0);			// Reset to the first column for each page.
 
 		twi.start();
-		twi.send_byte(OLED_ADDR_WRITE);		// Want to write data to the OLED.
-		twi.send_byte(OLED_CTL_LAST_RAM);	// All following bytes are data intended for RAM.
+		twi.write_byte(OLED_ADDR_WRITE);		// Want to write data to the OLED.
+		twi.write_byte(OLED_CTL_LAST_RAM);	// All following bytes are data intended for RAM.
 
 		for(uint8_t col = 0; col < 128; col++)	// Loop for every column.
 		{
-			if(seg < bitmap_size)	twi.send_byte(pgm_read_byte(&bitmap[seg]));
-			else			twi.send_byte(0x00);	// Pad remaining gegments with blanks.
+			if(seg < bitmap_size)	twi.write_byte(pgm_read_byte(&bitmap[seg]));
+			else			twi.write_byte(0x00);	// Pad remaining gegments with blanks.
 			seg++;
 		}
 		twi.stop();
