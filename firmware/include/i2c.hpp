@@ -20,7 +20,8 @@ class i2c
 		void start(void);		// Set the I2C start condition.
 		void stop(void);		// Set the I2C stop condition.
 		void write_byte(uint8_t byte);	// Transmit a byte.
-		uint8_t read_byte(void);	// Receive a byte.
+		uint8_t read_byte_ack(void);	// Receive a byte and send acknowledgement.
+		uint8_t read_byte_nack(void);	// Receive a byte without sending acknowledgement.
 
 	private:
 		void wait_for_complete(void);	// Loop until the TWI (I2C) Interrupt flag is set indicating an operation has just completed.
