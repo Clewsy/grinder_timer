@@ -17,6 +17,7 @@ Planned improvements
 	- [ ] Switch from C to C++.
 	- [ ] New OLED driver (change from SPI SSD1306 to IIC SSD1315 controller).
 	- [ ] Pulse/fade effect for grind button LED.
+	- [ ] Ability to cancel a grind once started.
 
 ---
 
