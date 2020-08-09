@@ -46,7 +46,7 @@ uint8_t current_preset = PRESET_A;
 ISR(BUTTON_PCI_VECTOR);		// Interrupt subroutine triggered by a button press.
 ISR(TIMER_INT_VECTOR);		// Interrupt subroutine triggered by the LED pulse effect timer.
 ISR(CLOCK_INT_VECTOR);		// Interrupt subroutine triggered by the real-time clock tiomer.
-void refresh_preset_menu(void);	// Update the preset selection icons to show which preset is currently selected.
+void refresh_menu(void);	// Update the preset selection icons to show which preset is currently selected.
 void splash(void);		// Silly animation that runs at poer on.
 void hardware_init();		// Initialise peripherals.
 int main(void);			// contains the infinite loop.
