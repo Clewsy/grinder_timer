@@ -68,11 +68,11 @@ ISR(TIMER_INT_VECTOR);				// Interrupt subroutine triggered by the LED pulse eff
 ISR(CLOCK_INT_VECTOR);				// Interrupt subroutine triggered by the real-time clock tiomer.
 void led_control(uint8_t led_mode);		// Set the led to either off, on or pulsing.
 void change_preset_value(int8_t up_or_down);	// Increase or decrease the value of the current selected preset.
-void handle_up_down(int8_t left_or_right);	// Handle pressing or holding the up or down buttons.
+void handle_up_down(int8_t up_or_down);		// Handle pressing or holding the up or down buttons.
 void handle_left_right(int8_t left_or_right);	// Scroll left or right through the different presets.
 void grind(bool grind);				// Start or stop the grinder.
 void refresh_timer(void);			// Update the countdown timer section of the oled.
 void refresh_menu(void);			// Update the preset selection icons to show which preset is currently selected.
 void splash(void);				// Silly animation that runs at poer on.
-void hardware_init();				// Initialise peripherals.
+void hardware_init(void);			// Initialise peripherals.
 int main(void);					// contains the infinite loop.
