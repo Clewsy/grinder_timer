@@ -9,16 +9,10 @@ void timer::init(void)
 
 }
 
-void timer::enable(void)
+void timer::enable(bool enable)
 {
-	// Enable the output compare interrupt.
-	TIMER_TIMSK |= (1 << TIMER_IE);
-}
-
-void timer::disable(void)
-{
-	// Disable the output compare interrupt.
-	TIMER_TIMSK &= ~(1 << TIMER_IE);
+	if(enable)	TIMER_TIMSK |= (1 << TIMER_IE);		// Enable the output compare interrupt.
+	else		TIMER_TIMSK &= ~(1 << TIMER_IE);	// Disable the output compare interrupt.
 }
 
 void timer::set(uint16_t value)

@@ -33,13 +33,13 @@
 // Definitions used by the led_control() function.
 #define LED_OFF			00	// Set LED to off.
 #define LED_ON			01	// Set LED to on.
-#define LED_PULSE		10	// Set LED to pulsing.
+#define LED_PULSE		11	// Set LED to pulsing.
 #define LED_PULSE_SPEED		8000	// Sets the pulse speed.
 #define LED_MAX_BRIGHTNESS	150	// Sets the max brightness of the LED when pulsing or on (pwm pulse-width 0 to 255).
 
 // The value of pulse_dir switches between 1 and -1.
 // Enables tracking of the LED pulse effect, i.e. 1:getting brighter, 2:getting dimmer.
-int8_t pulse_dir = -1;
+int8_t pulse_dir = 1;
 
 // This variable contains a numerical value corresponding to the currently selected timer preset - A, B, C or D.
 uint8_t current_preset = PRESET_A;

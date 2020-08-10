@@ -39,20 +39,14 @@ ISR(CLOCK_INT_VECTOR)
 
 // Set the LED as either on, off or pulsing.
 // Valid values for led_mode are:
-// LED_OFF	00
-// LED_ON	01
-// LED_PULSE	10
+// LED_OFF	00 (LED disabled, pulse disabled).
+// LED_ON	01 (LED enabled, pulse disabled).
+// LED_PULSE	11 (LED enabled, pulse enabled).
 void led_control(uint8_t led_mode)
 {
-	pulse.disable();	// Start by assuming LED_OFF.
-	led.disable();
-
-	if(led_mode)		// LED_ON or LED_PULSE.
-	{
-		if(led_mode >> 1)	pulse.enable();			// LED_PULSE.
-		else			led.set(LED_MAX_BRIGHTNESS);	// LED_ON.
-		led.enable();
-	}
+	led.set(LED_MAX_BRIGHTNESS);
+	led.enable(led_mode);
+	pulse.enable(led_mode >> 1);
 }
 
 // Called to alter the  value of the currently selected preset.

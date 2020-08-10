@@ -23,8 +23,7 @@ class pwm
 {
 	public:
 		void init(void);
-		void enable(void);
-		void disable(void);
+		void enable(bool enable);
 		void set(uint8_t duty);
 		uint8_t get(void);
 };

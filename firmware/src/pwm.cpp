@@ -15,16 +15,10 @@ void pwm::init(void)
 	PWM_SET = 0x00;
 }
 
-void pwm::enable(void)
+void pwm::enable(bool enable)
 {
-	// Set the PWM pin to enable the PWM output.
-	PWM_PORT |= (1 << PWM_PIN);
-}
-
-void pwm::disable(void)
-{
-	// Clear the PWM pin to disable the PWM output.
-	PWM_PORT &= ~(1 << PWM_PIN);
+	if(enable)	PWM_PORT |= (1 << PWM_PIN);	// Set the PWM pin to enable the PWM output.
+	else		PWM_PORT &= ~(1 << PWM_PIN);	// Clear the PWM pin to disable the PWM output.
 }
 
 void pwm::set(uint8_t duty)

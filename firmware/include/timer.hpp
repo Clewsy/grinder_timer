@@ -21,7 +21,6 @@ class timer
 {
 	public:
 		void init(void);
-		void enable(void);
-		void disable(void);
+		void enable(bool enable);
 		void set(uint16_t value);
 };
