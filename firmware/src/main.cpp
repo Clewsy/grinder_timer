@@ -96,26 +96,18 @@ void handle_left_right(int8_t left_or_right)
 // Initiate or cease grinding.
 void grind(bool grind)
 {
-	grinding = grind;	// Set or clear the grinding flag.
+	grinding = grind;	// Set or clear the grinding flag (used in the buttons pin-change ISR).
 
-	if(grind)
+	rtc.enable(grind);	// Enable or disable the countdown timer.
+
+	if(!grind)		// If stopped grinding, pause at zero for a moment before resetting the timer.
 	{
-		rtc.enable(true);	// Enable the countdown.
-//		RELAY_ON;
-		led_control(LED_OFF);
-	}
-
-	else
-	{
-		rtc.enable(false);	// Disable the countdown.
-//		RELAY_OFF;
-
 		_delay_ms(RELAY_RESET_DELAY);
-
-		led_control(LED_ON);
 		counter = preset_timer[current_preset];
 		refresh_timer();
 	}
+
+	led_control(!grind);	// LED off while grinding, on when finished.
 }
 
 // Update the clock/timer section of the OLED.
