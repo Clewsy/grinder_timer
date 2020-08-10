@@ -62,12 +62,17 @@ void handle_up_down(uint8_t up_or_down)
 	switch(up_or_down)
 	{
 		case BUTTON_UP:
-			oled.test_pattern(0b01010101);	//Placeholder
+			preset_timer[current_preset] += 4;	// Add 4**sixteenths i.e. a quarter second.
+			if(preset_timer[current_preset] > PRESET_MAX_VALUE) preset_timer[current_preset] = PRESET_MAX_VALUE;	// Upper limit.
 			break;
 		case BUTTON_DOWN:
-			oled.clear_screen();		//Placeholder
+			preset_timer[current_preset] -= 4;	// Minus 4**sixteenths i.e. a quarter second.
+			if(preset_timer[current_preset] < PRESET_MIN_VALUE) preset_timer[current_preset] = PRESET_MIN_VALUE;	// Lower limit.
 			break;
 	}
+
+	counter = preset_timer[current_preset];	// Update the timer value.
+	refresh_timer();			// Update the timer display.
 }
 
 // Functioned called to update display when scrolling left or right.
