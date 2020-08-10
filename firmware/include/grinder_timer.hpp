@@ -37,6 +37,9 @@
 #define LED_PULSE_SPEED		8000	// Sets the pulse speed.
 #define LED_MAX_BRIGHTNESS	150	// Sets the max brightness of the LED when pulsing or on (pwm pulse-width 0 to 255).
 
+////////////////////////////////////////
+// Global variable declarations.
+
 // The value of pulse_dir switches between 1 and -1.
 // Enables tracking of the LED pulse effect, i.e. 1:getting brighter, 2:getting dimmer.
 int8_t pulse_dir = 1;
@@ -62,7 +65,9 @@ timer pulse;	// A timer is used to create a pulsing effectwith the LED.
 clock rtc;	// A real-time clock (using an external 32.768kHz crystal) is used for acurate timing.
 sh1106 oled;	// A 128x64 pixel oled with a sh1106 driver.
 
+////////////////////////////////////////
 // Function declarations.
+
 ISR(BUTTON_PCI_VECTOR);				// Interrupt subroutine triggered by a button press.
 ISR(TIMER_INT_VECTOR);				// Interrupt subroutine triggered by the LED pulse effect timer.
 ISR(CLOCK_INT_VECTOR);				// Interrupt subroutine triggered by the real-time clock tiomer.
