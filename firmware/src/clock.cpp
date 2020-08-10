@@ -33,13 +33,8 @@ void clock::init(void)
 	while(CLOCK_ASSR & ((1 << CLOCK_TCUB) | (1 << CLOCK_OCRAUB) | (1 << CLOCK_OCRBUB) | (1 << CLOCK_TCRAUB) | (1 << CLOCK_TCRBUB))) {}
 }
 
-void clock::enable(void)
+void clock::enable(bool enable)
 {
-	CLOCK_TIMSK |= (1 << CLOCK_TOIE);
-}
-
-void clock::disable(void)
-{
-	CLOCK_TIMSK &= ~(1 << CLOCK_TOIE);
-
+	if(enable)	CLOCK_TIMSK |= (1 << CLOCK_TOIE);	// Enable.
+	else		CLOCK_TIMSK &= ~(1 << CLOCK_TOIE);	// Disable.
 }

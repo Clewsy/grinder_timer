@@ -33,6 +33,5 @@ class clock
 {
 	public:
 		void init(void);
-		void enable(void);
-		void disable(void);
+		void enable(bool enable);
 };

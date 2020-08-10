@@ -106,17 +106,17 @@ void grind(bool grind)
 
 	if(grind)
 	{
-		rtc.enable();	// Enable the countdown.
+		rtc.enable(true);	// Enable the countdown.
 //		RELAY_ON;
 		led_control(LED_OFF);
 	}
 
 	else
 	{
-		rtc.disable();	// Disable the countdown.
+		rtc.enable(false);	// Disable the countdown.
 //		RELAY_OFF;
 
-		_delay_ms(RESET_DELAY);
+		_delay_ms(RELAY_RESET_DELAY);
 
 		led_control(LED_ON);
 		counter = preset_timer[current_preset];
