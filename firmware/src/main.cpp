@@ -9,11 +9,11 @@ ISR(BUTTON_PCI_VECTOR)
 	if(grinding && buttons.any())	grind(false);	// If grinding, cancel grind with any button.
 	else if(!grinding)
 	{
-		if	(buttons.check(BUTTON_UP))	handle_up_down(BUTTON_UP);		// Increase current preset timer.
-		else if	(buttons.check(BUTTON_DOWN))	handle_up_down(BUTTON_DOWN);		// Decrease current preset timer.
-		else if (buttons.check(BUTTON_LEFT))	handle_left_right(BUTTON_LEFT);		// Select preset to the left.
-		else if (buttons.check(BUTTON_RIGHT))	handle_left_right(BUTTON_RIGHT);	// Select preset to the right.
-		else if (buttons.check(BUTTON_GRIND))	grind(true);				// Start grinding.
+		if	(buttons.check(BUTTON_UP))	handle_up_down(UP);		// Increase current preset timer.
+		else if	(buttons.check(BUTTON_DOWN))	handle_up_down(DOWN);		// Decrease current preset timer.
+		else if (buttons.check(BUTTON_LEFT))	handle_left_right(LEFT);	// Select preset to the left.
+		else if (buttons.check(BUTTON_RIGHT))	handle_left_right(RIGHT);	// Select preset to the right.
+		else if (buttons.check(BUTTON_GRIND))	grind(true);			// Start grinding.
 	}
 
 	buttons.enable();					// Re-enable button pin-change interrupt.
@@ -55,71 +55,48 @@ void led_control(uint8_t led_mode)
 	}
 }
 
-// Function called to update display when scrolling up or down.
-void handle_up_down(uint8_t up_or_down)
+// Called to alter the  value of the currently selected preset.
+// Can be adjusted up or down in increments of 0.25 seconds.
+// Oled is also refreshed accordingly.
+void change_preset_value(int8_t up_or_down)
 {
-	switch(up_or_down)
-	{
-		case BUTTON_UP:
-			preset_timer[current_preset] += 4;	// Add 4**sixteenths i.e. a quarter second.
-			if(preset_timer[current_preset] > PRESET_MAX_VALUE) preset_timer[current_preset] = PRESET_MAX_VALUE;	// Upper limit.
-			break;
-		case BUTTON_DOWN:
-			preset_timer[current_preset] -= 4;	// Minus 4**sixteenths i.e. a quarter second.
-			if(preset_timer[current_preset] < PRESET_MIN_VALUE) preset_timer[current_preset] = PRESET_MIN_VALUE;	// Lower limit.
-			break;
-	}
+	preset_timer[current_preset] += (up_or_down * 4);							// Either +=4 or -=4.
+	if(preset_timer[current_preset] > PRESET_MAX_VALUE) preset_timer[current_preset] = PRESET_MAX_VALUE;	// Upper limit.
+	if(preset_timer[current_preset] < PRESET_MIN_VALUE) preset_timer[current_preset] = PRESET_MIN_VALUE;	// Lower limit.
 
 	counter = preset_timer[current_preset];	// Update the timer value.
 	refresh_timer();			// Update the timer display.
+}
+
+// Handle user pressing and releasing, or pressding and holding the up or down buttons.
+// Up and down buttons are used to adjust the value of the currently selected preset.
+void handle_up_down(int8_t up_or_down)
+{
+	change_preset_value(up_or_down);	// Update the preset value and refresh the display.
 
 	uint16_t hold_timer = BUTTON_LONG_PRESS;
-	while((buttons.check(up_or_down)) && (hold_timer > 0))
-	{
-		_delay_ms(1);
-		hold_timer--;
-	}
+	while((buttons.any()) && ((hold_timer--) > 0)) _delay_ms(1);	// Wait until button is released or long-press duration elapses.
 
-	while(buttons.check(up_or_down))
+	while(buttons.any())	// Until the button is released.
 	{
-		switch(up_or_down)
-		{
-			case BUTTON_UP:
-				preset_timer[current_preset] += 4;	// Add 4**sixteenths i.e. a quarter second.
-				if(preset_timer[current_preset] > PRESET_MAX_VALUE) preset_timer[current_preset] = PRESET_MAX_VALUE;	// Upper limit.
-				break;
-			case BUTTON_DOWN:
-				preset_timer[current_preset] -= 4;	// Minus 4**sixteenths i.e. a quarter second.
-				if(preset_timer[current_preset] < PRESET_MIN_VALUE) preset_timer[current_preset] = PRESET_MIN_VALUE;	// Lower limit.
-				break;
-		}
-		counter = preset_timer[current_preset];	// Update the timer value.
-		refresh_timer();			// Update the timer display.
+		change_preset_value(up_or_down);
 		_delay_ms(BUTTON_FAST_CHANGE);		
 	}
 }
 
 // Functioned called to update display when scrolling left or right.
-void handle_left_right(uint8_t left_or_right)
+void handle_left_right(int8_t left_or_right)
 {
-	switch(left_or_right)
-	{
-		case BUTTON_LEFT:
-			current_preset--;	// A<-B<-C<-D
-			if(current_preset > PRESET_D) current_preset = PRESET_D;
-			break;
+	current_preset += (left_or_right);	// Equivalent to either ++ or --.
 
-		case BUTTON_RIGHT:
-			current_preset++;	// A->B->C->D
-			if(current_preset > PRESET_D) current_preset = PRESET_A;
-			break;
-	}
+	if(current_preset == (PRESET_D + 1))	current_preset = PRESET_A;	// D->A
+	if(current_preset == 0xFF)		current_preset = PRESET_D;	// D<-A
 
 	counter = preset_timer[current_preset];	// Update the timer value.
 	refresh_timer();			// Update the timer display.
 	refresh_menu();				// Update the presets menu.
 
-	while (~BUTTON_PINS & BUTTON_MASK) {}	// Wait until the buttons are released.
+	while(buttons.any()) {}	// Wait until the button is released.
 }
 
 // Initiate or cease grinding.
@@ -139,7 +116,7 @@ void grind(bool grind)
 		rtc.disable();	// Disable the countdown.
 //		RELAY_OFF;
 
-		_delay_ms(1000);
+		_delay_ms(RESET_DELAY);
 
 		led_control(LED_ON);
 		counter = preset_timer[current_preset];

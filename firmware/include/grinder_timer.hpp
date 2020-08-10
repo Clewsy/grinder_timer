@@ -8,7 +8,11 @@
 // Button definitions.
 #define BUTTON_DEBOUNCE_MS	10	// Button de-bounce duration in milliseconds.
 #define BUTTON_LONG_PRESS	500	// Duration (in ms approximately) to wait before registering a long-press.
-#define BUTTON_FAST_CHANGE	50	// Duration (in ms approximately) between actions when the button is held in. (long-press).
+#define BUTTON_FAST_CHANGE	50	// Duration (in ms approximately) between actions when the button is held in. (long-press)
+#define UP			1	// Value indicates up button - used in handle_up_or_down() and change_preset_value() functions.
+#define DOWN			-1	// Value indicates down button - used in handle_up_or_down() and change_preset_value() functions.
+#define LEFT			-1	// Value indicates left button - used in handle_left_or_right() function.
+#define RIGHT			1	// Value indicates right button - used in handle_left_or_right() function.
 
 // Timer preset definitions.
 #define PRESET_A		0
@@ -19,18 +23,19 @@
 #define PRESET_MAX_VALUE	960	// Maximum value that can be used for a preset (in sixteenths of a second).
 
 // Relay control definitions.
-#define RELAY_PORT	PORTC
-#define RELAY_DDR	DDRC
-#define RELAY_PIN	PC0
-#define RELAY_ON	RELAY_PORT |= (1 << RELAY_PIN)	// Macro to turn the relay (and therefore the grinder) on.
-#define RELAY_OFF	RELAY_PORT &= ~(1 << RELAY_PIN)	// Macro to turn the relay (and therefore the grinder) off.
+#define RELAY_PORT		PORTC				// Port containing the pin connected to the relay.
+#define RELAY_DDR		DDRC				// Data direction register for the port containing the pin connected to the relay.
+#define RELAY_PIN		PC0				// Pin connected to the relay coil.
+#define RELAY_ON		RELAY_PORT |= (1 << RELAY_PIN)	// Macro to turn the relay (and therefore the grinder) on.
+#define RELAY_OFF		RELAY_PORT &= ~(1 << RELAY_PIN)	// Macro to turn the relay (and therefore the grinder) off.
+#define RELAY_RESET_DELAY	1000				// Delay in milliseconds after grinding has finished before resetting the timer.
 
 // Definitions used by the led_control() function.
-#define LED_OFF			00
-#define LED_ON			01
-#define LED_PULSE		10
-#define LED_PULSE_SPEED		8000
-#define LED_MAX_BRIGHTNESS	150
+#define LED_OFF			00	// Set LED to off.
+#define LED_ON			01	// Set LED to on.
+#define LED_PULSE		10	// Set LED to pulsing.
+#define LED_PULSE_SPEED		8000	// Sets the pulse speed.
+#define LED_MAX_BRIGHTNESS	150	// Sets the max brightness of the LED when pulsing or on (pwm pulse-width 0 to 255).
 
 // The value of pulse_dir switches between 1 and -1.
 // Enables tracking of the LED pulse effect, i.e. 1:getting brighter, 2:getting dimmer.
@@ -62,8 +67,9 @@ ISR(BUTTON_PCI_VECTOR);				// Interrupt subroutine triggered by a button press.
 ISR(TIMER_INT_VECTOR);				// Interrupt subroutine triggered by the LED pulse effect timer.
 ISR(CLOCK_INT_VECTOR);				// Interrupt subroutine triggered by the real-time clock tiomer.
 void led_control(uint8_t led_mode);		// Set the led to either off, on or pulsing.
-void handle_up_down(uint8_t left_or_right);	// Increase or decrease the value of the current selected preset.
-void handle_left_right(uint8_t left_or_right);	// Scroll left or right through the different presets.
+void change_preset_value(int8_t up_or_down);	// Increase or decrease the value of the current selected preset.
+void handle_up_down(int8_t left_or_right);	// Handle pressing or holding the up or down buttons.
+void handle_left_right(int8_t left_or_right);	// Scroll left or right through the different presets.
 void grind(bool grind);				// Start or stop the grinder.
 void refresh_timer(void);			// Update the countdown timer section of the oled.
 void refresh_menu(void);			// Update the preset selection icons to show which preset is currently selected.
