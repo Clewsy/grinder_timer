@@ -5,10 +5,12 @@
 #include "clock.hpp"
 #include "sh1106.hpp"
 
-// Button de-bounce duration in milliseconds.
-#define BUTTON_DEBOUNCE_MS	10
+// Button definitions.
+#define BUTTON_DEBOUNCE_MS	10	// Button de-bounce duration in milliseconds.
+#define BUTTON_LONG_PRESS	500	// Duration (in ms approximately) to wait before registering a long-press.
+#define BUTTON_FAST_CHANGE	50	// Duration (in ms approximately) between actions when the button is held in. (long-press).
 
-// Timer presets.
+// Timer preset definitions.
 #define PRESET_A		0
 #define PRESET_B		1
 #define PRESET_C		2

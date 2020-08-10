@@ -16,7 +16,6 @@ ISR(BUTTON_PCI_VECTOR)
 		else if (buttons.check(BUTTON_GRIND))	grind(true);				// Start grinding.
 	}
 
-	if(!grinding) while (~BUTTON_PINS & BUTTON_MASK) {}	// Wait until all buttons are released, unless the grind button was pressed.
 	buttons.enable();					// Re-enable button pin-change interrupt.
 }
 
@@ -73,6 +72,31 @@ void handle_up_down(uint8_t up_or_down)
 
 	counter = preset_timer[current_preset];	// Update the timer value.
 	refresh_timer();			// Update the timer display.
+
+	uint16_t hold_timer = BUTTON_LONG_PRESS;
+	while((buttons.check(up_or_down)) && (hold_timer > 0))
+	{
+		_delay_ms(1);
+		hold_timer--;
+	}
+
+	while(buttons.check(up_or_down))
+	{
+		switch(up_or_down)
+		{
+			case BUTTON_UP:
+				preset_timer[current_preset] += 4;	// Add 4**sixteenths i.e. a quarter second.
+				if(preset_timer[current_preset] > PRESET_MAX_VALUE) preset_timer[current_preset] = PRESET_MAX_VALUE;	// Upper limit.
+				break;
+			case BUTTON_DOWN:
+				preset_timer[current_preset] -= 4;	// Minus 4**sixteenths i.e. a quarter second.
+				if(preset_timer[current_preset] < PRESET_MIN_VALUE) preset_timer[current_preset] = PRESET_MIN_VALUE;	// Lower limit.
+				break;
+		}
+		counter = preset_timer[current_preset];	// Update the timer value.
+		refresh_timer();			// Update the timer display.
+		_delay_ms(BUTTON_FAST_CHANGE);		
+	}
 }
 
 // Functioned called to update display when scrolling left or right.
@@ -94,6 +118,8 @@ void handle_left_right(uint8_t left_or_right)
 	counter = preset_timer[current_preset];	// Update the timer value.
 	refresh_timer();			// Update the timer display.
 	refresh_menu();				// Update the presets menu.
+
+	while (~BUTTON_PINS & BUTTON_MASK) {}	// Wait until the buttons are released.
 }
 
 // Initiate or cease grinding.
