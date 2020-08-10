@@ -16,7 +16,7 @@ ISR(BUTTON_PCI_VECTOR)
 		else if (buttons.check(BUTTON_GRIND))	grind(true);			// Start grinding.
 	}
 
-	buttons.enable();					// Re-enable button pin-change interrupt.
+	buttons.enable();		// Re-enable button pin-change interrupt.
 }
 
 // An overflow of the timer output compare register triggers this interrupt sub-routine.
@@ -62,7 +62,7 @@ void change_preset_value(int8_t up_or_down)
 	refresh_timer();			// Update the timer display.
 }
 
-// Handle user pressing and releasing, or pressding and holding the up or down buttons.
+// Handle user pressing and releasing, or pressding and holding either the up or down button.
 // Up and down buttons are used to adjust the value of the currently selected preset.
 void handle_up_down(int8_t up_or_down)
 {
@@ -78,7 +78,7 @@ void handle_up_down(int8_t up_or_down)
 	}
 }
 
-// Functioned called to update display when scrolling left or right.
+// Function called to update display when scrolling left or right.
 void handle_left_right(int8_t left_or_right)
 {
 	current_preset += (left_or_right);	// Equivalent to either ++ or --.
@@ -113,7 +113,7 @@ void grind(bool grind)
 // Update the clock/timer section of the OLED.
 void refresh_timer(void)
 {
-	unsigned char digits_string[6] = {'0', '0', '.', '0', '0', 0};	// Want to display the current timer value as ##.## seconds.
+	unsigned char digits_string[6] = {'0','0','.','0','0',0};	// Want to display the current timer value as ##.## seconds.
 	digits_string[0] = (((counter >> 4) / 10) + '0');		// Convert counter value 10s to ascii.
 	digits_string[1] = (((counter >> 4) % 10) + '0');		// Convert counter value 1s to ascii.
 	digits_string[3] = (((uint16_t)(counter * 0.625) % 10) + '0');	// Convert counter value 10ths to ascii.
@@ -157,41 +157,22 @@ void splash(void)
 // Initialise the various hardware peripherals.
 void hardware_init()
 {
-	// Initialsie serial input/output (USART class).
-//	serial.init();
-//	serial.print_string((char*)"grind(coffee);\r\n");
-
-	// Configure the relay pin as an output.
-	RELAY_DDR |= (1 << RELAY_PIN);
-
-	// Initialise the buttons (keypad class).
-	buttons.init();	
-
-	// Initialise the led (pwm class for variable brightness).
-	led.init();
-
-	// Initialise then set the speed of the led pulse effect (timer class).
-	pulse.init();
-	pulse.set(LED_PULSE_SPEED);
-
-	// Initialise the real-time clock (clock class).
-	rtc.init();
-
-	// Initialise the OLED display (sh1106 class)
-	oled.init();
-
-	// Globally enable all interrupts.
-	sei();
+	
+	RELAY_DDR |= (1 << RELAY_PIN);	// Configure the relay pin as an output.
+	buttons.init();			// Initialise the buttons (keypad class).
+	led.init();			// Initialise the led (pwm class for variable brightness).
+	pulse.init();			// Initialise the led pulse effect (timer class).
+	pulse.set(LED_PULSE_SPEED);	// Set the speed of the led pulse effect (timer class).
+	rtc.init();			// Initialise the real-time clock (clock class).
+	oled.init();			// Initialise the OLED display (sh1106 class).
+	sei();				// Globally enable all interrupts.
 }
 
 int main(void)
 {
 	hardware_init();
-
 	splash();
-
 	led_control(LED_PULSE);
-
 	buttons.enable();
 
 	while(1)
