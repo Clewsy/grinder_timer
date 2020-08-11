@@ -1,8 +1,9 @@
 //#include "usart.hpp"
 #include "keypad.hpp"
 #include "pwm.hpp"
-#include "timer.hpp"
+#include "pulser.hpp"
 #include "clock.hpp"
+#include "sleeper.hpp"
 #include "sh1106.hpp"
 
 // Button definitions.
@@ -37,12 +38,18 @@
 #define LED_PULSE_SPEED		8000	// Sets the pulse speed.
 #define LED_MAX_BRIGHTNESS	150	// Sets the max brightness of the LED when pulsing or on (pwm pulse-width 0 to 255).
 
+// Definition for defining the duration after which the unit will enter a "sleep" mode.
+#define SLEEP_COUNTER	305
+// The sleeper timer/counter is configured such that the frequency of this interrupt (when enabled) is 0.032768Hz.
+// Delay(s) = sleep_counter * 0.032768Hz
+// Therefore, the various delays require count values such as:
+//   10s : sleep_counter ~ 305
+//   30s : sleep_counter ~ 916
+//   60s : sleep_counter ~ 1831
+//  120s : sleep_counter ~ 3662
+
 ////////////////////////////////////////
 // Global variable declarations.
-
-// The value of pulse_dir switches between 1 and -1.
-// Enables tracking of the LED pulse effect, i.e. 1:getting brighter, 2:getting dimmer.
-int8_t pulse_dir = 1;
 
 // This variable contains a numerical value corresponding to the currently selected timer preset - A, B, C or D.
 uint8_t current_preset = PRESET_A;
@@ -50,24 +57,22 @@ uint8_t current_preset = PRESET_A;
 // This array contains the preset timer values (as multiples of sixteenths of a seconds).
 uint16_t preset_timer[4] = {144, 192, 24, 72};
 
-// When the rtc timer is running, "counter" is incremented by the timer overflow ISR.
-// This timer is configured such that every increment represents a sixteenth of a second.
-uint16_t counter = preset_timer[PRESET_A];
-
 // A flag that indicates whether the grinder motor is currently running.
 bool grinding = false;
 
 // Initialise the various classes used.
 //usart serial;	// Serial interface - really only used for debugging.
 keypad buttons;	// 5-button keypad.
-pwm led;	// LED is connected to a pwm output to enable variable brightness.
-timer pulse;	// A timer is used to create a pulsing effectwith the LED. 
-clock rtc;	// A real-time clock (using an external 32.768kHz crystal) is used for acurate timing.
+sleeper sleep;	// (Uses Timer/Counter 0) Trigger an interrupt after a set duration to enter a "sleep" mode.
+pulser pulse;	// (Uses Timer/Counter 1) A timer is used to create a pulsing effect with the LED. 
+pwm led;	// (Uses Timer/Counter 3) LED is connected to a pwm output to enable variable brightness.
+clock rtc;	// (Uses Timer/Counter 2) A real-time clock (using an external 32.768kHz crystal) is used for acurate timing.
 sh1106 oled;	// A 128x64 pixel oled with a sh1106 driver.
 
 ////////////////////////////////////////
 // Function declarations.
 
+ISR(SLEEPER_INT_VECTOR);
 ISR(BUTTON_PCI_VECTOR);				// Interrupt subroutine triggered by a button press.
 ISR(TIMER_INT_VECTOR);				// Interrupt subroutine triggered by the LED pulse effect timer.
 ISR(CLOCK_INT_VECTOR);				// Interrupt subroutine triggered by the real-time clock tiomer.

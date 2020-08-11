@@ -1,9 +1,20 @@
 #include "grinder_timer.hpp"
 
+ISR(SLEEPER_INT_VECTOR)
+{
+	sleep.counter++;
+	if(sleep.counter > SLEEP_COUNTER)
+	{
+		sleep.counter = 0;
+		oled.test_pattern(0b00110011);
+	}
+}
+
 // A pin-change on any keypad button triggers this sub-routine.
 ISR(BUTTON_PCI_VECTOR)
 {
 	buttons.disable();		// Disable button pin-change interrupt while this ISR is executed..
+	sleep.counter = 0;		// Restart the sleep mode countdown timer whenver a button is pressed.
 	_delay_ms(BUTTON_DEBOUNCE_MS);	// Wait for the button de-bounce duration.
 
 	if(grinding && buttons.any())	grind(false);	// If grinding, cancel grind with any button.
@@ -21,20 +32,20 @@ ISR(BUTTON_PCI_VECTOR)
 
 // An overflow of the timer output compare register triggers this interrupt sub-routine.
 // Configured to vary the LED brightness at desired interval to create a pulsing effect.
-ISR(TIMER_INT_VECTOR)
+ISR(PULSER_INT_VECTOR)
 {
-	if ((led.get() == LED_MAX_BRIGHTNESS) || (led.get() == 0)) pulse_dir *= -1;	// Reverse the pulse direction at either end of the count.
-	led.set(led.get() + pulse_dir);							// Update the led brightness.
+	if ((led.get() == LED_MAX_BRIGHTNESS) || (led.get() == 0)) pulse.direction *= -1;	// Reverse the pulse direction at either end of the count.
+	led.set(led.get() + pulse.direction);							// Update the led brightness.
 }
 
 // An overflow of the timer counter register triggers this interrupt sub-routine.
 // Configured to use external 32.768kHz crystal and therefore provide accurate timing in sixteenths of a second.
 ISR(CLOCK_INT_VECTOR)
 {
-	if(counter > 0)	counter--;	// Count down to zero.
-	else		grind(false);	// If reached zero, stop grinding.
+	if(rtc.counter > 0)	rtc.counter--;	// Count down to zero.
+	else			grind(false);	// If reached zero, stop grinding.
 
-	refresh_timer();		// Update the display with the remaining countdown duration.
+	refresh_timer();			// Update the display with the remaining countdown duration.
 }
 
 // Set the LED as either on, off or pulsing.
@@ -58,7 +69,7 @@ void change_preset_value(int8_t up_or_down)
 	if(preset_timer[current_preset] > PRESET_MAX_VALUE) preset_timer[current_preset] = PRESET_MAX_VALUE;	// Upper limit.
 	if(preset_timer[current_preset] < PRESET_MIN_VALUE) preset_timer[current_preset] = PRESET_MIN_VALUE;	// Lower limit.
 
-	counter = preset_timer[current_preset];	// Update the timer value.
+	rtc.counter = preset_timer[current_preset];	// Update the timer value.
 	refresh_timer();			// Update the timer display.
 }
 
@@ -86,7 +97,7 @@ void handle_left_right(int8_t left_or_right)
 	if(current_preset == (PRESET_D + 1))	current_preset = PRESET_A;	// D->A
 	if(current_preset == 0xFF)		current_preset = PRESET_D;	// D<-A
 
-	counter = preset_timer[current_preset];	// Update the timer value.
+	rtc.counter = preset_timer[current_preset];	// Update the timer value.
 	refresh_timer();			// Update the timer display.
 	refresh_menu();				// Update the presets menu.
 
@@ -103,7 +114,7 @@ void grind(bool grind)
 	if(!grind)		// If stopped grinding, pause at zero for a moment before resetting the timer.
 	{
 		_delay_ms(RELAY_RESET_DELAY);
-		counter = preset_timer[current_preset];
+		rtc.counter = preset_timer[current_preset];
 		refresh_timer();
 	}
 
@@ -114,10 +125,10 @@ void grind(bool grind)
 void refresh_timer(void)
 {
 	unsigned char digits_string[6] = {'0','0','.','0','0',0};	// Want to display the current timer value as ##.## seconds.
-	digits_string[0] = (((counter >> 4) / 10) + '0');		// Convert counter value 10s to ascii.
-	digits_string[1] = (((counter >> 4) % 10) + '0');		// Convert counter value 1s to ascii.
-	digits_string[3] = (((uint16_t)(counter * 0.625) % 10) + '0');	// Convert counter value 10ths to ascii.
-	digits_string[4] = (((uint16_t)(counter * 6.25) % 10) + '0');	// Convert counter value 100ths to ascii.
+	digits_string[0] = (((rtc.counter >> 4) / 10) + '0');		// Convert counter value 10s to ascii.
+	digits_string[1] = (((rtc.counter >> 4) % 10) + '0');		// Convert counter value 1s to ascii.
+	digits_string[3] = (((uint16_t)(rtc.counter * 0.625) % 10) + '0');	// Convert counter value 10ths to ascii.
+	digits_string[4] = (((uint16_t)(rtc.counter * 6.25) % 10) + '0');	// Convert counter value 100ths to ascii.
 
 	oled.print_string(digits_string, DSEG7_Classic_Bold_32, 3, 5);	// Write the array to the display.
 }
@@ -157,14 +168,15 @@ void splash(void)
 // Initialise the various hardware peripherals.
 void hardware_init()
 {
-	
 	RELAY_DDR |= (1 << RELAY_PIN);	// Configure the relay pin as an output.
 	buttons.init();			// Initialise the buttons (keypad class).
 	led.init();			// Initialise the led (pwm class for variable brightness).
 	pulse.init();			// Initialise the led pulse effect (timer class).
 	pulse.set(LED_PULSE_SPEED);	// Set the speed of the led pulse effect (timer class).
 	rtc.init();			// Initialise the real-time clock (clock class).
+rtc.counter = preset_timer[PRESET_A];	// Initialise the rtc timer value.
 	oled.init();			// Initialise the OLED display (sh1106 class).
+	sleep.init();			// Initialise the sleeper timer.
 	sei();				// Globally enable all interrupts.
 }
 
@@ -174,6 +186,10 @@ int main(void)
 	splash();
 	led_control(LED_PULSE);
 	buttons.enable();
+
+
+//sleep.set(3905);
+sleep.enable(true);
 
 	while(1)
 	{

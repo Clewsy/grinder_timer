@@ -34,4 +34,5 @@ class clock
 	public:
 		void init(void);
 		void enable(bool enable);
+		uint16_t counter = 0;
 };
