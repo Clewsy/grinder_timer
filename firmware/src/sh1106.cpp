@@ -88,6 +88,13 @@ void sh1106::init(void)
 	send_command(OLED_ON);
 }
 
+// Enable (true) or disable (false) the oled.
+void sh1106::enable_screen(bool enable)
+{
+	if(enable)	send_command(OLED_ON);
+	else		send_command(OLED_OFF);
+}
+
 // Send blanks to every segment of the display.
 void sh1106::clear_screen()
 {

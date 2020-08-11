@@ -7,17 +7,11 @@ void pulser::init(void)
 	// CS[2:0] set to 001 : clk/1 (no prescaling).
 	PULSER_TCCRB |= ((1 << PULSER_WGM2) | (1 << PULSER_CS1));
 
+	PULSER_SET_REG = PULSER_SPEED;	// Set the output compare value - the value that triggers the interrupt when reached by the counter.
 }
 
 void pulser::enable(bool enable)
 {
 	if(enable)	PULSER_TIMSK |= (1 << PULSER_IE);	// Enable the output compare interrupt.
 	else		PULSER_TIMSK &= ~(1 << PULSER_IE);	// Disable the output compare interrupt.
-}
-
-void pulser::set(uint16_t value)
-{
-	// Set the value of the output compare register (16-bit register).
-	// Use this value to determine the pulse "speed".
-	PULSER_SET_REG = value;
 }

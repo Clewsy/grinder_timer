@@ -1,25 +1,24 @@
 #include "grinder_timer.hpp"
 
+// An overflow of the configured timer counter register triggers this interrupt sub-routine.
+// It increments a counter until a set value is reached at which point it enables "sleep mode".
 ISR(SLEEPER_INT_VECTOR)
 {
-	sleep.counter++;
-	if(sleep.counter > SLEEP_COUNTER)
-	{
-		sleep.counter = 0;
-		oled.test_pattern(0b00110011);
-	}
+	sleep_timer.counter++;
+	if(sleep_timer.counter > SLEEP_COUNTER) sleep_mode(true);
 }
 
 // A pin-change on any keypad button triggers this sub-routine.
 ISR(BUTTON_PCI_VECTOR)
 {
 	buttons.disable();		// Disable button pin-change interrupt while this ISR is executed..
-	sleep.counter = 0;		// Restart the sleep mode countdown timer whenver a button is pressed.
 	_delay_ms(BUTTON_DEBOUNCE_MS);	// Wait for the button de-bounce duration.
 
-	if(grinding && buttons.any())	grind(false);	// If grinding, cancel grind with any button.
-	else if(!grinding)
+	if	(grinding && buttons.any())	grind(false);		// If grinding, cancel grind with any button.
+	else if	(sleep_timer.sleeping)		sleep_mode(false);	// Wake device but skip button action.
+	else if	(!grinding)
 	{
+		sleep_timer.counter = 0;						// Reset sleep mode timer counter.
 		if	(buttons.check(BUTTON_UP))	handle_up_down(UP);		// Increase current preset timer.
 		else if	(buttons.check(BUTTON_DOWN))	handle_up_down(DOWN);		// Decrease current preset timer.
 		else if (buttons.check(BUTTON_LEFT))	handle_left_right(LEFT);	// Select preset to the left.
@@ -34,8 +33,8 @@ ISR(BUTTON_PCI_VECTOR)
 // Configured to vary the LED brightness at desired interval to create a pulsing effect.
 ISR(PULSER_INT_VECTOR)
 {
-	if ((led.get() == LED_MAX_BRIGHTNESS) || (led.get() == 0)) pulse.direction *= -1;	// Reverse the pulse direction at either end of the count.
 	led.set(led.get() + pulse.direction);							// Update the led brightness.
+	if ((led.get() >= LED_MAX_BRIGHTNESS) || (led.get() <= 0)) pulse.direction *= -1;	// Reverse the pulse direction at either end of the count.
 }
 
 // An overflow of the timer counter register triggers this interrupt sub-routine.
@@ -57,7 +56,19 @@ void led_control(uint8_t led_mode)
 {
 	led.set(LED_MAX_BRIGHTNESS);
 	led.enable(led_mode);
+	pulse.direction = -1;
 	pulse.enable(led_mode >> 1);
+}
+
+// Call this function to enter or cancel "sleep mode" which is effectively disabling the oled and enabling the LED pulse effect.
+void sleep_mode(bool go_to_sleep)
+{
+	oled.enable_screen(!go_to_sleep);		// Turn the screen on or off.
+	sleep_timer.enable(!go_to_sleep);		// If we want to sleep then we can disable the sleep_timer.  Otherwise enable it to resume counting.
+	led_control(LED_PULSE >> (1 - go_to_sleep));	// Will set the led to pulsing in sleep mode, otherwise just on.
+	sleep_timer.counter = 0;			// This function always resets the sleep_timer regardless of sleeping flag.
+	if(sleep_timer.sleeping) while(buttons.any()) {}// If sleeping, wait until the button is released so the actual button action is ignored.
+	sleep_timer.sleeping = go_to_sleep;		// Set the "sleeping" flag.
 }
 
 // Called to alter the  value of the currently selected preset.
@@ -98,8 +109,7 @@ void handle_left_right(int8_t left_or_right)
 	if(current_preset == 0xFF)		current_preset = PRESET_D;	// D<-A
 
 	rtc.counter = preset_timer[current_preset];	// Update the timer value.
-	refresh_timer();			// Update the timer display.
-	refresh_menu();				// Update the presets menu.
+	refresh_display();				// Update the timer and preset menu displays.
 
 	while(buttons.any()) {}	// Wait until the button is released.
 }
@@ -111,14 +121,26 @@ void grind(bool grind)
 
 	rtc.enable(grind);	// Enable or disable the countdown timer.
 
-	if(!grind)		// If stopped grinding, pause at zero for a moment before resetting the timer.
+	if(!grind)		// If stopped grinding, pause at zero for a moment before resetting the rtc and sleep mode timers.
 	{
 		_delay_ms(RELAY_RESET_DELAY);
 		rtc.counter = preset_timer[current_preset];
 		refresh_timer();
+		sleep_mode(false);
 	}
 
 	led_control(!grind);	// LED off while grinding, on when finished.
+}
+
+// Update the preset selection menu section of the OLED.
+void refresh_menu(void)
+{
+	unsigned char preset_icons[5] = {'A','B','C','D',0};	// Default icons i.e. not selected.
+	preset_icons[current_preset] += 4;			// Charaters E, F, G & H actually show as inverted A, B, C & D to identify selected preset.
+	oled.print_string(preset_icons, Preset_Icons, 0, 34);	// Print the preset icons string to the OLED.
+
+	oled.print_char(LEFT_ARROW, Arrows, 0, 19);		// Print a left-pointing arrow to the left of the preset icons.
+	oled.print_char(RIGHT_ARROW, Arrows, 0, 94);		// Print a right-pointing arrow to the right of the preset icons.
 }
 
 // Update the clock/timer section of the OLED.
@@ -133,15 +155,11 @@ void refresh_timer(void)
 	oled.print_string(digits_string, DSEG7_Classic_Bold_32, 3, 5);	// Write the array to the display.
 }
 
-// Update the preset selection menu section of the OLED.
-void refresh_menu(void)
+// Refresh bot main sections of the display - the timer section and the preset menu section.
+void refresh_display(void)
 {
-	unsigned char preset_icons[5] = {'A','B','C','D',0};	// Default icons i.e. not selected.
-	preset_icons[current_preset] += 4;			// Charaters E, F, G & H actually show as inverted A, B, C & D to identify selected preset.
-	oled.print_string(preset_icons, Preset_Icons, 0, 34);	// Print the preset icons string to the OLED.
-
-	oled.print_char(LEFT_ARROW, Arrows, 0, 19);		// Print a left-pointing arrow to the left of the preset icons.
-	oled.print_char(RIGHT_ARROW, Arrows, 0, 94);		// Print a right-pointing arrow to the right of the preset icons.
+	refresh_menu();
+	refresh_timer();
 }
 
 // Display a silly "animation" when powered on.
@@ -172,11 +190,10 @@ void hardware_init()
 	buttons.init();			// Initialise the buttons (keypad class).
 	led.init();			// Initialise the led (pwm class for variable brightness).
 	pulse.init();			// Initialise the led pulse effect (timer class).
-	pulse.set(LED_PULSE_SPEED);	// Set the speed of the led pulse effect (timer class).
 	rtc.init();			// Initialise the real-time clock (clock class).
 rtc.counter = preset_timer[PRESET_A];	// Initialise the rtc timer value.
 	oled.init();			// Initialise the OLED display (sh1106 class).
-	sleep.init();			// Initialise the sleeper timer.
+	sleep_timer.init();		// Initialise the sleeper timer.
 	sei();				// Globally enable all interrupts.
 }
 
@@ -184,12 +201,9 @@ int main(void)
 {
 	hardware_init();
 	splash();
-	led_control(LED_PULSE);
+	led_control(LED_ON);
 	buttons.enable();
-
-
-//sleep.set(3905);
-sleep.enable(true);
+	sleep_timer.enable(true);
 
 	while(1)
 	{

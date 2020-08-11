@@ -59,6 +59,7 @@ class sh1106
 {
 	public:
 		void init(void);
+		void enable_screen(bool enable);
 		void clear_screen(void);
 		void invert_screen(bool invert);
 		void print_char(unsigned char character, const uint8_t *font, uint8_t start_page, uint8_t start_column);

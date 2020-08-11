@@ -16,13 +16,13 @@
 #define PULSER_TIMSK		TIMSK1			// Timer/Counter Timer Interrupt Mask Register
 #define PULSER_IE		OCIE1A			// Timer Output Compare Interrupt Enable Bit.
 #define PULSER_INT_VECTOR	TIMER1_COMPA_vect	// Interrupt subroutine name.
+#define PULSER_SPEED		8000			// Write to PULSER_SET_REG to set the pulse speed.
 
 class pulser
 {
 	public:
 		void init(void);
 		void enable(bool enable);
-		void set(uint16_t value);
 		int8_t direction = 1;	// Enables tracking of the LED pulse effect, i.e. 1:getting brighter, -1:getting dimmer.
 
 };
