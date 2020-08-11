@@ -38,7 +38,7 @@
 #define LED_MAX_BRIGHTNESS	150	// Sets the max brightness of the LED when pulsing or on (pwm pulse-width 0 to 255).
 
 // Definition for defining the duration after which the unit will enter a "sleep" mode.
-#define SLEEP_COUNTER	1831
+#define SLEEP_COUNTER		1831
 // The sleeper timer/counter is configured such that the frequency of this interrupt (when enabled) is 0.032768Hz.
 // Delay(s) = sleep_counter * 0.032768Hz
 // Therefore, the various delays require count values such as:

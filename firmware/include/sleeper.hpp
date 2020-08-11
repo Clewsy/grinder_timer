@@ -18,6 +18,6 @@ class sleeper
 	public:
 		void init(void);
 		void enable(bool enable);
-		uint16_t counter = 0;
-		bool sleeping = false;
+		uint16_t counter = 0;		// Counter can be used to tract number of times the ISR has been triggered.
+		bool sleeping = false;		// A flag for tracking the current sleep state.
 };

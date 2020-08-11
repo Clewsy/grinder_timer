@@ -34,7 +34,7 @@ ISR(BUTTON_PCI_VECTOR)
 ISR(PULSER_INT_VECTOR)
 {
 	led.set(led.get() + pulse.direction);							// Update the led brightness.
-	if ((led.get() >= LED_MAX_BRIGHTNESS) || (led.get() <= 0)) pulse.direction *= -1;	// Reverse the pulse direction at either end of the count.
+	if ((led.get() == LED_MAX_BRIGHTNESS) || (led.get() == 0)) pulse.direction *= -1;	// Reverse the pulse direction at either end of the count.
 }
 
 // An overflow of the timer counter register triggers this interrupt sub-routine.
@@ -146,13 +146,13 @@ void refresh_menu(void)
 // Update the clock/timer section of the OLED.
 void refresh_timer(void)
 {
-	unsigned char digits_string[6] = {'0','0','.','0','0',0};	// Want to display the current timer value as ##.## seconds.
-	digits_string[0] = (((rtc.counter >> 4) / 10) + '0');		// Convert counter value 10s to ascii.
-	digits_string[1] = (((rtc.counter >> 4) % 10) + '0');		// Convert counter value 1s to ascii.
+	unsigned char digits_string[6] = {'0','0','.','0','0',0};		// Want to display the current timer value as ##.## seconds.
+	digits_string[0] = (((rtc.counter >> 4) / 10) + '0');			// Convert counter value 10s to ascii.
+	digits_string[1] = (((rtc.counter >> 4) % 10) + '0');			// Convert counter value 1s to ascii.
 	digits_string[3] = (((uint16_t)(rtc.counter * 0.625) % 10) + '0');	// Convert counter value 10ths to ascii.
 	digits_string[4] = (((uint16_t)(rtc.counter * 6.25) % 10) + '0');	// Convert counter value 100ths to ascii.
 
-	oled.print_string(digits_string, DSEG7_Classic_Bold_32, 3, 5);	// Write the array to the display.
+	oled.print_string(digits_string, DSEG7_Classic_Bold_32, 3, 5);		// Write the array to the display.
 }
 
 // Refresh bot main sections of the display - the timer section and the preset menu section.

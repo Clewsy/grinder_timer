@@ -29,7 +29,7 @@ void clock::init(void)
 //	CLOCK_TCCRB |= ((1 << CLOCK_CS2) | (1 << CLOCK_CS0));	// Configured to trigger ISR every 1 second.
 
 	// Wait until all initialisation register writes are complete.
-	// All "update busy"bits in the ASSR register should return to 0.
+	// All "update busy" bits in the ASSR register should return to 0.
 	while(CLOCK_ASSR & ((1 << CLOCK_TCUB) | (1 << CLOCK_OCRAUB) | (1 << CLOCK_OCRBUB) | (1 << CLOCK_TCRAUB) | (1 << CLOCK_TCRBUB))) {}
 }
 
