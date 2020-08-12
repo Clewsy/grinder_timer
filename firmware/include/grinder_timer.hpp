@@ -5,6 +5,7 @@
 #include "clock.hpp"
 #include "sleeper.hpp"
 #include "sh1106.hpp"
+#include "presets.hpp"
 
 // Button definitions.
 #define BUTTON_DEBOUNCE_MS	10	// Button de-bounce duration in milliseconds.
@@ -14,14 +15,6 @@
 #define DOWN			-1	// Value indicates down button - used in handle_up_or_down() and change_preset_value() functions.
 #define LEFT			-1	// Value indicates left button - used in handle_left_or_right() function.
 #define RIGHT			1	// Value indicates right button - used in handle_left_or_right() function.
-
-// Timer preset definitions.
-#define PRESET_A		0
-#define PRESET_B		1
-#define PRESET_C		2
-#define PRESET_D		3
-#define PRESET_MIN_VALUE	16	// Minimum value that can be used for a preset (in sixteenths of a second).
-#define PRESET_MAX_VALUE	960	// Maximum value that can be used for a preset (in sixteenths of a second).
 
 // Relay control definitions.
 #define RELAY_PORT		PORTC				// Port containing the pin connected to the relay.
@@ -51,10 +44,10 @@
 // Global variable declarations.
 
 // This variable contains a numerical value corresponding to the currently selected timer preset - A, B, C or D.
-uint8_t current_preset = PRESET_A;
+//uint8_t current_preset = PRESET_A;
 
 // This array contains the preset timer values (as multiples of sixteenths of a seconds).
-uint16_t preset_timer[4] = {144, 192, 24, 72};
+//uint16_t preset_timer[4] = {144, 192, 24, 72};
 
 // A flag that indicates whether the grinder motor is currently running.
 bool grinding = false;
@@ -67,6 +60,10 @@ pulser pulse;		// (Uses Timer/Counter 1) A timer is used to create a pulsing eff
 pwm led;		// (Uses Timer/Counter 3) LED is connected to a pwm output to enable variable brightness.
 clock rtc;		// (Uses Timer/Counter 2) A real-time clock (using an external 32.768kHz crystal) is used for acurate timing.
 sh1106 oled;		// A 128x64 pixel oled with a sh1106 driver.
+
+
+presets preset;
+
 
 ////////////////////////////////////////
 // Function declarations.
@@ -85,5 +82,7 @@ void refresh_menu(void);			// Update the preset selection icons to show which pr
 void refresh_timer(void);			// Update the countdown timer section of the oled.
 void refresh_display(void);			// First run refresh_menu() then refresh_timer().
 void splash(void);				// Silly animation that runs at poer on.
+//void presets_update_eeprom(void);
+//void presets_init(void);
 void hardware_init(void);			// Initialise peripherals.
 int main(void);					// contains the infinite loop.

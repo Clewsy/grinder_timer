@@ -76,12 +76,12 @@ void sleep_mode(bool go_to_sleep)
 // Oled is also refreshed accordingly.
 void change_preset_value(int8_t up_or_down)
 {
-	preset_timer[current_preset] += (up_or_down * 4);							// Either +=4 or -=4.
-	if(preset_timer[current_preset] > PRESET_MAX_VALUE) preset_timer[current_preset] = PRESET_MAX_VALUE;	// Upper limit.
-	if(preset_timer[current_preset] < PRESET_MIN_VALUE) preset_timer[current_preset] = PRESET_MIN_VALUE;	// Lower limit.
+	preset.timer[preset.selected] += (up_or_down * 4);							// Either +=4 or -=4.
+	if(preset.timer[preset.selected] > PRESET_MAX_VALUE) preset.timer[preset.selected] = PRESET_MAX_VALUE;	// Upper limit.
+	if(preset.timer[preset.selected] < PRESET_MIN_VALUE) preset.timer[preset.selected] = PRESET_MIN_VALUE;	// Lower limit.
 
-	rtc.counter = preset_timer[current_preset];	// Update the timer value.
-	refresh_timer();			// Update the timer display.
+	rtc.counter = preset.timer[preset.selected];	// Update the timer value.
+	refresh_timer();				// Update the timer display.
 }
 
 // Handle user pressing and releasing, or pressding and holding either the up or down button.
@@ -103,13 +103,15 @@ void handle_up_down(int8_t up_or_down)
 // Function called to update display when scrolling left or right.
 void handle_left_right(int8_t left_or_right)
 {
-	current_preset += (left_or_right);	// Equivalent to either ++ or --.
+	preset.selected += (left_or_right);	// Equivalent to either ++ or --.
 
-	if(current_preset == (PRESET_D + 1))	current_preset = PRESET_A;	// D->A
-	if(current_preset == 0xFF)		current_preset = PRESET_D;	// D<-A
+	if(preset.selected == (PRESET_D + 1))	preset.selected = PRESET_A;	// D->A
+	if(preset.selected == 0xFF)		preset.selected = PRESET_D;	// D<-A
 
-	rtc.counter = preset_timer[current_preset];	// Update the timer value.
+	rtc.counter = preset.timer[preset.selected];	// Update the timer value.
 	refresh_display();				// Update the timer and preset menu displays.
+
+	preset.update_eeprom();// Update the presets in eeprom if the previously selected changed.
 
 	while(buttons.any()) {}	// Wait until the button is released.
 }
@@ -124,19 +126,21 @@ void grind(bool grind)
 	if(!grind)		// If stopped grinding, pause at zero for a moment before resetting the rtc and sleep mode timers.
 	{
 		_delay_ms(RELAY_RESET_DELAY);
-		rtc.counter = preset_timer[current_preset];
+		rtc.counter = preset.timer[preset.selected];
 		refresh_timer();
 		sleep_mode(false);
 	}
 
 	led_control(!grind);	// LED off while grinding, on when finished.
+
+	preset.update_eeprom();// Update the presets in eeprom if the previously selected changed.
 }
 
 // Update the preset selection menu section of the OLED.
 void refresh_menu(void)
 {
 	unsigned char preset_icons[5] = {'A','B','C','D',0};	// Default icons i.e. not selected.
-	preset_icons[current_preset] += 4;			// Charaters E, F, G & H actually show as inverted A, B, C & D to identify selected preset.
+	preset_icons[preset.selected] += 4;			// Charaters E, F, G & H actually show as inverted A, B, C & D to identify selected preset.
 	oled.print_string(preset_icons, Preset_Icons, 0, 34);	// Print the preset icons string to the OLED.
 
 	oled.print_char(LEFT_ARROW, Arrows, 0, 19);		// Print a left-pointing arrow to the left of the preset icons.
@@ -191,7 +195,8 @@ void hardware_init()
 	led.init();			// Initialise the led (pwm class for variable brightness).
 	pulse.init();			// Initialise the led pulse effect (timer class).
 	rtc.init();			// Initialise the real-time clock (clock class).
-rtc.counter = preset_timer[PRESET_A];	// Initialise the rtc timer value.
+preset.init();
+rtc.counter = preset.timer[PRESET_A];	// Initialise the rtc timer value.
 	oled.init();			// Initialise the OLED display (sh1106 class).
 	sleep_timer.init();		// Initialise the sleeper timer.
 	sei();				// Globally enable all interrupts.
