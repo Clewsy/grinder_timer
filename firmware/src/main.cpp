@@ -14,7 +14,7 @@ ISR(BUTTON_PCI_VECTOR)
 	_delay_ms(BUTTON_DEBOUNCE_MS);	// Wait for the button de-bounce duration.
 
 	if	(grinder.get_status() && buttons.any())	grind(false);		// If grinding, cancel grind with any button.
-	else if	(sleep_timer.sleeping)			sleep_mode(false);	// Wake device but skip button action.
+	else if	(sleep_timer.sleeping && buttons.any())	sleep_mode(false);	// If sleeping, wake device but skip button action.
 	else if	(!grinder.get_status())
 	{
 		sleep_timer.reset();							// Reset sleep mode timer counter.
@@ -93,7 +93,7 @@ void handle_left_right(int8_t left_or_right)
 	rtc.counter = preset.timer[preset.selected];	// Update the timer value.
 	refresh_display();				// Update the timer and preset menu displays.
 
-	preset.update_eeprom();// Update the presets in eeprom if the previously selected changed.
+	preset.update_eeprom();	// Update the presets in eeprom if the previously selected changed.
 
 	while(buttons.any()) {}	// Wait until the button is released.
 }
@@ -159,7 +159,7 @@ void splash(void)
 											// 2nd: 4 cycles, 2ms delay.
 											// 3rd: 2 cycles, 4ms delay.
 											// 4th: 1 cycle,  8ms delay.
-	_delay_ms(1000);
+	_delay_ms(2000);
 	oled.clear_screen();
 }
 
