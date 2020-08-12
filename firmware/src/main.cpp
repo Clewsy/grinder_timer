@@ -194,9 +194,9 @@ void hardware_init()
 	buttons.init();			// Initialise the buttons (keypad class).
 	led.init();			// Initialise the led (pwm class for variable brightness).
 	pulse.init();			// Initialise the led pulse effect (timer class).
+	preset.init();			// Read saved (to eeprom) values for the four presets and the currently  selected preset.
 	rtc.init();			// Initialise the real-time clock (clock class).
-preset.init();
-rtc.counter = preset.timer[PRESET_A];	// Initialise the rtc timer value.
+rtc.counter = preset.timer[preset.selected];	// Initialise the rtc timer value.
 	oled.init();			// Initialise the OLED display (sh1106 class).
 	sleep_timer.init();		// Initialise the sleeper timer.
 	sei();				// Globally enable all interrupts.
