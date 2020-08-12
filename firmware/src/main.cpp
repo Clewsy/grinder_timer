@@ -178,10 +178,9 @@ void hardware_init()
 {
 	RELAY_DDR |= (1 << RELAY_PIN);			// Configure the relay pin as an output.
 	buttons.init();					// Initialise the buttons (keypad class).
-	led.init();					// Initialise the led (pwm class for variable brightness).
-	preset.init();					// Read saved (to eeprom) values for the four presets and the currently  selected preset.
-	rtc.init();					// Initialise the real-time clock (clock class).
-	rtc.counter = preset.timer[preset.selected];	// Initialise the rtc timer value.
+	led.init(LED_ON);				// Initialise the led (pulser class) and set the initial mode (on, off or pulsing).
+	preset.init();					// Initialise the saved (to eeprom) values for the four presets and the currently selected preset.
+	rtc.init(preset.timer[preset.selected]);	// Initialise the real-time clock (clock class) and set the initial counter value.
 	oled.init();					// Initialise the OLED display (sh1106 class).
 	sleep_timer.init();				// Initialise the sleeper timer.
 	sei();						// Globally enable all interrupts.
@@ -191,7 +190,7 @@ int main(void)
 {
 	hardware_init();
 	splash();
-	led.mode(LED_ON);
+//	led.mode(LED_ON);
 	buttons.enable();
 	sleep_timer.enable(true);
 

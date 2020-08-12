@@ -32,7 +32,7 @@
 class clock
 {
 	public:
-		void init(void);
+		void init(uint16_t initial_counter_value);
 		void enable(bool enable);
 		uint16_t counter = 0;
 };

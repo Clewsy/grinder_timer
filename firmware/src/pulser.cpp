@@ -1,6 +1,6 @@
 #include "pulser.hpp"
 
-void pulser::init(void)
+void pulser::init(uint8_t initial_mode)
 {
 	////////Initialise the pulse timer.
 	// WGM[3:0] set to 0100 : CTC mode, counts from 0 to value of output compare register.
@@ -17,6 +17,9 @@ void pulser::init(void)
 	PWM_TCCRB |= ((1 << PWM_WGM2) | (1 << PWM_CS1));
 	PWM_DDR |= (1 << PWM_PIN);	// Set as an output the pin to which the LED is connected.
 	PWM_SET = 0x00;			// When initialised, duty cycle will be at a known value.
+
+	////////Set the initial led mode.
+	mode(initial_mode);
 }
 
 // Enable or disable the pwm timer.

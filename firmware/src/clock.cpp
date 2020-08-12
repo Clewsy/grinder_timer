@@ -1,6 +1,6 @@
 #include "clock.hpp"
 
-void clock::init(void)
+void clock::init(uint16_t initial_counter_value)
 {
 	// Ensure all of the timer/counter interrupts are disabled during initialisation.
 	CLOCK_TIMSK &= ~((1 << CLOCK_OCIEA) | (1 << CLOCK_OCIEB) | (1 << CLOCK_TOIE));
@@ -31,6 +31,9 @@ void clock::init(void)
 	// Wait until all initialisation register writes are complete.
 	// All "update busy" bits in the ASSR register should return to 0.
 	while(CLOCK_ASSR & ((1 << CLOCK_TCUB) | (1 << CLOCK_OCRAUB) | (1 << CLOCK_OCRBUB) | (1 << CLOCK_TCRAUB) | (1 << CLOCK_TCRBUB))) {}
+
+	// Set the initialised value of the counter. 
+	counter = initial_counter_value;
 }
 
 void clock::enable(bool enable)
