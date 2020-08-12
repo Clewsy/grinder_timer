@@ -17,7 +17,6 @@
 #define BUTTON_GRIND	PD7	// Pin connected to the grind button
 #define BUTTON_MASK	((1 << BUTTON_GRIND) | (1 << BUTTON_UP) | (1 << BUTTON_DOWN) | (1 << BUTTON_LEFT) | (1 << BUTTON_RIGHT))
 
-
 class keypad
 {
 	public:

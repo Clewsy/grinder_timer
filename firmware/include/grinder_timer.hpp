@@ -1,6 +1,5 @@
 //#include "usart.hpp"
 #include "keypad.hpp"
-#include "pwm.hpp"
 #include "pulser.hpp"
 #include "clock.hpp"
 #include "sleeper.hpp"
@@ -24,12 +23,6 @@
 #define RELAY_OFF		RELAY_PORT &= ~(1 << RELAY_PIN)	// Macro to turn the relay (and therefore the grinder) off.
 #define RELAY_RESET_DELAY	1000				// Delay in milliseconds after grinding has finished before resetting the timer.
 
-// Definitions used by the led_control() function.
-#define LED_OFF			0b00	// Set LED to off.
-#define LED_ON			0b01	// Set LED to on.
-#define LED_PULSE		0b11	// Set LED to pulsing.
-#define LED_MAX_BRIGHTNESS	150	// Sets the max brightness of the LED when pulsing or on (pwm pulse-width 0 to 255).
-
 // Definition for defining the duration after which the unit will enter a "sleep" mode.
 #define SLEEP_COUNTER		1831
 // The sleeper timer/counter is configured such that the frequency of this interrupt (when enabled) is 0.032768Hz.
@@ -43,11 +36,6 @@
 ////////////////////////////////////////
 // Global variable declarations.
 
-// This variable contains a numerical value corresponding to the currently selected timer preset - A, B, C or D.
-//uint8_t current_preset = PRESET_A;
-
-// This array contains the preset timer values (as multiples of sixteenths of a seconds).
-//uint16_t preset_timer[4] = {144, 192, 24, 72};
 
 // A flag that indicates whether the grinder motor is currently running.
 bool grinding = false;
@@ -56,14 +44,10 @@ bool grinding = false;
 //usart serial;		// Serial interface - really only used for debugging.
 keypad buttons;		// 5-button keypad.
 sleeper sleep_timer;	// (Uses Timer/Counter 0) Trigger an interrupt after a set duration to enter a "sleep" mode.
-pulser pulse;		// (Uses Timer/Counter 1) A timer is used to create a pulsing effect with the LED. 
-pwm led;		// (Uses Timer/Counter 3) LED is connected to a pwm output to enable variable brightness.
+pulser led;		// (Uses Timer/Counter 1 for pulsing, Timer/Counter 3 for pwm) LED connected to a pwm output can be on, off or pulsing.
 clock rtc;		// (Uses Timer/Counter 2) A real-time clock (using an external 32.768kHz crystal) is used for acurate timing.
 sh1106 oled;		// A 128x64 pixel oled with a sh1106 driver.
-
-
-presets preset;
-
+presets preset;		// Timer values for four presets, plust the currently selected preset.  Retained through a power-cycle by being saved in eeprom.
 
 ////////////////////////////////////////
 // Function declarations.
