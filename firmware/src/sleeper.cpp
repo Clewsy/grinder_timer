@@ -17,8 +17,15 @@ void sleeper::init(void)
 	// Fov = 256 / 7812.5 ~ 0.032768Hz.
 }
 
+// Enable (true) or disable (false) the sleeper timer.
 void sleeper::enable(bool enable)
 {
 	if(enable)	SLEEPER_TIMSK |= (1 << SLEEPER_IE);	// Enable the output compare interrupt.
 	else		SLEEPER_TIMSK &= ~(1 << SLEEPER_IE);	// Disable the output compare interrupt.
+}
+
+// Reset the sleeper counter.
+void sleeper::reset(void)
+{
+	counter = 0;
 }

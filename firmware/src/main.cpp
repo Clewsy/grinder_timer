@@ -11,22 +11,19 @@ ISR(SLEEPER_INT_VECTOR)
 // A pin-change on any keypad button triggers this sub-routine.
 ISR(BUTTON_PCI_VECTOR)
 {
-	buttons.disable();		// Disable button pin-change interrupt while this ISR is executed..
 	_delay_ms(BUTTON_DEBOUNCE_MS);	// Wait for the button de-bounce duration.
 
-	if	(grinding && buttons.any())	grind(false);		// If grinding, cancel grind with any button.
-	else if	(sleep_timer.sleeping)		sleep_mode(false);	// Wake device but skip button action.
-	else if	(!grinding)
+	if	(grinder.get_status() && buttons.any())	grind(false);		// If grinding, cancel grind with any button.
+	else if	(sleep_timer.sleeping)			sleep_mode(false);	// Wake device but skip button action.
+	else if	(!grinder.get_status())
 	{
-		sleep_timer.counter = 0;						// Reset sleep mode timer counter.
+		sleep_timer.reset();							// Reset sleep mode timer counter.
 		if	(buttons.check(BUTTON_UP))	handle_up_down(UP);		// Increase current preset timer.
 		else if	(buttons.check(BUTTON_DOWN))	handle_up_down(DOWN);		// Decrease current preset timer.
 		else if (buttons.check(BUTTON_LEFT))	handle_left_right(LEFT);	// Select preset to the left.
 		else if (buttons.check(BUTTON_RIGHT))	handle_left_right(RIGHT);	// Select preset to the right.
 		else if (buttons.check(BUTTON_GRIND))	grind(true);			// Start grinding.
 	}
-
-	buttons.enable();		// Re-enable button pin-change interrupt.
 }
 
 // An overflow of the timer output compare register triggers this interrupt sub-routine.
@@ -42,7 +39,6 @@ ISR(CLOCK_INT_VECTOR)
 {
 	if(rtc.counter > 0)	rtc.counter--;	// Count down to zero.
 	else			grind(false);	// If reached zero, stop grinding.
-
 	refresh_timer();			// Update the display with the remaining countdown duration.
 }
 
@@ -52,7 +48,7 @@ void sleep_mode(bool go_to_sleep)
 	oled.enable_screen(!go_to_sleep);		// Turn the screen on or off.
 	sleep_timer.enable(!go_to_sleep);		// If we want to sleep then we can disable the sleep_timer.  Otherwise enable it to resume counting.
 	led.mode(LED_PULSE >> (1 - go_to_sleep));	// Will set the led to pulsing in sleep mode, otherwise just on.
-	sleep_timer.counter = 0;			// This function always resets the sleep_timer regardless of sleeping flag.
+	sleep_timer.reset();				// This function always resets the sleep_timer regardless of sleeping flag.
 	if(sleep_timer.sleeping) while(buttons.any()) {}// If sleeping, wait until the button is released so the actual button action is ignored.
 	sleep_timer.sleeping = go_to_sleep;		// Set the "sleeping" flag.
 }
@@ -105,21 +101,17 @@ void handle_left_right(int8_t left_or_right)
 // Initiate or cease grinding.
 void grind(bool grind)
 {
-	grinding = grind;	// Set or clear the grinding flag (used in the buttons pin-change ISR).
-
+	grinder.on(grind);	// Turn on or off the grinder motor.
 	rtc.enable(grind);	// Enable or disable the countdown timer.
-
-	if(!grind)		// If stopped grinding, pause at zero for a moment before resetting the rtc and sleep mode timers.
+	if(!grind)		// If stopped grinding, pause at zero for a moment before resetting the rtc.
 	{
 		_delay_ms(RELAY_RESET_DELAY);
 		rtc.counter = preset.timer[preset.selected];
 		refresh_timer();
-		sleep_mode(false);
 	}
-
 	led.mode(!grind);	// LED off while grinding, on when finished.
-
-	preset.update_eeprom();// Update the presets in eeprom if the previously selected changed.
+	preset.update_eeprom();	// Update the presets in eeprom (will only update if value differed from eeprom when the grind was started).
+	sleep_mode(false);	// Restart the sleep mode timer.
 }
 
 // Update the preset selection menu section of the OLED.
@@ -169,14 +161,12 @@ void splash(void)
 											// 4th: 1 cycle,  8ms delay.
 	_delay_ms(1000);
 	oled.clear_screen();
-	refresh_menu();									// Show the preset menu.
-	refresh_timer();								// Show the current preset value.
 }
 
 // Initialise the various hardware peripherals.
 void hardware_init()
 {
-	RELAY_DDR |= (1 << RELAY_PIN);			// Configure the relay pin as an output.
+	grinder.init();					// Initialise the grinder motor relay (relay class).
 	buttons.init();					// Initialise the buttons (keypad class).
 	led.init(LED_ON);				// Initialise the led (pulser class) and set the initial mode (on, off or pulsing).
 	preset.init();					// Initialise the saved (to eeprom) values for the four presets and the currently selected preset.
@@ -190,9 +180,9 @@ int main(void)
 {
 	hardware_init();
 	splash();
-//	led.mode(LED_ON);
-	buttons.enable();
+	refresh_display();
 	sleep_timer.enable(true);
+	buttons.enable();
 
 	while(1)
 	{
