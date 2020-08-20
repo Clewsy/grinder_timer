@@ -3,22 +3,22 @@
 ## NOTE: Rev_2 of grinder_timer is currently under development.
 Planned improvements
 - Hardware:
-	- [ ] Pull-ups on I2C SDA and CLK lines.
-	- [ ] Drive relay with a transistor instead of direct from IO.
-	- [ ] Add flyback diode protection to relay coil.
-	- [ ] Smaller transformer.
-	- [ ] Smaller relay.
-	- [ ] Switch to SMD where possible.
-	- [ ] Two-sided PCB (have it fabricated instead of etching).
-	- [ ] Switch buttons from mushy panel-mount to tactile SMD.
-	- [ ] Balanced caps for the 32.768kHz crystal.
-	- [ ] Put grind button LED on a PWM output.
+	- [X] Pull-ups on I2C SDA and CLK lines.
+	- [X] Drive relay with a transistor instead of direct from IO.
+	- [X] Add flyback diode protection to relay coil.
+	- [X] Smaller transformer.
+	- [X] Smaller relay.
+	- [X] Switch to SMD where possible.
+	- [X] Two-sided PCB (have it fabricated instead of etching).
+	- [X] Switch buttons from mushy panel-mount to tactile SMD.
+	- [X] Balanced caps for the 32.768kHz crystal.
+	- [X] Put grind button LED on a PWM output.
 - Firmware:
-	- [ ] Switch from C to C++.
-	- [ ] New OLED driver (change from SPI SSD1306 to IIC SH1106 controller).
-	- [ ] Pulse/fade effect for grind button LED.
-	- [ ] Ability to cancel a grind once started.
-	- [ ] Remeber selected preset after a power-cycle.
+	- [X] Switch from C to C++.
+	- [X] New OLED driver (change from SPI SSD1306 to IIC SH1106 controller).
+	- [X] Pulse/fade effect for grind button LED.
+	- [X] Ability to cancel a grind once started.
+	- [X] Remeber selected preset after a power-cycle.
 
 ---
 
