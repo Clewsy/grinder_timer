@@ -148,9 +148,9 @@ void refresh_display(void)
 void splash(void)
 {
 	oled.map_bits(LOGO_CLEWS, sizeof(LOGO_CLEWS));					// Show bitmap for a duration.
-	_delay_ms(250);
+	_delay_ms(300);
 	oled.map_bits(LOGO_HAD, sizeof(LOGO_HAD));					// Show bitmap for a duration.
-	_delay_ms(250);
+	_delay_ms(300);
 	oled.clear_screen();
 	oled.draw_box(0, 0, 64, 128);							// Box around the outermost border of the oled.
 	oled.print_string((unsigned char*)"grind(coffee);", Roboto_Mono_12, 3, 15);	// Text centered (roughly).
