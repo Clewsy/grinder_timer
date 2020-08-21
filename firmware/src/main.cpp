@@ -109,9 +109,9 @@ void grind(bool grind)
 		rtc.counter = preset.timer[preset.selected];
 		refresh_timer();
 	}
-	led.mode(!grind);	// LED off while grinding, on when finished.
 	preset.update_eeprom();	// Update the presets in eeprom (will only update if value differed from eeprom when the grind was started).
 	sleep_mode(false);	// Restart the sleep mode timer.
+	led.mode(!grind);	// LED off while grinding, on when finished.
 }
 
 // Update the preset selection menu section of the OLED.
