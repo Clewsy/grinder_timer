@@ -22,7 +22,13 @@ Improvements since rev1:
 	- [X] New OLED driver (change from SPI SSD1306 to IIC SH1106 controller).
 	- [X] Pulse/fade effect for grind button LED.
 	- [X] Ability to cancel a grind once started.
-	- [X] Remeber selected preset after a power-cycle.
+	- [X] Remember selected preset after a power-cycle.
+
+Repo contents:
+- [hardware][link_repo_hardware]: KiCad files including the [schematic][link_repo_schematic] and PCB layout.
+- [firmware][link_repo_firmware]: The code witten in C++ and developed in VSCode with the PlatformIO IDE.
+- [data][link_repo_data]: Datasheets and specs for the various components used.
+- [rev1_archive][link_repo_rev1_archive]: Firmware developed for the original grinder_timer (written in C).
 
 ![The completed grinder_timer_rev2.][image_grinder_timer_rev2]
 ---
@@ -47,10 +53,14 @@ Proudly mentioned at [hackaday.com][link_web_hackaday_grinder_timer].
 [link_clews_grinder_timer]:https://clews.pro/projects/grinder_timer.php
 [link_clews_grinder_timer_rev2]:https://clews.pro/projects/grinder_timer_rev2.php
 
-[link_web_rancilio_rocky]:https://www.ranciliogroup.com/rancilio/rocky/rocky/
-[link_repo_schematic]:schematic/grinder_timer/
-[link_repo_pcb]:schematic/grinder_timer/
+[link_repo_data]::data/
+[link_repo_firmware]::firmware/
+[link_repo_hardware]:hardware/
+[link_repo_rev1_archive]:rev1_archive/
+[link_repo_schematic_rev2]:hardware/schematic.pdf
+
 [link_web_hackaday_grinder_timer]:https://hackaday.com/2017/12/14/dumb-coffee-grinder-gets-smarter-with-time/
+[link_web_rancilio_rocky]:https://www.ranciliogroup.com/rancilio/rocky/rocky/
 
 [image_grinder_timer]:images/grinder_timer_photo.jpg
 [image_grinder_timer_rev2]:images/grinder_timer_rev2_photo.jpg
