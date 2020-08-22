@@ -53,8 +53,8 @@ Proudly mentioned at [hackaday.com][link_web_hackaday_grinder_timer].
 [link_clews_grinder_timer]:https://clews.pro/projects/grinder_timer.php
 [link_clews_grinder_timer_rev2]:https://clews.pro/projects/grinder_timer_rev2.php
 
-[link_repo_data]::data/
-[link_repo_firmware]::firmware/
+[link_repo_data]:data/
+[link_repo_firmware]:firmware/
 [link_repo_hardware]:hardware/
 [link_repo_rev1_archive]:rev1_archive/
 [link_repo_schematic]:hardware/schematic.pdf
