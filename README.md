@@ -44,7 +44,7 @@ This is a programmable timer tethered to a [Rancilio Rocky][link_web_rancilio_ro
 - Aluminium enclosure.
 - Single cable (3-core) tether to grinder for power and control.
 
-The code, [schematic][link_repo_schematic] and [PCB layout][link_repo_pcb] are all included here on gitlab.  More information can be found at my [project page][link_clews_grinder_timer].
+The code, schematic and PCB layout are all included here on gitlab.  More information can be found at my [project page][link_clews_grinder_timer].
 
 Proudly mentioned at [hackaday.com][link_web_hackaday_grinder_timer].
 
@@ -57,7 +57,7 @@ Proudly mentioned at [hackaday.com][link_web_hackaday_grinder_timer].
 [link_repo_firmware]::firmware/
 [link_repo_hardware]:hardware/
 [link_repo_rev1_archive]:rev1_archive/
-[link_repo_schematic_rev2]:hardware/schematic.pdf
+[link_repo_schematic]:hardware/schematic.pdf
 
 [link_web_hackaday_grinder_timer]:https://hackaday.com/2017/12/14/dumb-coffee-grinder-gets-smarter-with-time/
 [link_web_rancilio_rocky]:https://www.ranciliogroup.com/rancilio/rocky/rocky/
