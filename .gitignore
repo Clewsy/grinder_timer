@@ -2,6 +2,6 @@
 *.o
 *.hex
 *.swp
-schematic/gerber_export
+hardware/gerber_export
 firmware/.vscode
 firmware.pio
