@@ -19,7 +19,7 @@ Improvements since rev1:
 	- [X] Put grind button LED on a PWM output.
 - Firmware:
 	- [X] Switch from C to C++.
-	- [X] New OLED driver (change from SPI SSD1306 to IIC SH1106 controller).
+	- [X] New OLED driver (change from SPI SSD1306 to I2C SH1106 controller).
 	- [X] Pulse/fade effect for grind button LED.
 	- [X] Ability to cancel a grind once started.
 	- [X] Remember selected preset after a power-cycle.
