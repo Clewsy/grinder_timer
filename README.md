@@ -25,9 +25,9 @@ Improvements since rev1:
 	- [X] Remember selected preset after a power-cycle.
 
 Repo contents:
-- [hardware][link_repo_hardware]: KiCad files including the [schematic][link_repo_schematic] and PCB layout.
-- [firmware][link_repo_firmware]: The code witten in C++ and developed in VSCode with the PlatformIO IDE.
 - [data][link_repo_data]: Datasheets and specs for the various components used.
+- [firmware][link_repo_firmware]: The code witten in C++ and developed in VSCode with the PlatformIO IDE.
+- [hardware][link_repo_hardware]: KiCad files including the [schematic][link_repo_schematic] and PCB layout.
 - [rev1_archive][link_repo_rev1_archive]: Firmware developed for the original grinder_timer (written in C).
 
 ![The completed grinder_timer_rev2.][image_grinder_timer_rev2]
