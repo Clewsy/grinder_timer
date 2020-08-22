@@ -856,7 +856,7 @@ L grinder_timer:terminal P3
 U 1 1 5F001AFE
 P 1050 2900
 F 0 "P3" H 1050 2950 79  0000 C CNN
-F 1 "NEUTRAL" H 1050 2850 79  0000 C CNN
+F 1 "ACTIVE" H 1050 2850 79  0000 C CNN
 F 2 "grinder_timer:pcb_tab" H 1050 2900 79  0001 C CNN
 F 3 "" H 1050 2900 79  0001 C CNN
 	1    1050 2900
@@ -867,7 +867,7 @@ L grinder_timer:terminal P2
 U 1 1 5F001657
 P 1050 2600
 F 0 "P2" H 1050 2650 79  0000 C CNN
-F 1 "ACTIVE" H 1050 2550 79  0000 C CNN
+F 1 "NEUTRAL" H 1050 2550 79  0000 C CNN
 F 2 "grinder_timer:pcb_tab" H 1050 2600 79  0001 C CNN
 F 3 "" H 1050 2600 79  0001 C CNN
 	1    1050 2600
@@ -1008,7 +1008,7 @@ Wire Wire Line
 Wire Wire Line
 	2600 2250 2600 2200
 Text Notes 7050 5100 0    79   ~ 0
-BOM\n----------------------------------------\nB1 - DF04S - Bridge Rectifier\nC1 - EMVY160ADA471MHA0G - 470uF Electrolytic Capacitor\nC2 - 0.1uF 1206 Ceramic Capacitor\nC3 - 0.1uF 1206 Ceramic Capacitor\nC4 - MCESL35V106M5X5.2 - 10uF Electrolytic Capacitor\nC5 - 7pF 1206 Ceramic Capacitor\nC6 - 17pF 1206 Ceramic Capacitor\nD1 - T4 1N4148W SOD-123 Diode\nJ1 - 6-Pin (2x3) ISP Header\nJ2 - 6-Pin (1x6) Serial Header\nK1 - SRM-1C-SL-5VDC - Relay\nO1 - OLED Display w/ SH1106 Driver in I2C Mode\nP1 - 19708-4001 - PCB-Mount Spade Terminal\nP2 - 19708-4001 - PCB-Mount Spade Terminal\nP3 - 19708-4001 - PCB-Mount Spade Terminal\nQ1 - PBSS4350Z - NPN Transistor\nR1 - 3.3k Ohm 1206 Resistor\nR2 - 3.3k Ohm 1206 Resistor\nR3 - 10k Ohm 1206 Resistor\nR4 - 150 Ohm 1206 Resistor\nR5 - 10k Ohm 1206 Resistor\nS0 - PTS645SM43SMTR92LFS - Surface Mount 6mm Tact Switch\nS1 - 3FSH9 - Surface Mount Tact Switch\nS2 - 3FSH9 - Surface Mount Tact Switch\nS3 - 3FSH9 - Surface Mount Tact Switch\nS4 - 3FSH9 - Surface Mount Tact Switch\nS5 - 5GSH93561 - Surface Mount Tact Switch w/ LED\nT1 - 44121 - 6V Transformer\nU1 - ATMEGA328PB - Microcontroller\nU2 - NCP1117 - 5V 1A LDO Linear Regulator\nY1 - FSRLF - 32.768kHz Crystal
+BOM\n----------------------------------------\nB1 - DF04S - Bridge Rectifier\nC1 - EMVY160ADA471MHA0G - 470uF Electrolytic Capacitor\nC2 - 0.1uF 1206 Ceramic Capacitor\nC3 - 0.1uF 1206 Ceramic Capacitor\nC4 - MCESL35V106M5X5.2 - 10uF Electrolytic Capacitor\nC5 - 7pF 1206 Ceramic Capacitor\nC6 - 17pF 1206 Ceramic Capacitor\nD1 - T4 1N4148W SOD-123 Diode\nJ1 - 6-Pin (2x3) ISP Header\nJ2 - 6-Pin (1x6) Serial Header\nK1 - SRM-1C-SL-5VDC - Relay\nO1 - OLED Display w/ SH1106 Driver in I2C Mode\nP1 - 19708-4001 - PCB-Mount Spade Terminal\nP2 - 19708-4001 - PCB-Mount Spade Terminal\nP3 - 19708-4001 - PCB-Mount Spade Terminal\nQ1 - PBSS4350Z - NPN Transistor\nR1 - 1.8k Ohm 1206 Resistor\nR2 - 1.8k Ohm 1206 Resistor\nR3 - 10k Ohm 1206 Resistor\nR4 - 150 Ohm 1206 Resistor\nR5 - 10k Ohm 1206 Resistor\nS0 - PTS645SM43SMTR92LFS - Surface Mount 6mm Tact Switch\nS1 - 3FSH9 - Surface Mount Tact Switch\nS2 - 3FSH9 - Surface Mount Tact Switch\nS3 - 3FSH9 - Surface Mount Tact Switch\nS4 - 3FSH9 - Surface Mount Tact Switch\nS5 - 5GSH93561 - Surface Mount Tact Switch w/ LED\nT1 - 44121 - 6V Transformer\nU1 - ATMEGA328PB - Microcontroller\nU2 - NCP1117 - 5V 1A LDO Linear Regulator\nY1 - FSRLF - 32.768kHz Crystal
 $Comp
 L Relay:FINDER-32.21-x000 K1
 U 1 1 5F0C6F1B
