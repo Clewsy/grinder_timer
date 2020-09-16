@@ -189,41 +189,46 @@ void sh1106::print_string(unsigned char *string, const uint8_t *font, uint8_t st
 // width:	1 to 128 pixels.
 void sh1106::draw_box(uint8_t start_row, uint8_t start_column, uint8_t height, uint8_t width)
 {
-	uint8_t start_page = (start_row / 8);	// Addressing is done by (page, column), so calculate the first page from the start row.
+	uint8_t start_page = (start_row / 8);				// Addressing is done by (page, column), so calculate the first page from the start row.
+	uint8_t num_pages = ((((start_row % 8) + height - 1) / 8) + 1);	// The number of pages spanned by the box.
+
+	uint8_t empty_rows_in_top_page = (start_row % 8);								// For left-shifting top row segments.
+	uint8_t empty_rows_in_bottom_page = (8 - (height - ((num_pages - 2) * 8) - (8 - empty_rows_in_top_page)));	// For right-shifting bottom row segments.
+
 
 	set_address(start_page, start_column);	// Set address for the first segment.
 
-	if(height > 8)	// Boxes with height larger than 8 pixels.
+	if(num_pages > 1)	// Boxes that span more than one page.
 	{
-		send_data(0xFF << (start_row % 8));						// Top left box segment.
+		send_data(0xFF << empty_rows_in_top_page);						// Top left box segment.
 		for(uint8_t c = (start_column + 1); c < (start_column + width - 1); c++)	// Cycle through columns for box top row.
 		{
-			send_data(0x01 << (start_row % 8));
+			send_data(0x01 << empty_rows_in_top_page);
 		}
-		send_data(0xFF << (start_row % 8));						// Top right box segment.
-		for(uint8_t p = (start_page + 1); p < (start_page + (height / 8) - 1); p++)	// Cycle through pages.
+		send_data(0xFF << empty_rows_in_top_page);						// Top right box segment.
+		for(uint8_t p = (start_page + 1); p < (start_page + num_pages - 1); p++)	// Cycle through pages.
 		{
 			set_address(p, start_column);
 			send_data(0xFF);							// Left side box segments.
 			set_address(p, (start_column + width - 1));
 			send_data(0xFF);							// Right side box segments.
 		}
-		set_address((start_page + (height / 8) - 1), start_column);
-		send_data(0xFF >> (height % 8));						// Bottom left box segment.
+		set_address((start_page + num_pages - 1), start_column);
+		send_data(0xFF >> empty_rows_in_bottom_page);						// Bottom left box segment.
 		for(uint8_t c = (start_column + 1); c < (start_column + width - 1); c++)	// Cycle through columns for box bottom row.
 		{
-			send_data(0x80 >> (height % 8));
+			send_data(0x80 >> empty_rows_in_bottom_page);
 		}
-		send_data(0xFF >> (height % 8));						// Bottom right box segment.
+		send_data(0xFF >> empty_rows_in_bottom_page);						// Bottom right box segment.
 	}
-	else	// Boxes with height less than or equal to 8 pixels.
+	else	// Boxes that fit within a single page.
 	{
-		send_data((0xFF >> (8 - height)) << (8 - (start_row % 8)));				// Left box segment.
-		for(uint8_t c = start_column; c < (start_column + width - 2); c++)		// Cycle through for box top and bottom rows.
+		send_data((0xFF >> (8 - height)) << empty_rows_in_top_page);				// Left box segment.
+		for(uint8_t c = (start_column + 1); c < (start_column + width - 1); c++)		// Cycle through for box top and bottom rows.
 		{
-			send_data(((0x01 << (height - 1)) + 1) << (8 - (start_row % 8)));
+			send_data(((0x01 << (height - 1)) + 1) << empty_rows_in_top_page);
 		}
-		send_data((0xFF >> (8 - height)) << (8 - (start_row % 8)));				// Right box segment.
+		send_data((0xFF >> (8 - height)) << empty_rows_in_top_page);				// Right box segment.
 	}
 }
 
