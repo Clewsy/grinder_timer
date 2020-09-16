@@ -30,6 +30,11 @@ Repo contents:
 - [hardware][link_repo_hardware]: KiCad files including the [schematic][link_repo_schematic] and PCB layout.
 - [rev1_archive][link_repo_rev1_archive]: Firmware developed for the original grinder_timer (written in C).
 
+Note: I used an ATmega328PB which isn't supported by the latest avr-libc package.  For the code in this repo to compile, using the included makefile, options are:
+a) Modify to use an ATmega328; or
+b) Manually install the *libatmega328pb.a*, *iom328pb.h* and *crtatmega328pb.o* files; or
+c) Use platformio instead of the makefile.
+
 ![The completed grinder_timer_rev2.][image_grinder_timer_rev2]
 ---
 

@@ -1,6 +1,7 @@
 *.elf
 *.o
 *.hex
+*.map
 *.swp
 hardware/gerber_export
 firmware/.vscode
