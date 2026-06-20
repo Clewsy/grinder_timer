@@ -1,5 +1,9 @@
 # grinder_timer
 
+## Rev2.1
+
+Modelled and printed a bezel for the OLED to tidy-up the enclosure.  Modelled in [freecad][link_web_freecad], printed on a [Prusa CORE One+][link_web_prusa].  CAD files and photo [here][link_repo_bezel].
+
 ## Rev2
 
 More information can be found at my [project page][link_clews_grinder_timer_rev2].
@@ -58,14 +62,18 @@ Proudly mentioned at [hackaday.com][link_web_hackaday_grinder_timer].
 [link_clews_grinder_timer]:https://clews.pro/projects/grinder_timer.php
 [link_clews_grinder_timer_rev2]:https://clews.pro/projects/grinder_timer_rev2.php
 
+[link_repo_bezel]:hardware/bezel/
 [link_repo_data]:data/
 [link_repo_firmware]:firmware/
-[link_repo_hardware]:hardware/
+[link_repo_hardware]:hardware/pcb/
 [link_repo_rev1_archive]:rev1_archive/
 [link_repo_schematic]:hardware/schematic.pdf
 
+[link_web_freecad]:https://www.freecad.org/
 [link_web_hackaday_grinder_timer]:https://hackaday.com/2017/12/14/dumb-coffee-grinder-gets-smarter-with-time/
+[link_web_prusa]:https://www.prusa3d.com/
 [link_web_rancilio_rocky]:https://www.ranciliogroup.com/rancilio/rocky/rocky/
 
 [image_grinder_timer]:images/grinder_timer_photo.jpg
 [image_grinder_timer_rev2]:images/grinder_timer_rev2_photo.jpg
+[image_grinder_timer_rev2.1]:images/grinder_timer_rev2.1_photo_s.jpg
