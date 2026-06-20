@@ -76,4 +76,3 @@ Proudly mentioned at [hackaday.com][link_web_hackaday_grinder_timer].
 
 [image_grinder_timer]:images/grinder_timer_photo.jpg
 [image_grinder_timer_rev2]:images/grinder_timer_rev2_photo.jpg
-[image_grinder_timer_rev2.1]:images/grinder_timer_rev2.1_photo_s.jpg
